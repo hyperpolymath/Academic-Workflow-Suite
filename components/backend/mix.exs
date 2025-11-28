@@ -63,7 +63,7 @@ defmodule AwapBackend.MixProject do
       {:esbuild, "~> 0.7", runtime: Mix.env() == :dev},
       {:swoosh, "~> 1.3"},
       {:finch, "~> 0.13"},
-      {:gettext, "~> 0.20"},
+      {:gettext, "~> 1.0"},
 
       # Testing
       {:excoveralls, "~> 0.18", only: :test},
