@@ -1,0 +1,193 @@
+Palimpsest License v0.8
+
+Copyright (c) 2025 Academic Workflow Suite Contributors
+
+SPDX-License-Identifier: Palimpsest-0.8
+
+Preamble
+--------
+
+The Palimpsest License is designed for works that value attribution,
+solidarity economics, and collaborative improvement while remaining
+compatible with common open-source licenses.
+
+This license allows you to:
+- Use the software for any purpose
+- Study and modify the source code
+- Redistribute original or modified versions
+- Dual-license with MIT, Apache-2.0, or GPL family licenses
+
+Terms and Conditions
+--------------------
+
+1. DEFINITIONS
+
+   "Work" refers to the software, documentation, and associated materials
+   covered by this license.
+
+   "You" refers to the individual or legal entity exercising rights under
+   this license.
+
+   "Attribution" means clearly crediting the original authors and
+   contributors in documentation and derivative works.
+
+   "Solidarity Economics" means economic arrangements that prioritize
+   mutual benefit, cooperation, and community well-being over pure profit
+   maximization.
+
+2. GRANT OF RIGHTS
+
+   Subject to the terms of this license, you are granted:
+
+   a) Perpetual, worldwide, non-exclusive, royalty-free rights to:
+      - Use the Work for any purpose
+      - Study the Work's source code
+      - Modify the Work
+      - Distribute copies of the Work
+      - Distribute modified versions of the Work
+
+   b) Patent rights to the extent necessary to use, modify, and
+      distribute the Work
+
+3. ATTRIBUTION REQUIREMENTS
+
+   All distributions (original or modified) must:
+
+   a) Include this license text
+   b) Clearly identify the original authors and contributors
+   c) Acknowledge the Palimpsest License in documentation
+   d) Preserve all copyright, attribution, and license notices
+
+   Attribution format:
+   ```
+   Based on Academic Workflow Suite
+   Copyright (c) 2025 Academic Workflow Suite Contributors
+   Licensed under Palimpsest License v0.8
+   https://github.com/Hyperpolymath/academic-workflow-suite
+   ```
+
+4. SOLIDARITY ECONOMICS (RECOMMENDED, NOT REQUIRED)
+
+   We encourage (but do not require) downstream users to:
+
+   a) Share improvements back to the community
+   b) Support the original project financially if commercially successful
+   c) Prioritize cooperative economic models
+   d) Consider collective ownership structures
+   e) Contribute to Commons-based initiatives
+
+   Recommended support mechanisms:
+   - Open Collective: https://opencollective.com/aws-edu
+   - Direct contributions to upstream project
+   - In-kind support (documentation, bug fixes, testing)
+
+5. SHARING IMPROVEMENTS (ENCOURAGED)
+
+   While not legally required, we strongly encourage:
+
+   a) Publishing modifications under compatible licenses
+   b) Contributing improvements upstream
+   c) Documenting changes and rationale
+   d) Participating in community governance
+
+6. DUAL LICENSING
+
+   This work may be used under either:
+
+   a) This Palimpsest License v0.8, OR
+   b) MIT License (see LICENSE-MIT), OR
+   c) Apache License 2.0, OR
+   d) GNU General Public License v3.0 (AGPL-3.0)
+
+   You may choose the license that best fits your use case.
+   Commercial users may prefer MIT or Apache-2.0.
+   Community-focused projects may prefer Palimpsest or GPL.
+
+7. COMPATIBILITY
+
+   The Palimpsest License is compatible with:
+   - MIT License
+   - Apache License 2.0
+   - GNU General Public License v3.0+
+   - GNU Affero General Public License v3.0+
+   - Creative Commons Attribution-ShareAlike 4.0
+
+   Works combining Palimpsest-licensed and GPL-licensed code may be
+   distributed under GPL terms.
+
+8. NO WARRANTY
+
+   THE WORK IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+
+   IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+   CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+   TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE WORK
+   OR THE USE OR OTHER DEALINGS IN THE WORK.
+
+9. LIMITATION OF LIABILITY
+
+   In no event will the authors or contributors be held liable for any
+   damages arising from the use of this Work, except as required by
+   applicable law.
+
+10. GOVERNANCE AND AMENDMENTS
+
+    This license may be updated by the Palimpsest License Stewards.
+    Major version changes (0.x → 1.0) require community consultation.
+    Minor updates may clarify terms without changing intent.
+
+11. TERMINATION
+
+    Your rights under this license terminate automatically if you:
+    a) Violate the attribution requirements
+    b) Claim the Work as entirely your own creation
+    c) Remove or modify license notices without permission
+
+    Termination does not affect downstream recipients who remain compliant.
+
+12. ACCEPTANCE
+
+    By using, modifying, or distributing the Work, you indicate acceptance
+    of these terms.
+
+Philosophy
+----------
+
+The Palimpsest License embodies:
+
+- **Attribution**: Credit where credit is due
+- **Freedom**: Permissive like MIT, but encourages sharing
+- **Solidarity**: Economic cooperation over extraction
+- **Community**: Collective improvement benefits all
+- **Pragmatism**: Compatible with existing licenses
+- **Reversibility**: Easy to switch to other licenses if needed
+
+Name Origin
+-----------
+
+A palimpsest is a manuscript where the original text has been scraped off
+and overwritten, yet traces remain visible. Like a palimpsest, software
+evolves through layers of contribution, each building on what came before.
+
+The Palimpsest License honors this layered history while allowing new
+writing to emerge.
+
+Contact
+-------
+
+Questions about this license:
+- Email: license@palimpsest-license.org
+- Repository: https://github.com/palimpsest-license/spec
+- Discussion: https://discuss.palimpsest-license.org
+
+For Academic Workflow Suite specifically:
+- Email: legal@academic-workflow-suite.org
+- Issues: https://github.com/Hyperpolymath/academic-workflow-suite/issues
+
+---
+
+Palimpsest License v0.8
+Last Updated: 2025-11-22
+SPDX-License-Identifier: Palimpsest-0.8

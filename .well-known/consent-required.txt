@@ -1,0 +1,173 @@
+# consent-required.txt - HTTP 430 Protocol
+# Specifies resources that require user consent before access
+# https://datatracker.ietf.org/doc/html/draft-cdn-control-header
+
+# HTTP 430 Preference Required
+# This file indicates which resources require explicit user consent
+
+## Telemetry and Analytics
+
+# Anonymous usage statistics
+/api/telemetry/* requires-consent="analytics"
+/api/metrics/* requires-consent="analytics"
+
+# Crash reports
+/api/crash-reports/* requires-consent="diagnostics"
+
+## Third-Party Integrations
+
+# Moodle LMS integration (requires OU credentials)
+/api/moodle/* requires-consent="lms-integration"
+
+# Optional rubric repository (no student data)
+/api/rubrics/sync requires-consent="rubric-sync"
+
+## AI Model Updates
+
+# Optional AI model updates (downloads large files)
+/api/models/update requires-consent="model-updates"
+
+## Explicitly NO Consent Required
+
+# Core functionality - never requires consent
+/api/tmas/* requires-consent="false"
+/api/feedback/* requires-consent="false"
+/api/analyze/* requires-consent="false"
+
+# Health checks - always allowed
+/api/health requires-consent="false"
+/api/version requires-consent="false"
+
+# Documentation - always allowed
+/docs/* requires-consent="false"
+/api/schema requires-consent="false"
+
+## Consent Categories
+
+# analytics: Anonymous usage statistics
+#   - What: Page views, feature usage counts, error rates
+#   - Why: Improve user experience, prioritize features
+#   - Who: AWS developers only
+#   - Storage: 90 days, aggregated only
+#   - Opt-out: yes, via settings
+
+# diagnostics: Crash reports
+#   - What: Stack traces, system info (no PII)
+#   - Why: Fix bugs faster
+#   - Who: AWS developers only
+#   - Storage: Until fixed, then deleted
+#   - Opt-out: yes, via settings
+
+# lms-integration: Moodle LMS
+#   - What: Assignment download, grade upload
+#   - Why: Streamline workflow
+#   - Who: Your Moodle instance only
+#   - Storage: Credentials local only, cached 24h
+#   - Opt-out: yes, use manual upload/download
+
+# rubric-sync: Optional rubric repository
+#   - What: Download community rubrics
+#   - Why: Share best practices
+#   - Who: AWS rubric repository (no student data)
+#   - Storage: Rubrics only, no student data ever
+#   - Opt-out: yes, use local rubrics only
+
+# model-updates: AI model updates
+#   - What: Download improved AI models (large files, 1-5 GB)
+#   - Why: Better feedback quality
+#   - Who: AWS model repository
+#   - Storage: Local only, replaced on update
+#   - Opt-out: yes, use existing models
+
+## Default Consent Policy
+
+# By default, Academic Workflow Suite:
+# ✅ DOES NOT collect telemetry
+# ✅ DOES NOT send crash reports
+# ✅ DOES NOT sync with cloud services
+# ✅ DOES NOT auto-update models
+# ✅ DOES keep all student data local
+
+# Users must explicitly opt-in to any data sharing.
+
+## Privacy Guarantees
+
+# Student Data:
+# ❌ NEVER sent to any external service
+# ❌ NEVER requires consent (because it's never shared!)
+# ✅ ALWAYS stays on local machine
+# ✅ ALWAYS cryptographically anonymized before AI
+
+# Even with all consents granted:
+# - Student names NEVER sent
+# - Student IDs NEVER sent
+# - Essay content NEVER sent to cloud
+# - Feedback NEVER sent to cloud
+
+## Consent Management
+
+# Check consent status:
+GET /api/consent
+
+# Grant consent:
+POST /api/consent
+{
+  "category": "analytics",
+  "granted": true,
+  "timestamp": "2025-11-22T14:32:01Z"
+}
+
+# Revoke consent:
+DELETE /api/consent/analytics
+
+# Export consent history:
+GET /api/consent/history
+
+## HTTP 430 Responses
+
+# If resource requires consent but none granted:
+
+HTTP/1.1 430 Preference Required
+Content-Type: application/json
+Preference-Applied: requires-consent=analytics
+
+{
+  "error": "consent_required",
+  "category": "analytics",
+  "message": "This feature requires consent for analytics",
+  "opt_in_url": "/settings/consent",
+  "more_info": "/privacy-policy#analytics"
+}
+
+## Compliance
+
+# GDPR: Full compliance
+# - Explicit consent required (Article 7)
+# - Easy withdrawal (Article 7.3)
+# - Granular control (Article 6.1.a)
+# - No consent bundling (Article 7.4)
+
+# CCPA: Compliant
+# - Do Not Sell (we never sell data)
+# - Opt-out mechanisms
+# - Data deletion on request
+
+## Contact
+
+# Privacy questions: privacy@academic-workflow-suite.org
+# Consent issues: consent@academic-workflow-suite.org
+# Data requests: data@academic-workflow-suite.org
+
+## Notes
+
+# This consent-required.txt file is:
+# - Machine-readable (parseable by consent management tools)
+# - Human-readable (clear explanations)
+# - Version-controlled (changes tracked in Git)
+# - Auditable (who changed what, when)
+
+---
+
+Last Updated: 2025-11-22
+Version: 1.0
+Canonical: https://academic-workflow-suite.org/.well-known/consent-required.txt
