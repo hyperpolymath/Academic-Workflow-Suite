@@ -30,6 +30,7 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup Rust toolchain
         uses: dtolnay/rust-toolchain@stable
@@ -61,6 +62,7 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup Elixir
         uses: erlef/setup-beam@v1
@@ -98,6 +100,7 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -121,6 +124,7 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Run ShellCheck
         uses: ludeeus/action-shellcheck@master
@@ -144,6 +148,7 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup Rust toolchain
         uses: dtolnay/rust-toolchain@stable
@@ -182,6 +187,7 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup Elixir
         uses: erlef/setup-beam@v1
@@ -227,6 +233,7 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -269,6 +276,7 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup Rust toolchain
         uses: dtolnay/rust-toolchain@stable
@@ -305,6 +313,7 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup Elixir
         uses: erlef/setup-beam@v1
@@ -346,6 +355,7 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -382,18 +392,24 @@ jobs:
 
       - name: Download core artifacts
         uses: actions/download-artifact@v4
+        uses: actions/checkout@v6
+
+      - name: Download core artifacts
+        uses: actions/download-artifact@v6
         with:
           name: core-Linux
           path: components/core/target/release/
 
       - name: Download AI jail artifacts
         uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v6
         with:
           name: ai-jail-Linux
           path: components/ai-jail/target/release/
 
       - name: Download backend artifacts
         uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v6
         with:
           name: elixir-backend
           path: components/backend/_build/prod/
@@ -425,6 +441,10 @@ jobs:
 
       - name: Download AI jail artifacts
         uses: actions/download-artifact@v4
+        uses: actions/checkout@v6
+
+      - name: Download AI jail artifacts
+        uses: actions/download-artifact@v6
         with:
           name: ai-jail-Linux
           path: components/ai-jail/target/release/
@@ -452,6 +472,7 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Run cargo-audit
         uses: rustsec/audit-check@v1
@@ -464,6 +485,7 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -488,6 +510,7 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v3
@@ -503,6 +526,7 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Run Semgrep
         uses: returntocorp/semgrep-action@v1
@@ -527,6 +551,10 @@ jobs:
 
       - name: Download all artifacts
         uses: actions/download-artifact@v4
+        uses: actions/checkout@v6
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v6
 
       - name: Install packaging tools
         run: |
@@ -556,6 +584,10 @@ jobs:
 
       - name: Download Windows artifacts
         uses: actions/download-artifact@v4
+        uses: actions/checkout@v6
+
+      - name: Download Windows artifacts
+        uses: actions/download-artifact@v6
         with:
           pattern: '*-Windows'
 
@@ -583,6 +615,10 @@ jobs:
 
       - name: Download macOS artifacts
         uses: actions/download-artifact@v4
+        uses: actions/checkout@v6
+
+      - name: Download macOS artifacts
+        uses: actions/download-artifact@v6
         with:
           pattern: '*-macOS'
 
@@ -606,6 +642,7 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -630,7 +667,7 @@ jobs:
             type=sha
 
       - name: Build and push
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: components/ai-jail
           push: true
@@ -652,10 +689,10 @@ jobs:
       contents: write
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Download all packages
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v6
         with:
           path: release-artifacts
 
