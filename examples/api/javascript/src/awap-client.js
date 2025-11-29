@@ -60,14 +60,13 @@ class AwapClient {
     constructor(options = {}) {
         this.apiUrl = options.apiUrl || process.env.AWS_API_URL || 'http://localhost:8080';
         this.timeout = options.timeout || 300000; // 5 minutes
-        this.verifySsl = options.verifySsl !== false;
+        // Always verify SSL certificates
 
         this.axios = axios.create({
             baseURL: this.apiUrl,
             timeout: 30000,
-            httpsAgent: this.verifySsl ? undefined : new (require('https').Agent)({
-                rejectUnauthorized: false
-            })
+            // Always use the default agent, which verifies certificates
+            // (Optionally, could explicitly set: httpsAgent: new (require('https').Agent)({ rejectUnauthorized: true }))
         });
     }
 
