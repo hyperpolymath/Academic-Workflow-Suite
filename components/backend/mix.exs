@@ -33,7 +33,7 @@ defmodule AwapBackend.MixProject do
   defp deps do
     [
       # Phoenix and Web
-      {:phoenix, "~> 1.7.0"},
+      {:phoenix, "~> 1.8.2"},
       {:phoenix_ecto, "~> 4.4"},
       {:phoenix_live_dashboard, "~> 0.8.0"},
       {:telemetry_metrics, "~> 1.1"},
