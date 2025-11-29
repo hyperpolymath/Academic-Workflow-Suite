@@ -12,7 +12,7 @@ path = "src/main.rs"
 
 [dependencies]
 # Candle ML framework
-candle-core = { version = "0.6", features = ["cuda"] }
+candle-core = { version = "0.9", features = ["cuda"] }
 candle-nn = "0.9"
 candle-transformers = "0.6"
 
