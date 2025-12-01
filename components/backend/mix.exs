@@ -33,10 +33,10 @@ defmodule AwapBackend.MixProject do
   defp deps do
     [
       # Phoenix and Web
-      {:phoenix, "~> 1.7.0"},
+      {:phoenix, "~> 1.8.2"},
       {:phoenix_ecto, "~> 4.4"},
       {:phoenix_live_dashboard, "~> 0.8.0"},
-      {:telemetry_metrics, "~> 0.6"},
+      {:telemetry_metrics, "~> 1.1"},
       {:telemetry_poller, "~> 1.0"},
       {:jason, "~> 1.2"},
       {:plug_cowboy, "~> 2.5"},
@@ -63,7 +63,7 @@ defmodule AwapBackend.MixProject do
       {:esbuild, "~> 0.7", runtime: Mix.env() == :dev},
       {:swoosh, "~> 1.3"},
       {:finch, "~> 0.13"},
-      {:gettext, "~> 0.20"},
+      {:gettext, "~> 1.0"},
 
       # Testing
       {:excoveralls, "~> 0.18", only: :test},

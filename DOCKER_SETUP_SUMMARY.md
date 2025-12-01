@@ -122,24 +122,21 @@ All scripts are executable and color-coded for better UX:
    - Removes all containers, volumes, networks, images
    - System cleanup
 
-### Justfile
+### Makefile
 
-Comprehensive justfile with 300+ recipes organized into 17 categories:
+Comprehensive Makefile with 40+ commands organized into categories:
 
-- **Build**: `just docker-build`, `just docker-build-core`, etc.
-- **Start/Stop**: `just docker-up`, `just docker-down`, `just docker-restart`
-- **Testing**: `just docker-test`, `just docker-test-core`, etc.
-- **Logs**: `just docker-logs`, `just docker-logs-core`, etc.
-- **Access**: `just docker-shell-core`, `just docker-shell-postgres`, etc.
-- **Database**: `just docker-db-migrate`, `just docker-db-backup`, etc.
-- **Cleanup**: `just docker-clean`, `just docker-reset`
-- **Monitoring**: `just docker-prometheus`, `just docker-grafana`
-- **Development**: `just dev-format`, `just dev-lint`, `just dev-watch`
-- **Security**: `just security-audit`, `just security-secrets`, etc.
-- **Release**: `just release`, `just release-package`, etc.
-- **And 10+ more categories** with shortcuts and aliases
+- **Build**: `make docker-build`, `make docker-build-core`, etc.
+- **Start/Stop**: `make docker-up`, `make docker-down`, `make docker-restart`
+- **Testing**: `make docker-test`, `make docker-test-core`, etc.
+- **Logs**: `make docker-logs`, `make docker-logs-core`, etc.
+- **Access**: `make docker-shell-core`, `make docker-shell-postgres`, etc.
+- **Database**: `make docker-db-migrate`, `make docker-db-backup`, etc.
+- **Cleanup**: `make docker-clean`, `make docker-reset`
+- **Monitoring**: `make docker-prometheus`, `make docker-grafana`
+- **Development**: `make dev-format`, `make dev-lint`
 
-Run `just help` or `just --list` for full list. See `justfile-cookbook.adoc` for comprehensive documentation.
+Run `make help` for full list.
 
 ### Documentation
 

@@ -582,13 +582,13 @@ git clone https://github.com/academic-workflow-suite/aws.git
 cd aws
 
 # Build all components
-just build
+make build
 
 # Install
-just install-cli-system
+sudo make install
 
-# Or install to user location
-just install-cli
+# Or install to custom location
+make install PREFIX=~/.local
 ```
 
 **Full installation guide**: See [Installation Guide](docs/INSTALLATION_GUIDE.md)
@@ -851,17 +851,17 @@ aws-core stats export --module TM112 --format csv
 git clone https://github.com/academic-workflow-suite/aws.git
 cd aws
 
-# Install dependencies (optional - handled by build)
-just dev-deps-update
+# Install dependencies
+make deps
 
 # Build all components
-just build
+make build
 
 # Run tests
-just test
+make test
 
 # Start development servers
-just dev
+make dev
 ```
 
 ### Project Structure
@@ -890,14 +890,14 @@ academic-workflow-suite/
 git checkout -b feature/my-feature
 
 # Make changes and test
-just test
-just lint
+make test
+make lint
 
 # Run locally
-just dev
+make dev
 
 # Build release
-just build-release
+make release
 
 # Create pull request
 git push origin feature/my-feature
@@ -907,19 +907,19 @@ git push origin feature/my-feature
 
 ```bash
 # All tests
-just test
+make test
 
 # Unit tests only
-just test-unit
+make test-unit
 
 # Integration tests
-just test-integration
+make test-integration
 
 # End-to-end tests
-just test-e2e
+make test-e2e
 
 # With coverage
-just test-coverage
+make test-coverage
 ```
 
 ### Code Style
@@ -931,13 +931,13 @@ This project follows:
 
 ```bash
 # Format code
-just format
+make format
 
 # Lint code
-just lint
+make lint
 
 # Fix auto-fixable issues
-just format-all
+make lint-fix
 ```
 
 ### Contributing
@@ -955,10 +955,8 @@ We welcome contributions! Please see [CONTRIBUTING.md](components/office-addin/C
 1. Fork the repository
 2. Create a feature branch
 3. Make your changes with tests
-4. Ensure `just test` and `just lint` pass
+4. Ensure `make test` and `make lint` pass
 5. Submit a pull request
-
-See `justfile-cookbook.adoc` for complete recipe documentation (300+ recipes).
 
 ---
 

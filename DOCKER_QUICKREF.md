@@ -5,79 +5,79 @@
 ## 🚀 Quick Start
 
 ```bash
-just docker-build    # Build all images
-just docker-up       # Start development
-just help            # Show all commands
+make docker-build    # Build all images
+make docker-up       # Start development
+make help           # Show all commands
 ```
 
 ## 📦 Build
 
 ```bash
-just docker-build              # Build all images
-just docker-build-core         # Build Core Engine only
-just docker-build-backend      # Build Backend Service only
-just docker-build-no-cache     # Force rebuild without cache
+make docker-build              # Build all images
+make docker-build-core         # Build Core Engine only
+make docker-build-backend      # Build Backend Service only
+docker-compose build --no-cache  # Force rebuild without cache
 ```
 
 ## ▶️ Start/Stop
 
 ```bash
-just docker-up        # Start dev environment
-just docker-prod      # Start production
-just docker-down      # Stop services
-just docker-restart   # Restart dev environment
+make docker-up        # Start dev environment
+make docker-prod      # Start production
+make docker-down      # Stop services
+make docker-restart   # Restart dev environment
 ```
 
 ## 🧪 Testing
 
 ```bash
-just docker-test           # Run all tests
-just docker-test-core      # Test Core Engine
-just docker-test-backend   # Test Backend Service
+make docker-test           # Run all tests
+make docker-test-core      # Test Core Engine
+make docker-test-backend   # Test Backend Service
 ```
 
 ## 📊 Logs & Status
 
 ```bash
-just docker-logs           # All logs
-just docker-logs-core      # Core Engine logs
-just docker-ps             # Service status
-just docker-stats          # Resource usage
+make docker-logs           # All logs
+make docker-logs-core      # Core Engine logs
+make docker-ps            # Service status
+make docker-stats         # Resource usage
 ```
 
 ## 💻 Shell Access
 
 ```bash
-just docker-shell-core       # Bash in Core Engine
-just docker-shell-backend    # Bash in Backend Service
-just docker-shell-postgres   # PostgreSQL psql
-just docker-shell-redis      # Redis CLI
+make docker-shell-core       # Bash in Core Engine
+make docker-shell-backend    # Bash in Backend Service
+make docker-shell-postgres   # PostgreSQL psql
+make docker-shell-redis      # Redis CLI
 ```
 
 ## 🗄️ Database
 
 ```bash
-just docker-db-migrate    # Run migrations
-just docker-db-rollback   # Rollback migration
-just docker-db-reset      # Reset database
-just docker-db-seed       # Seed database
-just docker-db-backup     # Backup database
+make docker-db-migrate    # Run migrations
+make docker-db-rollback   # Rollback migration
+make docker-db-reset      # Reset database
+make docker-db-seed       # Seed database
+make docker-db-backup     # Backup database
 ```
 
 ## 🧹 Cleanup
 
 ```bash
-just docker-clean            # Clean dangling resources
-just docker-clean-volumes    # Remove volumes (⚠️ deletes data)
-just docker-reset            # Complete reset (⚠️⚠️⚠️)
+make docker-clean            # Clean dangling resources
+make docker-clean-volumes    # Remove volumes (⚠️ deletes data)
+make docker-reset           # Complete reset (⚠️⚠️⚠️)
 ```
 
 ## 📈 Monitoring
 
 ```bash
-just docker-prometheus    # Open Prometheus
-just docker-grafana       # Open Grafana
-just docker-adminer       # Open Adminer
+make docker-prometheus    # Open Prometheus
+make docker-grafana      # Open Grafana
+make docker-adminer      # Open Adminer
 ```
 
 ## 🔍 Inspection
@@ -172,13 +172,12 @@ docker-compose up -d <service>
 - Full Guide: `docs/DOCKER_GUIDE.md`
 - Summary: `DOCKER_SETUP_SUMMARY.md`
 - Architecture: `docs/ARCHITECTURE.md`
-- Justfile Help: `just help`
-- Justfile Cookbook: `justfile-cookbook.adoc`
+- Makefile Help: `make help`
 
 ## ⚡ Pro Tips
 
-1. Use `just` commands for convenience (300+ recipes available)
-2. Check `just help` or `just --list` for all available commands
+1. Use `make` commands for convenience
+2. Check `make help` for all available commands
 3. Use `-d` flag for detached mode
 4. Use `--build` flag to force rebuild
 5. Use `--no-deps` to not start dependent services
@@ -188,10 +187,10 @@ docker-compose up -d <service>
 
 ```bash
 # Nuclear option - reset everything
-just docker-reset
+make docker-reset
 
 # Graceful stop with volume preservation
-just docker-down
+make docker-down
 
 # Force remove everything
 docker-compose down -v --remove-orphans
@@ -200,4 +199,4 @@ docker system prune -af --volumes
 
 ---
 
-**Last Updated**: 2025-12-01
+**Last Updated**: 2025-11-22
