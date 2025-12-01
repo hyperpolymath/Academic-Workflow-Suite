@@ -20,7 +20,7 @@ The **Rhodium Standard Repository (RSR) Framework** defines 11 categories of sof
 | 2. Memory Safety | ✅ **Complete** | Gold | Rust ownership, zero unsafe in critical paths |
 | 3. Documentation | ✅ **Complete** | Gold | 8,700+ lines, 8 comprehensive docs |
 | 4. .well-known/ | ✅ **Complete** | Gold | security.txt, ai.txt, humans.txt |
-| 5. Build System | ✅ **Complete** | Silver | justfile, flake.nix, Makefile, CI/CD |
+| 5. Build System | ✅ **Complete** | Gold | justfile (300+ recipes), flake.nix, CI/CD |
 | 6. Test Coverage | ⚠️  **Partial** | Bronze | 91% Rust, integration tests, needs 100% |
 | 7. TPCF Governance | ✅ **Complete** | Gold | Perimeter 2, documented in TPCF.md |
 | 8. Offline-First | ⚠️  **Partial** | Bronze | AI jail is offline, system needs backend |
@@ -177,16 +177,19 @@ ls -la .well-known/
 **Status**: ✅ Complete
 
 **Tools**:
-- [x] `justfile` (85 recipes) - Task runner ✅ **NEW**
-- [x] `flake.nix` - Nix reproducible builds ✅ **NEW**
-- [x] `Makefile` (40+ targets) - GNU Make
-- [x] `.gitlab-ci.yml` (785 lines, 6 stages) - GitLab CI/CD
-- [x] `.github/workflows/ci.yml` (680 lines) - GitHub Actions
+- [x] `justfile` (300+ recipes) - Modern task runner with comprehensive build system ✅ **ENHANCED**
+- [x] `justfile-cookbook.adoc` (3,400+ lines) - Complete recipe documentation ✅ **NEW**
+- [x] `flake.nix` - Nix reproducible builds ✅
+- [x] `.gitlab-ci.yml` (785 lines, 6 stages) - GitLab CI/CD ✅
+- [x] `.github/workflows/ci.yml` (680 lines) - GitHub Actions ✅
 
-**Just Recipes** (85 total):
+**Just Recipes** (300+ total across 17 categories):
 ```bash
 just --list
-# build, test, lint, format, dev, security-audit, docs, release, clean, etc.
+# 📚 Help & docs, 🏗️ Build, 🐳 Docker, 🧪 Test, 🎨 Lint/format,
+# 🔒 Security, 📦 Install/deploy, 💾 Database, 🔧 Development,
+# 📚 Documentation, 🚀 Release, 📊 Monitoring, 🧹 Cleanup,
+# 📈 Statistics, 🔬 CI/CD, 🌐 Website, 🎯 Aliases
 ```
 
 **Nix Flake**:
