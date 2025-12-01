@@ -1,0 +1,3674 @@
+= Academic Workflow Suite Justfile Cookbook
+:toc: left
+:toclevels: 3
+:numbered:
+:icons: font
+:source-highlighter: rouge
+:doctype: book
+:version: 1.0.0
+:author: Academic Workflow Suite Team
+:description: Comprehensive guide to all just recipes available in the Academic Workflow Suite
+
+== Introduction
+
+This cookbook provides comprehensive documentation for all available `just` recipes in the Academic Workflow Suite. The project uses https://github.com/casey/just[Just], a modern command runner similar to Make but with better ergonomics.
+
+=== Quick Start
+
+[source,bash]
+----
+# List all available recipes
+just --list
+
+# Run the interactive chooser
+just
+
+# Get help for a specific recipe
+just help-recipe <recipe-name>
+
+# Run a recipe
+just <recipe-name>
+----
+
+=== Installation
+
+To use these recipes, you need to have `just` installed:
+
+[source,bash]
+----
+# macOS
+brew install just
+
+# Linux (cargo)
+cargo install just
+
+# Arch Linux
+pacman -S just
+
+# Ubuntu/Debian
+curl --proto '=https' --tlsv1.2 -sSf https://just.systems/install.sh | bash -s -- --to /usr/local/bin
+----
+
+=== Conventions
+
+* 🏗️ Build operations
+* 🐳 Docker operations
+* 🧪 Testing operations
+* 🎨 Linting and formatting
+* 🔒 Security operations
+* 📦 Installation and deployment
+* 💾 Database operations
+* 🔧 Development operations
+* 📚 Documentation operations
+* 🚀 Release operations
+* 📊 Monitoring and observability
+* 🧹 Cleanup operations
+* 📈 Statistics and reporting
+* 🔬 CI/CD operations
+* 🌐 Website operations
+* 🔧 Utility operations
+* 🎯 Aliases and shortcuts
+
+== Recipe Categories
+
+=== 📚 Help & Documentation Recipes
+
+==== `help`
+
+Display a list of all available recipes.
+
+[source,bash]
+----
+just help
+----
+
+*Output:* List of all recipes with their descriptions.
+
+==== `help-recipe RECIPE`
+
+Show detailed help for a specific recipe.
+
+[source,bash]
+----
+just help-recipe build
+----
+
+*Parameters:*
+
+* `RECIPE` - Name of the recipe to show help for
+
+==== `help-full`
+
+Show comprehensive documentation with all available recipes.
+
+[source,bash]
+----
+just help-full
+----
+
+==== `info`
+
+Display project information including version, git branch, and tool versions.
+
+[source,bash]
+----
+just info
+----
+
+*Output:*
+----
+=== Academic Workflow Suite ===
+Version: 1.0.0
+Git Branch: main
+Git Commit: abc1234
+Docker Compose: version 2.x.x
+Rust: 1.75.0
+Elixir: 1.15.0
+Node: v20.x.x
+----
+
+=== 🏗️ Build Recipes
+
+==== `build`
+
+Build all components of the project.
+
+[source,bash]
+----
+just build
+----
+
+*Dependencies:* `build-core`, `build-ai-jail`, `build-backend`, `build-office-addin`, `build-cli`, `build-shared`, `build-monitoring`
+
+*Time:* ~5-10 minutes
+
+==== `build-all`
+
+Clean and build all components from scratch.
+
+[source,bash]
+----
+just build-all
+----
+
+*Dependencies:* `clean`, `build`
+
+==== `build-release`
+
+Build all components in release mode with optimizations.
+
+[source,bash]
+----
+just build-release
+----
+
+*Dependencies:* `build-core-release`, `build-ai-jail-release`, `build-backend-release`, `build-cli-release`, `build-shared-release`
+
+*Note:* This produces optimized binaries suitable for production.
+
+==== `build-debug`
+
+Build all components in debug mode with debug symbols.
+
+[source,bash]
+----
+just build-debug
+----
+
+*Dependencies:* `build-core-debug`, `build-ai-jail-debug`, `build-backend-debug`, `build-cli-debug`, `build-shared-debug`
+
+==== `build-core`
+
+Build the Rust core engine in release mode.
+
+[source,bash]
+----
+just build-core
+----
+
+*Location:* `components/core`
+
+*Output:* `components/core/target/release/core`
+
+==== `build-core-debug`
+
+Build the core engine in debug mode.
+
+[source,bash]
+----
+just build-core-debug
+----
+
+*Output:* `components/core/target/debug/core`
+
+==== `build-core-release`
+
+Build the core engine in release mode with all optimizations and locked dependencies.
+
+[source,bash]
+----
+just build-core-release
+----
+
+*Flags:* `--release --locked`
+
+==== `build-ai-jail`
+
+Build the AI jail container (Rust + Docker).
+
+[source,bash]
+----
+just build-ai-jail
+----
+
+*Steps:*
+1. Builds Rust binary with `cargo build --release`
+2. Builds Docker image with tag `aws-ai-jail:latest`
+
+==== `build-backend`
+
+Build the Elixir/Phoenix backend.
+
+[source,bash]
+----
+just build-backend
+----
+
+*Steps:*
+1. Fetches dependencies with `mix deps.get`
+2. Compiles in production mode with `MIX_ENV=prod mix compile`
+
+==== `build-office-addin`
+
+Build the ReScript Office add-in.
+
+[source,bash]
+----
+just build-office-addin
+----
+
+*Steps:*
+1. Installs npm dependencies
+2. Runs `npm run build`
+
+==== `build-cli`
+
+Build the CLI tool in release mode.
+
+[source,bash]
+----
+just build-cli
+----
+
+*Output:* `cli/target/release/aws`
+
+==== `build-shared`
+
+Build shared Rust libraries.
+
+[source,bash]
+----
+just build-shared
+----
+
+*Location:* `components/shared`
+
+==== `build-monitoring`
+
+Build monitoring components using Docker Compose.
+
+[source,bash]
+----
+just build-monitoring
+----
+
+==== `build-website`
+
+Build the static website.
+
+[source,bash]
+----
+just build-website
+----
+
+*Output:* `website/dist/`
+
+==== `build-cross-all`
+
+Cross-compile for all platforms (Linux, macOS, Windows).
+
+[source,bash]
+----
+just build-cross-all
+----
+
+*Dependencies:* `build-cross-linux`, `build-cross-macos`, `build-cross-windows`
+
+*Note:* Requires cross-compilation toolchains to be installed.
+
+==== `build-cross-linux`
+
+Cross-compile for Linux x86_64.
+
+[source,bash]
+----
+just build-cross-linux
+----
+
+*Target:* `x86_64-unknown-linux-gnu`
+
+==== `build-cross-macos`
+
+Cross-compile for macOS x86_64.
+
+[source,bash]
+----
+just build-cross-macos
+----
+
+*Target:* `x86_64-apple-darwin`
+
+==== `build-cross-windows`
+
+Cross-compile for Windows x86_64.
+
+[source,bash]
+----
+just build-cross-windows
+----
+
+*Target:* `x86_64-pc-windows-gnu`
+
+==== `build-pgo`
+
+Build with profile-guided optimization.
+
+[source,bash]
+----
+just build-pgo
+----
+
+*Note:* Requires cargo-pgo to be installed.
+
+=== 🐳 Docker Recipes
+
+==== `docker-build`
+
+Build all Docker images.
+
+[source,bash]
+----
+just docker-build
+----
+
+*Images built:*
+- aws-core
+- aws-backend
+- aws-ai-jail
+- aws-nginx
+
+==== `docker-build-no-cache`
+
+Build all Docker images without using cache.
+
+[source,bash]
+----
+just docker-build-no-cache
+----
+
+*Use case:* When you need a clean build or dependencies have changed.
+
+==== `docker-build-core`
+
+Build only the Core Engine Docker image.
+
+[source,bash]
+----
+just docker-build-core
+----
+
+==== `docker-build-backend`
+
+Build only the Backend Service Docker image.
+
+[source,bash]
+----
+just docker-build-backend
+----
+
+==== `docker-build-ai-jail`
+
+Build only the AI Jail Docker image.
+
+[source,bash]
+----
+just docker-build-ai-jail
+----
+
+==== `docker-build-nginx`
+
+Build only the Nginx Docker image.
+
+[source,bash]
+----
+just docker-build-nginx
+----
+
+==== `docker-dev`
+
+Start the development environment using Docker Compose.
+
+[source,bash]
+----
+just docker-dev
+# or
+just dev
+----
+
+*Compose files:*
+- `docker-compose.yml`
+- `docker-compose.dev.yml`
+
+*Services started:*
+- PostgreSQL
+- Redis
+- Core Engine
+- Backend Service
+- AI Jail
+- Nginx
+
+==== `docker-prod`
+
+Start the production environment.
+
+[source,bash]
+----
+just docker-prod
+----
+
+*Compose files:*
+- `docker-compose.yml`
+- `docker-compose.prod.yml`
+
+==== `docker-up`
+
+Alias for `docker-dev`. Start development environment.
+
+[source,bash]
+----
+just docker-up
+----
+
+==== `docker-down`
+
+Stop all development services.
+
+[source,bash]
+----
+just docker-down
+----
+
+==== `docker-down-prod`
+
+Stop all production services.
+
+[source,bash]
+----
+just docker-down-prod
+----
+
+==== `docker-restart`
+
+Restart the development environment.
+
+[source,bash]
+----
+just docker-restart
+----
+
+*Steps:*
+1. Stops all services
+2. Starts all services
+
+==== `docker-test`
+
+Run tests in Docker containers.
+
+[source,bash]
+----
+just docker-test
+----
+
+*Compose files:*
+- `docker-compose.yml`
+- `docker-compose.test.yml`
+
+==== `docker-test-core`
+
+Run Core Engine tests in Docker.
+
+[source,bash]
+----
+just docker-test-core
+----
+
+==== `docker-test-backend`
+
+Run Backend Service tests in Docker.
+
+[source,bash]
+----
+just docker-test-backend
+----
+
+==== `docker-test-integration`
+
+Run integration tests in Docker.
+
+[source,bash]
+----
+just docker-test-integration
+----
+
+==== `docker-logs`
+
+View logs for all services.
+
+[source,bash]
+----
+just docker-logs
+----
+
+==== `docker-logs-core`
+
+View Core Engine logs.
+
+[source,bash]
+----
+just docker-logs-core
+----
+
+==== `docker-logs-backend`
+
+View Backend Service logs.
+
+[source,bash]
+----
+just docker-logs-backend
+----
+
+==== `docker-logs-ai-jail`
+
+View AI Jail logs.
+
+[source,bash]
+----
+just docker-logs-ai-jail
+----
+
+==== `docker-logs-follow`
+
+Follow logs in real-time.
+
+[source,bash]
+----
+just docker-logs-follow
+----
+
+==== `docker-ps`
+
+Show status of all services.
+
+[source,bash]
+----
+just docker-ps
+----
+
+==== `docker-ps-all`
+
+Show detailed status of all services.
+
+[source,bash]
+----
+just docker-ps-all
+----
+
+==== `docker-exec SERVICE CMD`
+
+Execute a command in a running service container.
+
+[source,bash]
+----
+just docker-exec core "ls -la"
+just docker-exec backend "mix ecto.migrate"
+----
+
+*Parameters:*
+
+* `SERVICE` - Name of the service (core, backend, postgres, redis, etc.)
+* `CMD` - Command to execute
+
+==== `docker-shell-core`
+
+Open an interactive shell in the Core Engine container.
+
+[source,bash]
+----
+just docker-shell-core
+----
+
+==== `docker-shell-backend`
+
+Open an interactive shell in the Backend Service container.
+
+[source,bash]
+----
+just docker-shell-backend
+----
+
+==== `docker-shell-postgres`
+
+Open a psql shell in the PostgreSQL container.
+
+[source,bash]
+----
+just docker-shell-postgres
+----
+
+==== `docker-shell-redis`
+
+Open a redis-cli shell in the Redis container.
+
+[source,bash]
+----
+just docker-shell-redis
+----
+
+==== `docker-db-migrate`
+
+Run database migrations in Docker.
+
+[source,bash]
+----
+just docker-db-migrate
+----
+
+==== `docker-db-rollback`
+
+Rollback the last database migration in Docker.
+
+[source,bash]
+----
+just docker-db-rollback
+----
+
+==== `docker-db-reset`
+
+Reset the database in Docker (WARNING: Deletes all data).
+
+[source,bash]
+----
+just docker-db-reset
+----
+
+==== `docker-db-seed`
+
+Seed the database in Docker.
+
+[source,bash]
+----
+just docker-db-seed
+----
+
+==== `docker-db-backup`
+
+Backup the PostgreSQL database.
+
+[source,bash]
+----
+just docker-db-backup
+----
+
+*Output:* `backups/postgres/backup_YYYYMMDD_HHMMSS.sql.gz`
+
+==== `docker-db-restore BACKUP_FILE`
+
+Restore PostgreSQL database from a backup file.
+
+[source,bash]
+----
+just docker-db-restore backups/postgres/backup_20231201_120000.sql.gz
+----
+
+*Parameters:*
+
+* `BACKUP_FILE` - Path to the backup file
+
+==== `docker-reset`
+
+Reset all Docker data (WARNING: Deletes all data).
+
+[source,bash]
+----
+just docker-reset
+----
+
+*Confirmation required.*
+
+==== `docker-clean`
+
+Clean up dangling Docker images and containers.
+
+[source,bash]
+----
+just docker-clean
+----
+
+==== `docker-clean-volumes`
+
+Clean up all Docker volumes (WARNING: Deletes data).
+
+[source,bash]
+----
+just docker-clean-volumes
+----
+
+==== `docker-clean-all`
+
+Clean up everything Docker-related (WARNING: Deletes all data).
+
+[source,bash]
+----
+just docker-clean-all
+----
+
+==== `docker-stats`
+
+Show container resource usage (one-time snapshot).
+
+[source,bash]
+----
+just docker-stats
+----
+
+==== `docker-stats-live`
+
+Show container resource usage (live updating).
+
+[source,bash]
+----
+just docker-stats-live
+----
+
+==== `docker-prometheus`
+
+Open Prometheus dashboard at http://localhost:9090.
+
+[source,bash]
+----
+just docker-prometheus
+----
+
+==== `docker-grafana`
+
+Open Grafana dashboard at http://localhost:3000.
+
+[source,bash]
+----
+just docker-grafana
+----
+
+==== `docker-adminer`
+
+Open Adminer database UI at http://localhost:8081.
+
+[source,bash]
+----
+just docker-adminer
+----
+
+==== `docker-version`
+
+Show Docker and Docker Compose versions.
+
+[source,bash]
+----
+just docker-version
+----
+
+==== `docker-config`
+
+Show Docker Compose configuration.
+
+[source,bash]
+----
+just docker-config
+----
+
+==== `docker-images`
+
+List all Academic Workflow Suite Docker images.
+
+[source,bash]
+----
+just docker-images
+----
+
+==== `docker-volumes`
+
+List all Academic Workflow Suite Docker volumes.
+
+[source,bash]
+----
+just docker-volumes
+----
+
+==== `docker-networks`
+
+List all Academic Workflow Suite Docker networks.
+
+[source,bash]
+----
+just docker-networks
+----
+
+==== `docker-inspect CONTAINER`
+
+Inspect a Docker container's configuration.
+
+[source,bash]
+----
+just docker-inspect core
+----
+
+*Parameters:*
+
+* `CONTAINER` - Name of the container to inspect
+
+==== `docker-disk-usage`
+
+Show Docker disk usage.
+
+[source,bash]
+----
+just docker-disk-usage
+----
+
+=== 🧪 Test Recipes
+
+==== `test`
+
+Run all tests (unit, integration, security).
+
+[source,bash]
+----
+just test
+----
+
+*Dependencies:* `test-unit`, `test-integration`, `test-security`
+
+*Time:* ~5-15 minutes
+
+==== `test-all`
+
+Run all tests with coverage reports.
+
+[source,bash]
+----
+just test-all
+----
+
+*Dependencies:* `test-coverage`, `test-integration`, `test-security`
+
+==== `test-unit`
+
+Run all unit tests (Rust, Elixir, ReScript).
+
+[source,bash]
+----
+just test-unit
+----
+
+*Dependencies:* `test-rust`, `test-elixir`, `test-rescript`
+
+==== `test-rust`
+
+Run Rust tests for all Rust components.
+
+[source,bash]
+----
+just test-rust
+----
+
+*Components tested:*
+- Core Engine
+- AI Jail
+- Shared Libraries
+- CLI
+
+==== `test-rust-release`
+
+Run Rust tests in release mode.
+
+[source,bash]
+----
+just test-rust-release
+----
+
+*Use case:* Testing release-optimized code
+
+==== `test-rust-verbose`
+
+Run Rust tests with verbose output (prints println! statements).
+
+[source,bash]
+----
+just test-rust-verbose
+----
+
+==== `test-rust-single`
+
+Run Rust tests single-threaded (useful for debugging).
+
+[source,bash]
+----
+just test-rust-single
+----
+
+==== `test-rust-specific TEST`
+
+Run a specific Rust test.
+
+[source,bash]
+----
+just test-rust-specific test_authentication
+----
+
+*Parameters:*
+
+* `TEST` - Name of the test function or module
+
+==== `test-elixir`
+
+Run Elixir tests for the backend.
+
+[source,bash]
+----
+just test-elixir
+----
+
+==== `test-elixir-verbose`
+
+Run Elixir tests with verbose output.
+
+[source,bash]
+----
+just test-elixir-verbose
+----
+
+==== `test-elixir-specific TEST`
+
+Run a specific Elixir test file.
+
+[source,bash]
+----
+just test-elixir-specific test/auth/user_test.exs
+----
+
+*Parameters:*
+
+* `TEST` - Path to the test file
+
+==== `test-rescript`
+
+Run ReScript tests for the Office add-in.
+
+[source,bash]
+----
+just test-rescript
+----
+
+==== `test-rescript-watch`
+
+Run ReScript tests in watch mode.
+
+[source,bash]
+----
+just test-rescript-watch
+----
+
+*Use case:* Development with auto-rerunning tests
+
+==== `test-integration`
+
+Run integration tests.
+
+[source,bash]
+----
+just test-integration
+----
+
+*Location:* `tests/benchmarks/integration_bench.sh`
+
+==== `test-integration-verbose`
+
+Run integration tests with verbose output.
+
+[source,bash]
+----
+just test-integration-verbose
+----
+
+==== `test-security`
+
+Run security tests.
+
+[source,bash]
+----
+just test-security
+----
+
+*Tests:*
+- Dependency audits
+- Container escape tests
+- Network isolation verification
+
+==== `test-pentest`
+
+Run penetration tests.
+
+[source,bash]
+----
+just test-pentest
+----
+
+*Tests:*
+- SQL injection tests
+- XSS tests
+
+WARNING: Only run on authorized systems.
+
+==== `test-fuzz COMPONENT DURATION`
+
+Run fuzzing tests on a component.
+
+[source,bash]
+----
+just test-fuzz core 5m
+----
+
+*Parameters:*
+
+* `COMPONENT` - Name of the component (core, ai-jail, etc.)
+* `DURATION` - Duration to run fuzzing (default: "1m")
+
+*Note:* Requires cargo-fuzz to be installed.
+
+==== `test-coverage`
+
+Run tests with coverage reports.
+
+[source,bash]
+----
+just test-coverage
+----
+
+*Output:*
+- `components/core/target/coverage/index.html` (Rust coverage)
+- `components/backend/cover/` (Elixir coverage)
+
+==== `test-coverage-view`
+
+Open coverage reports in browser.
+
+[source,bash]
+----
+just test-coverage-view
+----
+
+==== `test-bench`
+
+Run benchmarks.
+
+[source,bash]
+----
+just test-bench
+----
+
+*Components benchmarked:*
+- Core Engine
+- AI Jail
+
+==== `test-bench-criterion`
+
+Run criterion benchmarks (detailed performance testing).
+
+[source,bash]
+----
+just test-bench-criterion
+----
+
+==== `test-mutate`
+
+Run mutation testing.
+
+[source,bash]
+----
+just test-mutate
+----
+
+*Note:* Requires cargo-mutants to be installed.
+
+==== `test-property`
+
+Run property-based tests.
+
+[source,bash]
+----
+just test-property
+----
+
+*Note:* Runs tests with proptest feature enabled.
+
+==== `test-e2e`
+
+Run end-to-end tests.
+
+[source,bash]
+----
+just test-e2e
+----
+
+*Location:* `tests/e2e/`
+
+==== `test-smoke`
+
+Run smoke tests (quick sanity checks).
+
+[source,bash]
+----
+just test-smoke
+----
+
+==== `test-load`
+
+Run load tests.
+
+[source,bash]
+----
+just test-load
+----
+
+*Location:* `tests/load/`
+
+==== `test-stress`
+
+Run stress tests.
+
+[source,bash]
+----
+just test-stress
+----
+
+*Location:* `tests/stress/`
+
+=== 🎨 Linting & Formatting Recipes
+
+==== `lint`
+
+Run all linters.
+
+[source,bash]
+----
+just lint
+----
+
+*Dependencies:* `lint-rust`, `lint-elixir`, `lint-rescript`, `lint-shell`, `lint-yaml`, `lint-docker`, `lint-markdown`
+
+==== `lint-rust`
+
+Lint Rust code with clippy.
+
+[source,bash]
+----
+just lint-rust
+----
+
+*Flags:* `-D warnings` (deny all warnings)
+
+==== `lint-rust-all`
+
+Lint Rust code (all targets including tests, benches, examples).
+
+[source,bash]
+----
+just lint-rust-all
+----
+
+==== `lint-rust-pedantic`
+
+Lint Rust code with pedantic clippy lints.
+
+[source,bash]
+----
+just lint-rust-pedantic
+----
+
+*Flags:* `-W clippy::pedantic`
+
+==== `lint-elixir`
+
+Lint Elixir code.
+
+[source,bash]
+----
+just lint-elixir
+----
+
+*Tools:*
+- mix format --check-formatted
+- mix credo --strict
+
+==== `lint-elixir-all`
+
+Lint Elixir code with all checks including dialyzer.
+
+[source,bash]
+----
+just lint-elixir-all
+----
+
+*Note:* Dialyzer takes longer to run.
+
+==== `lint-rescript`
+
+Lint ReScript code.
+
+[source,bash]
+----
+just lint-rescript
+----
+
+==== `lint-rescript-fix`
+
+Lint and auto-fix ReScript code.
+
+[source,bash]
+----
+just lint-rescript-fix
+----
+
+==== `lint-shell`
+
+Lint shell scripts with shellcheck.
+
+[source,bash]
+----
+just lint-shell
+----
+
+==== `lint-shell-strict`
+
+Lint shell scripts with strict mode.
+
+[source,bash]
+----
+just lint-shell-strict
+----
+
+*Flags:* `-x` (follow sources)
+
+==== `lint-yaml`
+
+Lint YAML files with yamllint.
+
+[source,bash]
+----
+just lint-yaml
+----
+
+==== `lint-yaml-strict`
+
+Lint YAML files in strict mode.
+
+[source,bash]
+----
+just lint-yaml-strict
+----
+
+==== `lint-docker`
+
+Lint Dockerfiles with hadolint.
+
+[source,bash]
+----
+just lint-docker
+----
+
+==== `lint-markdown`
+
+Lint Markdown files with markdownlint.
+
+[source,bash]
+----
+just lint-markdown
+----
+
+==== `lint-markdown-fix`
+
+Lint and auto-fix Markdown files.
+
+[source,bash]
+----
+just lint-markdown-fix
+----
+
+==== `lint-json`
+
+Lint JSON files.
+
+[source,bash]
+----
+just lint-json
+----
+
+==== `lint-toml`
+
+Lint TOML files with taplo.
+
+[source,bash]
+----
+just lint-toml
+----
+
+==== `format`
+
+Format all code.
+
+[source,bash]
+----
+just format
+----
+
+*Dependencies:* `format-rust`, `format-elixir`, `format-rescript`, `format-toml`
+
+==== `format-rust`
+
+Format Rust code with rustfmt.
+
+[source,bash]
+----
+just format-rust
+----
+
+==== `format-rust-check`
+
+Check Rust formatting without modifying files.
+
+[source,bash]
+----
+just format-rust-check
+----
+
+==== `format-elixir`
+
+Format Elixir code.
+
+[source,bash]
+----
+just format-elixir
+----
+
+==== `format-elixir-check`
+
+Check Elixir formatting without modifying files.
+
+[source,bash]
+----
+just format-elixir-check
+----
+
+==== `format-rescript`
+
+Format ReScript code.
+
+[source,bash]
+----
+just format-rescript
+----
+
+==== `format-toml`
+
+Format TOML files with taplo.
+
+[source,bash]
+----
+just format-toml
+----
+
+==== `format-all`
+
+Format all code and auto-fix linting issues.
+
+[source,bash]
+----
+just format-all
+----
+
+*Dependencies:* `format`, `lint-markdown-fix`, `lint-rescript-fix`
+
+==== `format-check`
+
+Check all formatting without modifying files.
+
+[source,bash]
+----
+just format-check
+----
+
+*Dependencies:* `format-rust-check`, `format-elixir-check`
+
+=== 🔒 Security Recipes
+
+==== `security`
+
+Run all security checks.
+
+[source,bash]
+----
+just security
+----
+
+*Dependencies:* `security-audit`, `security-secrets`, `security-pentest`, `security-deps-check`
+
+==== `security-audit`
+
+Run security audits for all dependency managers.
+
+[source,bash]
+----
+just security-audit
+----
+
+*Tools:*
+- cargo audit (Rust)
+- mix hex.audit (Elixir)
+- npm audit (Node.js)
+
+==== `security-audit-fix`
+
+Fix security vulnerabilities automatically where possible.
+
+[source,bash]
+----
+just security-audit-fix
+----
+
+==== `security-secrets`
+
+Scan for secrets in the codebase.
+
+[source,bash]
+----
+just security-secrets
+----
+
+*Location:* `security/audit-scripts/secret-scan.sh`
+
+==== `security-secrets-deep`
+
+Deep scan for secrets using trufflehog.
+
+[source,bash]
+----
+just security-secrets-deep
+----
+
+*Note:* Requires trufflehog to be installed.
+
+==== `security-pentest`
+
+Run penetration tests.
+
+[source,bash]
+----
+just security-pentest
+----
+
+*Tests:*
+- SQL injection
+- XSS attacks
+
+WARNING: Only run on authorized systems.
+
+==== `security-deps-check`
+
+Check for outdated dependencies with known vulnerabilities.
+
+[source,bash]
+----
+just security-deps-check
+----
+
+*Tools:*
+- cargo outdated
+- mix hex.outdated
+- npm outdated
+
+==== `security-sast`
+
+Run Static Application Security Testing.
+
+[source,bash]
+----
+just security-sast
+----
+
+*Tools:*
+- cargo geiger (unsafe Rust usage)
+- Custom SAST scripts
+
+==== `security-dast`
+
+Run Dynamic Application Security Testing.
+
+[source,bash]
+----
+just security-dast
+----
+
+==== `security-sbom`
+
+Generate Software Bill of Materials.
+
+[source,bash]
+----
+just security-sbom
+----
+
+*Output:* `sbom.json`
+
+*Note:* Requires cargo-sbom to be installed.
+
+==== `security-verify-signatures`
+
+Verify release signatures.
+
+[source,bash]
+----
+just security-verify-signatures
+----
+
+==== `security-container-scan`
+
+Scan containers for vulnerabilities.
+
+[source,bash]
+----
+just security-container-scan
+----
+
+*Tool:* docker scan
+
+==== `security-container-bench`
+
+Run container security benchmark with Trivy.
+
+[source,bash]
+----
+just security-container-bench
+----
+
+*Note:* Requires Trivy to be available.
+
+==== `security-cve-check`
+
+Check for CVEs in dependencies.
+
+[source,bash]
+----
+just security-cve-check
+----
+
+*Flags:* `--deny warnings`
+
+=== 📦 Installation & Deployment Recipes
+
+==== `install`
+
+Install all components.
+
+[source,bash]
+----
+just install
+----
+
+*Dependencies:* `install-core`, `install-cli`, `install-office-addin`
+
+==== `install-core`
+
+Install the core engine.
+
+[source,bash]
+----
+just install-core
+----
+
+*Installation location:* `~/.cargo/bin/`
+
+==== `install-cli`
+
+Install the CLI tool to user's cargo bin.
+
+[source,bash]
+----
+just install-cli
+----
+
+*Installation location:* `~/.cargo/bin/aws`
+
+==== `install-cli-system`
+
+Install the CLI tool system-wide (requires sudo).
+
+[source,bash]
+----
+just install-cli-system
+----
+
+*Installation location:* `/usr/local/bin/aws`
+
+==== `uninstall-cli-system`
+
+Uninstall the CLI tool from system (requires sudo).
+
+[source,bash]
+----
+just uninstall-cli-system
+----
+
+==== `install-office-addin`
+
+Install the Office add-in (sideload).
+
+[source,bash]
+----
+just install-office-addin
+----
+
+==== `install-completions`
+
+Generate shell completions for the CLI.
+
+[source,bash]
+----
+just install-completions
+----
+
+*Output:* `cli/completions/`
+
+==== `install-completions-bash`
+
+Install bash completions system-wide (requires sudo).
+
+[source,bash]
+----
+just install-completions-bash
+----
+
+*Installation location:* `/etc/bash_completion.d/`
+
+==== `install-completions-zsh`
+
+Install zsh completions to user directory.
+
+[source,bash]
+----
+just install-completions-zsh
+----
+
+*Installation location:* `~/.zsh/completion/`
+
+==== `install-completions-fish`
+
+Install fish completions to user directory.
+
+[source,bash]
+----
+just install-completions-fish
+----
+
+*Installation location:* `~/.config/fish/completions/`
+
+==== `deploy-prod`
+
+Deploy to production environment.
+
+[source,bash]
+----
+just deploy-prod
+----
+
+*Steps:*
+1. Build in release mode
+2. Run tests
+3. Build Docker images without cache
+4. Deploy using deployment script
+
+*Note:* Requires production credentials.
+
+==== `deploy-staging`
+
+Deploy to staging environment.
+
+[source,bash]
+----
+just deploy-staging
+----
+
+==== `deploy-website-gh`
+
+Deploy website to GitHub Pages.
+
+[source,bash]
+----
+just deploy-website-gh
+----
+
+==== `deploy-website-netlify`
+
+Deploy website to Netlify.
+
+[source,bash]
+----
+just deploy-website-netlify
+----
+
+*Note:* Requires Netlify CLI and authentication.
+
+=== 💾 Database Recipes
+
+==== `db-init`
+
+Initialize databases.
+
+[source,bash]
+----
+just db-init
+----
+
+*Script:* `scripts/management/init-database.sh`
+
+==== `db-reset`
+
+Reset databases (WARNING: Deletes all data).
+
+[source,bash]
+----
+just db-reset
+----
+
+==== `db-backup`
+
+Backup all databases.
+
+[source,bash]
+----
+just db-backup
+----
+
+*Script:* `scripts/management/backup.sh`
+
+==== `db-restore BACKUP_FILE`
+
+Restore databases from a backup file.
+
+[source,bash]
+----
+just db-restore backups/backup_20231201.tar.gz
+----
+
+*Parameters:*
+
+* `BACKUP_FILE` - Path to the backup file
+
+==== `db-migration-create NAME`
+
+Create a new database migration.
+
+[source,bash]
+----
+just db-migration-create add_user_preferences
+----
+
+*Parameters:*
+
+* `NAME` - Name of the migration
+
+*Output:* New migration file in `components/backend/priv/repo/migrations/`
+
+==== `db-migrate`
+
+Run database migrations.
+
+[source,bash]
+----
+just db-migrate
+----
+
+==== `db-rollback`
+
+Rollback the last database migration.
+
+[source,bash]
+----
+just db-rollback
+----
+
+==== `db-rollback-to VERSION`
+
+Rollback database to a specific version.
+
+[source,bash]
+----
+just db-rollback-to 20231201120000
+----
+
+*Parameters:*
+
+* `VERSION` - Migration version timestamp
+
+==== `db-migration-status`
+
+Show database migration status.
+
+[source,bash]
+----
+just db-migration-status
+----
+
+*Output:* List of migrations with their status (up/down)
+
+==== `db-seed`
+
+Seed the database with sample data.
+
+[source,bash]
+----
+just db-seed
+----
+
+*Script:* `components/backend/priv/repo/seeds.exs`
+
+==== `db-drop`
+
+Drop the database (WARNING: Deletes all data).
+
+[source,bash]
+----
+just db-drop
+----
+
+==== `db-create`
+
+Create the database.
+
+[source,bash]
+----
+just db-create
+----
+
+==== `db-setup`
+
+Setup database (create + migrate + seed).
+
+[source,bash]
+----
+just db-setup
+----
+
+=== 🔧 Development Recipes
+
+==== `dev`
+
+Start development environment (alias for `docker-dev`).
+
+[source,bash]
+----
+just dev
+----
+
+==== `dev-detached`
+
+Start development environment in detached mode.
+
+[source,bash]
+----
+just dev-detached
+----
+
+==== `dev-down`
+
+Stop development environment (alias for `docker-down`).
+
+[source,bash]
+----
+just dev-down
+----
+
+==== `dev-restart`
+
+Restart development environment (alias for `docker-restart`).
+
+[source,bash]
+----
+just dev-restart
+----
+
+==== `dev-watch-rust`
+
+Watch Rust files and rebuild/test on changes.
+
+[source,bash]
+----
+just dev-watch-rust
+----
+
+*Note:* Requires cargo-watch to be installed.
+
+==== `dev-watch-rescript`
+
+Watch ReScript files and rebuild on changes.
+
+[source,bash]
+----
+just dev-watch-rescript
+----
+
+==== `dev-watch`
+
+Watch all files and rebuild on changes.
+
+[source,bash]
+----
+just dev-watch
+----
+
+*Dependencies:* `dev-watch-rust`, `dev-watch-rescript`
+
+*Note:* Run in separate terminals as they both watch in foreground.
+
+==== `dev-hot-reload`
+
+Start hot reload development for Rust.
+
+[source,bash]
+----
+just dev-hot-reload
+----
+
+==== `dev-shell`
+
+Start a development shell with Nix.
+
+[source,bash]
+----
+just dev-shell
+----
+
+*Note:* Requires Nix with flakes enabled.
+
+==== `dev-format`
+
+Format code in all components (alias for `format`).
+
+[source,bash]
+----
+just dev-format
+----
+
+==== `dev-lint`
+
+Lint code in all components (alias for `lint`).
+
+[source,bash]
+----
+just dev-lint
+----
+
+==== `dev-deps-update`
+
+Update dependencies for all components.
+
+[source,bash]
+----
+just dev-deps-update
+----
+
+*Updates:*
+- Cargo dependencies (Rust)
+- Mix dependencies (Elixir)
+- NPM dependencies (Node.js)
+
+==== `dev-deps-check`
+
+Check that all required development tools are installed.
+
+[source,bash]
+----
+just dev-deps-check
+----
+
+*Checks:*
+- Rust (rustc)
+- Elixir
+- Node.js
+- Docker
+- Just
+
+==== `dev-setup`
+
+Setup development environment.
+
+[source,bash]
+----
+just dev-setup
+----
+
+*Steps:*
+1. Install Rust components (clippy, rustfmt)
+2. Install Cargo tools (audit, watch, tarpaulin, outdated)
+3. Install NPM dependencies
+
+==== `dev-rebuild`
+
+Clean and rebuild development environment.
+
+[source,bash]
+----
+just dev-rebuild
+----
+
+*Dependencies:* `clean`, `build`, `dev-restart`
+
+=== 📚 Documentation Recipes
+
+==== `docs`
+
+Generate all documentation.
+
+[source,bash]
+----
+just docs
+----
+
+*Dependencies:* `docs-rust`, `docs-elixir`, `docs-website`
+
+==== `docs-rust`
+
+Generate Rust documentation.
+
+[source,bash]
+----
+just docs-rust
+----
+
+*Output:* `target/doc/`
+
+==== `docs-rust-open`
+
+Generate and open Rust documentation in browser.
+
+[source,bash]
+----
+just docs-rust-open
+----
+
+==== `docs-elixir`
+
+Generate Elixir documentation.
+
+[source,bash]
+----
+just docs-elixir
+----
+
+*Output:* `components/backend/doc/`
+
+==== `docs-elixir-open`
+
+Generate and open Elixir documentation in browser.
+
+[source,bash]
+----
+just docs-elixir-open
+----
+
+==== `docs-website`
+
+Build website documentation (alias for `build-website`).
+
+[source,bash]
+----
+just docs-website
+----
+
+==== `docs-serve`
+
+Serve documentation locally on http://localhost:8000.
+
+[source,bash]
+----
+just docs-serve
+----
+
+==== `docs-serve-built`
+
+Serve built website on http://localhost:8000.
+
+[source,bash]
+----
+just docs-serve-built
+----
+
+==== `docs-api`
+
+Generate API documentation.
+
+[source,bash]
+----
+just docs-api
+----
+
+*Tool:* Phoenix Swagger
+
+==== `docs-changelog`
+
+Generate changelog from git history.
+
+[source,bash]
+----
+just docs-changelog
+----
+
+*Output:* `CHANGELOG.md`
+
+*Note:* Requires git-cliff to be installed.
+
+=== 🚀 Release Recipes
+
+==== `release VERSION`
+
+Create a new release.
+
+[source,bash]
+----
+just release 1.2.3
+----
+
+*Parameters:*
+
+* `VERSION` - Semantic version number (e.g., 1.2.3)
+
+*Script:* `release/scripts/release.sh`
+
+==== `release-patch`
+
+Create a new patch release (0.0.x).
+
+[source,bash]
+----
+just release-patch
+----
+
+==== `release-minor`
+
+Create a new minor release (0.x.0).
+
+[source,bash]
+----
+just release-minor
+----
+
+==== `release-major`
+
+Create a new major release (x.0.0).
+
+[source,bash]
+----
+just release-major
+----
+
+==== `release-package`
+
+Package for all platforms.
+
+[source,bash]
+----
+just release-package
+----
+
+*Script:* `release/scripts/package.sh --all`
+
+==== `release-package-linux`
+
+Package for Linux only.
+
+[source,bash]
+----
+just release-package-linux
+----
+
+==== `release-package-macos`
+
+Package for macOS only.
+
+[source,bash]
+----
+just release-package-macos
+----
+
+==== `release-package-windows`
+
+Package for Windows only.
+
+[source,bash]
+----
+just release-package-windows
+----
+
+==== `release-verify VERSION`
+
+Verify release artifacts.
+
+[source,bash]
+----
+just release-verify 1.2.3
+----
+
+*Parameters:*
+
+* `VERSION` - Version to verify
+
+*Script:* `release/verify/verify_release.sh`
+
+==== `release-sign VERSION`
+
+Sign release artifacts.
+
+[source,bash]
+----
+just release-sign 1.2.3
+----
+
+*Parameters:*
+
+* `VERSION` - Version to sign
+
+*Note:* Requires GPG key configuration.
+
+==== `release-upload VERSION`
+
+Upload release artifacts to GitHub.
+
+[source,bash]
+----
+just release-upload 1.2.3
+----
+
+*Parameters:*
+
+* `VERSION` - Version to upload
+
+*Note:* Requires GitHub CLI (gh) and authentication.
+
+==== `release-github VERSION`
+
+Create a GitHub release.
+
+[source,bash]
+----
+just release-github 1.2.3
+----
+
+*Parameters:*
+
+* `VERSION` - Version for the release
+
+*Note:* Uses CHANGELOG.md for release notes.
+
+=== 📊 Monitoring & Observability Recipes
+
+==== `monitoring-up`
+
+Start monitoring stack.
+
+[source,bash]
+----
+just monitoring-up
+----
+
+*Components:*
+- Prometheus
+- Grafana
+- Jaeger
+
+==== `monitoring-down`
+
+Stop monitoring stack.
+
+[source,bash]
+----
+just monitoring-down
+----
+
+==== `logs`
+
+View logs for all services (follow mode).
+
+[source,bash]
+----
+just logs
+----
+
+==== `logs-service SERVICE`
+
+View logs for a specific service.
+
+[source,bash]
+----
+just logs-service backend
+----
+
+*Parameters:*
+
+* `SERVICE` - Name of the service
+
+==== `logs-tail N`
+
+View last N lines of logs.
+
+[source,bash]
+----
+just logs-tail 500
+----
+
+*Parameters:*
+
+* `N` - Number of lines (default: 100)
+
+==== `health`
+
+Run health check on all services.
+
+[source,bash]
+----
+just health
+----
+
+*Script:* `scripts/management/health-check.sh`
+
+==== `health-verbose`
+
+Run health check with verbose output.
+
+[source,bash]
+----
+just health-verbose
+----
+
+==== `status`
+
+Check service status and system resources.
+
+[source,bash]
+----
+just status
+----
+
+*Output:*
+- Service status from docker-compose ps
+- Resource usage from docker stats
+
+==== `monitor`
+
+Monitor system resources continuously.
+
+[source,bash]
+----
+just monitor
+----
+
+*Tool:* docker stats (live)
+
+==== `metrics`
+
+Open metrics dashboard (Prometheus).
+
+[source,bash]
+----
+just metrics
+----
+
+*URL:* http://localhost:9090
+
+==== `traces`
+
+Open traces dashboard (Jaeger).
+
+[source,bash]
+----
+just traces
+----
+
+*URL:* http://localhost:16686
+
+=== 🧹 Cleanup Recipes
+
+==== `clean`
+
+Clean all build artifacts.
+
+[source,bash]
+----
+just clean
+----
+
+*Dependencies:* `clean-rust`, `clean-elixir`, `clean-rescript`, `clean-docker`, `clean-temp`
+
+==== `clean-all`
+
+Clean everything including caches and dependencies.
+
+[source,bash]
+----
+just clean-all
+----
+
+*Dependencies:* `clean`, `clean-cache`, `clean-deps`
+
+==== `clean-rust`
+
+Clean Rust build artifacts.
+
+[source,bash]
+----
+just clean-rust
+----
+
+*Removes:*
+- `target/` directories in all Rust components
+
+==== `clean-elixir`
+
+Clean Elixir build artifacts.
+
+[source,bash]
+----
+just clean-elixir
+----
+
+*Removes:*
+- `_build/` directory
+- `deps/` directory
+
+==== `clean-rescript`
+
+Clean ReScript build artifacts.
+
+[source,bash]
+----
+just clean-rescript
+----
+
+*Removes:*
+- `node_modules/` directory
+- `dist/` directory
+
+==== `clean-docker`
+
+Clean Docker images and containers.
+
+[source,bash]
+----
+just clean-docker
+----
+
+==== `clean-temp`
+
+Clean temporary files.
+
+[source,bash]
+----
+just clean-temp
+----
+
+*Removes:*
+- `*.log` files
+- `*.tmp` files
+- Backup files (`*~`)
+- `.DS_Store` files
+
+==== `clean-cache`
+
+Clean build caches.
+
+[source,bash]
+----
+just clean-cache
+----
+
+*Removes:*
+- Cargo registry cache
+- Cargo git checkouts
+
+==== `clean-deps`
+
+Clean dependencies.
+
+[source,bash]
+----
+just clean-deps
+----
+
+*Removes:*
+- Elixir `deps/`
+- Node.js `node_modules/`
+
+==== `clean-website`
+
+Clean website build artifacts.
+
+[source,bash]
+----
+just clean-website
+----
+
+==== `clean-logs`
+
+Clean all log files.
+
+[source,bash]
+----
+just clean-logs
+----
+
+==== `clean-backups`
+
+Clean old backup files (older than 30 days).
+
+[source,bash]
+----
+just clean-backups
+----
+
+=== 📈 Statistics & Reporting Recipes
+
+==== `stats`
+
+Show project statistics.
+
+[source,bash]
+----
+just stats
+----
+
+*Output:*
+- Lines of code (tokei)
+- Git statistics
+- File counts
+
+==== `stats-code`
+
+Show code statistics sorted by lines.
+
+[source,bash]
+----
+just stats-code
+----
+
+*Tool:* tokei
+
+==== `stats-git`
+
+Show Git statistics.
+
+[source,bash]
+----
+just stats-git
+----
+
+*Output:*
+- Total commits
+- Total contributors
+- Repository size
+- Top contributors
+
+==== `stats-deps`
+
+Show dependency statistics.
+
+[source,bash]
+----
+just stats-deps
+----
+
+*Output:*
+- Rust crate count
+- Elixir package count
+- NPM package count
+
+==== `stats-test`
+
+Show test statistics.
+
+[source,bash]
+----
+just stats-test
+----
+
+*Output:*
+- Number of Rust tests
+- Number of Elixir tests
+- Number of ReScript tests
+
+==== `stats-docker`
+
+Show Docker statistics.
+
+[source,bash]
+----
+just stats-docker
+----
+
+*Output:*
+- Disk usage
+- Container counts
+- Image counts
+- Volume counts
+
+==== `stats-performance`
+
+Generate performance report.
+
+[source,bash]
+----
+just stats-performance
+----
+
+==== `stats-security`
+
+Generate security report.
+
+[source,bash]
+----
+just stats-security
+----
+
+*Tool:* cargo audit
+
+=== 🔬 CI/CD Recipes
+
+==== `ci`
+
+Run full CI pipeline locally.
+
+[source,bash]
+----
+just ci
+----
+
+*Dependencies:* `ci-lint`, `ci-test`, `ci-build`, `ci-security`
+
+*Time:* ~15-30 minutes
+
+==== `ci-lint`
+
+Run CI linting (alias for `lint`).
+
+[source,bash]
+----
+just ci-lint
+----
+
+==== `ci-test`
+
+Run CI tests (alias for `test`).
+
+[source,bash]
+----
+just ci-test
+----
+
+==== `ci-build`
+
+Run CI build (alias for `build-release`).
+
+[source,bash]
+----
+just ci-build
+----
+
+==== `ci-security`
+
+Run CI security checks (alias for `security`).
+
+[source,bash]
+----
+just ci-security
+----
+
+==== `ci-coverage`
+
+Run CI with coverage (alias for `test-coverage`).
+
+[source,bash]
+----
+just ci-coverage
+----
+
+==== `ci-validate`
+
+Validate CI configuration files.
+
+[source,bash]
+----
+just ci-validate
+----
+
+*Validates:* `.gitlab-ci.yml`
+
+==== `ci-pre-commit`
+
+Run pre-commit hooks.
+
+[source,bash]
+----
+just ci-pre-commit
+----
+
+*Note:* Requires pre-commit to be installed.
+
+==== `ci-pre-push`
+
+Run pre-push checks.
+
+[source,bash]
+----
+just ci-pre-push
+----
+
+*Steps:*
+1. Lint all code
+2. Run all tests
+
+=== 🌐 Website Recipes
+
+==== `website-install`
+
+Install website build dependencies.
+
+[source,bash]
+----
+just website-install
+----
+
+*Installs:*
+- html-minifier
+- clean-css-cli
+- uglify-js
+- imagemin-cli
+
+==== `website-build`
+
+Build the website (alias for `build-website`).
+
+[source,bash]
+----
+just website-build
+----
+
+==== `website-serve`
+
+Serve website in development mode.
+
+[source,bash]
+----
+just website-serve
+----
+
+*URL:* http://localhost:8000
+
+==== `website-serve-built`
+
+Serve built website (alias for `docs-serve-built`).
+
+[source,bash]
+----
+just website-serve-built
+----
+
+==== `website-clean`
+
+Clean website build (alias for `clean-website`).
+
+[source,bash]
+----
+just website-clean
+----
+
+==== `website-optimize`
+
+Optimize website assets.
+
+[source,bash]
+----
+just website-optimize
+----
+
+*Optimizes:*
+- CSS (minification)
+- JavaScript (minification)
+- Images (optimization)
+
+==== `website-validate`
+
+Validate HTML and CSS.
+
+[source,bash]
+----
+just website-validate
+----
+
+*Tool:* html5validator
+
+==== `website-test`
+
+Test website links.
+
+[source,bash]
+----
+just website-test
+----
+
+*Tool:* linkchecker
+
+==== `website-lighthouse`
+
+Run Lighthouse performance audit.
+
+[source,bash]
+----
+just website-lighthouse
+----
+
+*Output:* `lighthouse-report.html`
+
+==== `website-stats`
+
+Show website statistics.
+
+[source,bash]
+----
+just website-stats
+----
+
+*Output:*
+- HTML file count
+- CSS file count
+- JS file count
+- Total size
+- Build size
+
+==== `website-deploy-gh`
+
+Deploy website to GitHub Pages (alias for `deploy-website-gh`).
+
+[source,bash]
+----
+just website-deploy-gh
+----
+
+==== `website-deploy-netlify`
+
+Deploy website to Netlify (alias for `deploy-website-netlify`).
+
+[source,bash]
+----
+just website-deploy-netlify
+----
+
+=== 🔧 Utility Recipes
+
+==== `rsr-validate`
+
+Validate RSR (Rust Safety Rules) compliance.
+
+[source,bash]
+----
+just rsr-validate
+----
+
+*Checks:*
+- Type safety
+- Memory safety
+- Documentation completeness
+- `.well-known` files
+- Build system
+- TPCF compliance
+- Test coverage
+
+==== `env-check`
+
+Check environment setup (alias for `dev-deps-check`).
+
+[source,bash]
+----
+just env-check
+----
+
+==== `env-show`
+
+Show environment variables.
+
+[source,bash]
+----
+just env-show
+----
+
+*Filters:* RUST*, CARGO*, MIX*, NODE*, DOCKER*
+
+==== `tools-update`
+
+Update all development tools.
+
+[source,bash]
+----
+just tools-update
+----
+
+*Updates:*
+- Rustup toolchain
+- Cargo-installed tools
+
+==== `tools-install`
+
+Install all development tools.
+
+[source,bash]
+----
+just tools-install
+----
+
+*Installs:*
+- cargo-watch
+- cargo-audit
+- cargo-tarpaulin
+- cargo-outdated
+- cargo-edit
+- cargo-deny
+- cargo-geiger
+- cargo-sbom
+
+==== `bench-all`
+
+Run all benchmarks (alias for `test-bench`).
+
+[source,bash]
+----
+just bench-all
+----
+
+==== `profile COMPONENT`
+
+Profile an application component.
+
+[source,bash]
+----
+just profile core
+----
+
+*Parameters:*
+
+* `COMPONENT` - Name of the component to profile
+
+*Tool:* cargo flamegraph
+
+*Note:* Requires cargo-flamegraph to be installed.
+
+==== `quick`
+
+Run quick checks (fast CI).
+
+[source,bash]
+----
+just quick
+----
+
+*Dependencies:* `format-check`, `lint`, `test-unit`
+
+*Time:* ~3-5 minutes
+
+==== `full`
+
+Run full checks (complete CI).
+
+[source,bash]
+----
+just full
+----
+
+*Dependencies:* `lint`, `test`, `build`
+
+*Time:* ~15-30 minutes
+
+==== `backup`
+
+Create a backup of the system.
+
+[source,bash]
+----
+just backup
+----
+
+*Script:* `scripts/management/backup.sh`
+
+==== `restore BACKUP_FILE`
+
+Restore from a backup file.
+
+[source,bash]
+----
+just restore backups/backup_20231201.tar.gz
+----
+
+*Parameters:*
+
+* `BACKUP_FILE` - Path to the backup file
+
+==== `init`
+
+Initialize project for a new contributor.
+
+[source,bash]
+----
+just init
+----
+
+*Steps:*
+1. Run `dev-setup`
+2. Build all components
+3. Run all tests
+4. Display next steps
+
+*Time:* ~10-20 minutes
+
+==== `version`
+
+Show version information for all tools.
+
+[source,bash]
+----
+just version
+----
+
+*Shows versions of:*
+- Project
+- Rust
+- Cargo
+- Elixir
+- Node.js
+- Docker
+- Docker Compose
+- Just
+
+==== `open-browser`
+
+Open project in browser.
+
+[source,bash]
+----
+just open-browser
+----
+
+*URL:* http://localhost:8000
+
+==== `report`
+
+Generate a project report.
+
+[source,bash]
+----
+just report
+----
+
+*Output:* `PROJECT_REPORT.md`
+
+*Contents:*
+- Project statistics
+- Code metrics
+- Git statistics
+
+==== `verify`
+
+Verify project integrity.
+
+[source,bash]
+----
+just verify
+----
+
+*Checks:*
+1. Code formatting
+2. Linting
+3. Tests
+4. Security audits
+
+*Time:* ~15-30 minutes
+
+=== 🎯 Aliases & Shortcuts
+
+These are convenient single-letter aliases for common commands:
+
+[cols="1,3,5"]
+|===
+|Alias |Recipe |Description
+
+|`b`
+|`build`
+|Build all components
+
+|`t`
+|`test`
+|Run all tests
+
+|`l`
+|`lint`
+|Run all linters
+
+|`f`
+|`format`
+|Format all code
+
+|`c`
+|`clean`
+|Clean all build artifacts
+
+|`d`
+|`docker-up`
+|Start Docker development environment
+
+|`dd`
+|`docker-down`
+|Stop Docker development environment
+
+|`dr`
+|`docker-restart`
+|Restart Docker development environment
+
+|`dl`
+|`docker-logs`
+|View Docker logs
+
+|`ds`
+|`docker-ps`
+|Show Docker service status
+
+|`i`
+|`install`
+|Install all components
+
+|`u`
+|`uninstall-cli-system`
+|Uninstall CLI from system
+
+|`v`
+|`version`
+|Show version information
+
+|`h`
+|`help`
+|Show help message
+
+|`s`
+|`stats`
+|Show project statistics
+
+|`q`
+|`quick`
+|Run quick checks
+
+|`ci-local`
+|`ci`
+|Run CI pipeline locally
+
+|`up`
+|`dev`
+|Start development environment
+
+|`down`
+|`dev-down`
+|Stop development environment
+
+|`restart`
+|`dev-restart`
+|Restart development environment
+|===
+
+== Common Workflows
+
+=== New Contributor Setup
+
+[source,bash]
+----
+# Clone the repository
+git clone https://github.com/Hyperpolymath/academic-workflow-suite.git
+cd academic-workflow-suite
+
+# Initialize the project
+just init
+
+# Start development environment
+just dev
+
+# In another terminal, run tests
+just test
+----
+
+=== Daily Development Workflow
+
+[source,bash]
+----
+# Start development environment
+just up
+
+# Watch for changes and auto-rebuild
+just dev-watch-rust  # In one terminal
+just dev-watch-rescript  # In another terminal
+
+# Make changes to code...
+
+# Run quick checks before committing
+just quick
+
+# Or run full checks
+just full
+----
+
+=== Pre-commit Workflow
+
+[source,bash]
+----
+# Format all code
+just format
+
+# Run linters
+just lint
+
+# Run tests
+just test
+
+# If everything passes, commit
+git add .
+git commit -m "Your commit message"
+----
+
+=== Release Workflow
+
+[source,bash]
+----
+# Run full CI locally
+just ci
+
+# Create release
+just release 1.2.3
+
+# Package for all platforms
+just release-package
+
+# Verify release artifacts
+just release-verify 1.2.3
+
+# Sign release
+just release-sign 1.2.3
+
+# Create GitHub release
+just release-github 1.2.3
+
+# Upload artifacts
+just release-upload 1.2.3
+----
+
+=== Debugging Workflow
+
+[source,bash]
+----
+# Start development environment
+just dev
+
+# View logs
+just logs
+
+# Or view logs for specific service
+just logs-service backend
+
+# Open shell in container
+just docker-shell-core
+
+# Run health check
+just health-verbose
+
+# Check service status
+just status
+----
+
+=== Security Audit Workflow
+
+[source,bash]
+----
+# Run all security checks
+just security
+
+# Or run individual checks
+just security-audit
+just security-secrets
+just security-deps-check
+just security-container-scan
+
+# Generate SBOM
+just security-sbom
+
+# Check for CVEs
+just security-cve-check
+----
+
+== Configuration
+
+=== Environment Variables
+
+The justfile uses the following environment variables (loaded from `.env` if present):
+
+* `DOCKER_COMPOSE` - Docker Compose command (default: "docker-compose")
+* `CLI_BINARY_NAME` - CLI binary name (default: "aws")
+* `CLI_INSTALL_PATH` - CLI installation path (default: "/usr/local/bin")
+* `WEBSITE_BUILD_DIR` - Website build directory (default: "website/dist")
+
+=== Shell Settings
+
+[source,just]
+----
+set shell := ["bash", "-uc"]
+set dotenv-load := true
+set export := true
+set positional-arguments := true
+----
+
+* Uses bash as the shell
+* Automatically loads `.env` file
+* Exports all variables to recipes
+* Enables positional arguments
+
+== Tips & Tricks
+
+=== Interactive Recipe Chooser
+
+Run `just` without arguments to get an interactive chooser (if `fzf` is installed):
+
+[source,bash]
+----
+just
+----
+
+=== Tab Completion
+
+Install shell completions for better tab completion:
+
+[source,bash]
+----
+# For bash
+just install-completions-bash
+
+# For zsh
+just install-completions-zsh
+
+# For fish
+just install-completions-fish
+----
+
+=== Listing Recipes
+
+[source,bash]
+----
+# List all recipes
+just --list
+
+# List recipes with descriptions
+just --list --list-heading $'Available recipes:\n'
+
+# Search for specific recipes
+just --list | grep docker
+----
+
+=== Recipe Documentation
+
+[source,bash]
+----
+# Show recipe source
+just --show build
+
+# Show all recipes in a category
+just --list | grep "^docker-"
+----
+
+=== Running Multiple Recipes
+
+[source,bash]
+----
+# Run multiple recipes sequentially
+just clean build test
+
+# Run recipes with dependencies
+just full  # Runs lint, test, and build
+----
+
+=== Dry Run
+
+[source,bash]
+----
+# See what commands would be executed without running them
+just --dry-run build
+----
+
+=== Verbose Mode
+
+[source,bash]
+----
+# Show commands being executed
+just --verbose build
+----
+
+== Troubleshooting
+
+=== Common Issues
+
+==== Recipe Not Found
+
+[source,bash]
+----
+$ just biuld
+error: Justfile does not contain recipe `biuld`.
+Did you mean `build`?
+----
+
+*Solution:* Check recipe spelling with `just --list`
+
+==== Docker Permission Denied
+
+[source,bash]
+----
+$ just docker-up
+ERROR: Couldn't connect to Docker daemon
+----
+
+*Solutions:*
+- Add user to docker group: `sudo usermod -aG docker $USER`
+- Restart shell or log out/in
+- Start Docker daemon: `sudo systemctl start docker`
+
+==== Cargo Command Not Found
+
+[source,bash]
+----
+$ just build
+cargo: command not found
+----
+
+*Solution:* Install Rust: `curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh`
+
+==== Mix Command Not Found
+
+[source,bash]
+----
+$ just build-backend
+mix: command not found
+----
+
+*Solution:* Install Elixir: https://elixir-lang.org/install.html
+
+==== NPM Command Not Found
+
+[source,bash]
+----
+$ just build-office-addin
+npm: command not found
+----
+
+*Solution:* Install Node.js: https://nodejs.org/
+
+=== Debug Mode
+
+For debugging justfile issues:
+
+[source,bash]
+----
+# Show detailed execution
+just --verbose --dry-run <recipe>
+
+# Show justfile evaluation
+just --evaluate
+----
+
+=== Getting Help
+
+If you encounter issues:
+
+1. Check the cookbook: This document
+2. Check recipe documentation: `just help-recipe <recipe>`
+3. Check logs: `just logs`
+4. Check service status: `just status`
+5. Run health check: `just health-verbose`
+6. Check project documentation: `README.md`, `CONTRIBUTING.md`
+7. Ask for help: Create an issue on GitHub
+
+== Appendix
+
+=== Complete Recipe Reference
+
+[cols="1,3"]
+|===
+|Recipe Count |Description
+
+|50+
+|Build recipes
+
+|60+
+|Docker recipes
+
+|40+
+|Test recipes
+
+|30+
+|Linting & formatting recipes
+
+|20+
+|Security recipes
+
+|20+
+|Installation & deployment recipes
+
+|15+
+|Database recipes
+
+|15+
+|Development recipes
+
+|15+
+|Documentation recipes
+
+|15+
+|Release recipes
+
+|10+
+|Monitoring recipes
+
+|15+
+|Cleanup recipes
+
+|10+
+|Statistics recipes
+
+|10+
+|CI/CD recipes
+
+|10+
+|Website recipes
+
+|20+
+|Utility recipes
+
+|20+
+|Aliases
+
+|*300+*
+|*Total recipes*
+|===
+
+=== Tool Requirements
+
+Required tools:
+
+* Rust (rustc, cargo)
+* Elixir (elixir, mix)
+* Node.js (node, npm)
+* Docker (docker, docker-compose)
+* Just (just)
+* Git
+
+Optional tools for enhanced functionality:
+
+* cargo-watch - File watching for Rust
+* cargo-audit - Security auditing
+* cargo-tarpaulin - Code coverage
+* cargo-outdated - Dependency updates
+* cargo-edit - Dependency management
+* cargo-deny - Dependency graph analysis
+* cargo-geiger - Unsafe code detection
+* cargo-sbom - SBOM generation
+* cargo-flamegraph - Performance profiling
+* shellcheck - Shell script linting
+* yamllint - YAML linting
+* hadolint - Dockerfile linting
+* markdownlint - Markdown linting
+* pre-commit - Git hooks
+* tokei - Code statistics
+* git-cliff - Changelog generation
+* gh - GitHub CLI
+* netlify - Netlify CLI
+* trufflehog - Secret scanning
+* trivy - Container scanning
+
+=== External Resources
+
+* Just Documentation: https://just.systems/
+* Rust Documentation: https://doc.rust-lang.org/
+* Elixir Documentation: https://elixir-lang.org/docs.html
+* Docker Documentation: https://docs.docker.com/
+* Project README: https://github.com/Hyperpolymath/academic-workflow-suite/blob/main/README.md
+
+=== License
+
+This cookbook is part of the Academic Workflow Suite project and is licensed under the same terms as the project (GNU Affero General Public License v3.0).
+
+=== Contributing
+
+To contribute to this cookbook:
+
+1. Fork the repository
+2. Make your changes
+3. Submit a pull request
+
+See `CONTRIBUTING.md` for detailed guidelines.
+
+=== Changelog
+
+[cols="1,2,5"]
+|===
+|Version |Date |Changes
+
+|1.0.0
+|2025-12-01
+|Initial release of comprehensive justfile cookbook with 300+ recipes
+|===
+
+== Index
+
+A comprehensive index of all recipes is available by running:
+
+[source,bash]
+----
+just --list
+----
+
+---
+
+*End of Cookbook*
