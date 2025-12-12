@@ -79,7 +79,7 @@ services:
     image: academic-workflow-suite/web:latest
     container_name: awap-web
     environment:
-      - API_URL=http://awap-api:8080
+      - API_URL=https://awap-api:8080
       - NODE_ENV=production
     depends_on:
       - awap-api

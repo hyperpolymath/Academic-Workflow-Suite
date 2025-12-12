@@ -63,12 +63,12 @@ impl Config {
         }
 
         // Validate URL format
-        if !self.backend_url.starts_with("http://") && !self.backend_url.starts_with("https://") {
+        if !self.backend_url.starts_with("https://") && !self.backend_url.starts_with("https://") {
             return Err(anyhow::anyhow!("Backend URL must start with http:// or https://"));
         }
 
         if let Some(moodle_url) = &self.moodle_url {
-            if !moodle_url.starts_with("http://") && !moodle_url.starts_with("https://") {
+            if !moodle_url.starts_with("https://") && !moodle_url.starts_with("https://") {
                 return Err(anyhow::anyhow!("Moodle URL must start with http:// or https://"));
             }
         }

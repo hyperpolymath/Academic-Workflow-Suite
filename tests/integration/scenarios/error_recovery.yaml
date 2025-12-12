@@ -216,7 +216,7 @@ test_cases:
           module: "TM112"
           assignment: "TMA01"
           question: 1
-          content: "Test submission. Visit http://example.com for more info."
+          content: "Test submission. Visit https://example.com for more info."
 
       - name: "Grade with Network Monitoring"
         action: "grade_with_ai"

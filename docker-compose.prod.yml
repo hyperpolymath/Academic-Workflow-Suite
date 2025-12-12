@@ -304,7 +304,7 @@ services:
       NGINX_WORKER_PROCESSES: auto
       NGINX_WORKER_CONNECTIONS: 4096
     healthcheck:
-      test: ["CMD", "curl", "-f", "-k", "https://localhost/health"]
+      test: ["CMD", "curl", "-f", "-k", "http://localhost/health"]
       interval: 30s
       timeout: 10s
       retries: 3
