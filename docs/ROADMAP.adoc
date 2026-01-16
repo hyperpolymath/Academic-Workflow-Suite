@@ -1,0 +1,380 @@
+// SPDX-License-Identifier: PMPL-1.0
+// SPDX-FileCopyrightText: 2025 Jonathan D.A. Jewell
+= Academic Workflow Suite Roadmap
+:toc: auto
+:toclevels: 3
+
+== Overview
+
+This document outlines potential development directions for Academic Workflow Suite. Each direction represents a strategic path that could be pursued based on user needs, resource availability, and ecosystem evolution.
+
+== Current State (v0.2.0)
+
+=== Completed
+
+* Core engine with event sourcing (Rust/LMDB)
+* Office Add-in for Word (ReScript/Office.js)
+* AI isolation with network-jailed container
+* SHA3-512 student ID anonymization
+* Basic rubric support and feedback generation
+* Container migration to nerdctl/podman
+* Contractiles build system (just/Mustfile/Dustfile)
+
+=== In Progress
+
+* Proven library integration planning
+* Moodle LMS integration research
+* Batch processing improvements
+
+---
+
+== Direction 1: Deep Privacy Enhancement
+
+_Focus: Making AWS the gold standard for privacy-preserving educational AI_
+
+=== Phase 1: Cryptographic Hardening (v0.3.0)
+
+* [ ] Integrate `proven` SafeCrypto for verified SHA3/AES
+* [ ] Add homomorphic encryption for AI queries (SEAL/OpenFHE)
+* [ ] Implement secure multi-party computation for collaborative marking
+* [ ] Zero-knowledge proofs for audit compliance without data exposure
+
+=== Phase 2: Differential Privacy (v0.4.0)
+
+* [ ] Add noise injection for aggregate statistics
+* [ ] Privacy budget tracking per student
+* [ ] Federated learning support (model stays local, only gradients shared)
+* [ ] Formal privacy guarantees with ε-differential privacy
+
+=== Phase 3: Trustless Architecture (v0.5.0)
+
+* [ ] TEE support (Intel SGX, ARM TrustZone) for AI inference
+* [ ] Verifiable computation proofs for AI outputs
+* [ ] Decentralized audit trail (append-only Merkle tree)
+* [ ] Hardware attestation for AI jail integrity
+
+=== Potential Outcomes
+
+* University-wide deployment with provable GDPR compliance
+* Research publications on privacy-preserving educational AI
+* Adoption by privacy-conscious institutions globally
+
+---
+
+== Direction 2: LMS Integration Suite
+
+_Focus: Seamless integration with learning management systems_
+
+=== Phase 1: Moodle Deep Integration (v0.3.0)
+
+* [ ] Direct submission download via Moodle Web Services API
+* [ ] Automated grade upload to Moodle gradebook
+* [ ] Assignment metadata sync (rubrics, deadlines, cohorts)
+* [ ] Bulk download/upload with progress tracking
+
+=== Phase 2: Multi-LMS Support (v0.4.0)
+
+* [ ] Canvas LMS integration (REST API)
+* [ ] Blackboard Learn integration
+* [ ] Brightspace D2L integration
+* [ ] Generic LTI 1.3 provider for any LMS
+
+=== Phase 3: LMS-Native Experience (v0.5.0)
+
+* [ ] Embedded grading interface within LMS
+* [ ] Real-time sync (WebSocket-based)
+* [ ] LMS plugin packages (Moodle plugin, Canvas app)
+* [ ] Single sign-on via LMS authentication
+
+=== Potential Outcomes
+
+* Workflow reduction from download/upload cycles
+* Institution-wide rollouts via IT-managed LMS plugins
+* Partnership opportunities with LMS vendors
+
+---
+
+== Direction 3: AI Model Ecosystem
+
+_Focus: Flexible, customizable AI backends_
+
+=== Phase 1: Model Abstraction Layer (v0.3.0)
+
+* [ ] Unified model interface (local and API-based)
+* [ ] Support for llama.cpp, Ollama, vLLM backends
+* [ ] Model hot-swapping without restart
+* [ ] Quantization profiles (4-bit, 8-bit, full precision)
+
+=== Phase 2: Domain-Specific Fine-Tuning (v0.4.0)
+
+* [ ] LoRA/QLoRA fine-tuning pipeline
+* [ ] Module-specific adapters (STEM vs humanities)
+* [ ] Feedback style learning from tutor corrections
+* [ ] Rubric-aware prompt engineering
+
+=== Phase 3: Model Marketplace (v0.5.0)
+
+* [ ] Community model sharing (anonymized training)
+* [ ] Pre-trained adapters for popular OU modules
+* [ ] Model evaluation benchmarks
+* [ ] Federated fine-tuning across institutions
+
+=== Potential Outcomes
+
+* Personalized AI that learns each tutor's style
+* Community-driven improvement cycle
+* Research dataset for educational AI
+
+---
+
+== Direction 4: Collaborative Marking Platform
+
+_Focus: Team-based marking with consistency tools_
+
+=== Phase 1: Multi-Tutor Support (v0.3.0)
+
+* [ ] Shared rubric repository with versioning
+* [ ] Marking allocation and progress tracking
+* [ ] Cross-tutor consistency metrics
+* [ ] Conflict resolution for overlapping assignments
+
+=== Phase 2: Quality Assurance (v0.4.0)
+
+* [ ] Statistical analysis of marking patterns
+* [ ] Outlier detection (harsh/lenient markers)
+* [ ] Blind double-marking support
+* [ ] Moderation workflow with escalation
+
+=== Phase 3: Institutional Dashboard (v0.5.0)
+
+* [ ] Department-wide marking analytics
+* [ ] Cohort performance visualization
+* [ ] Grade distribution monitoring
+* [ ] External examiner reporting
+
+=== Potential Outcomes
+
+* Standardized marking across large teaching teams
+* Evidence-based quality assurance
+* Reduced moderation burden
+
+---
+
+== Direction 5: Student-Facing Tools
+
+_Focus: Pre-submission feedback for students_
+
+=== Phase 1: Self-Assessment Mode (v0.3.0)
+
+* [ ] Student-accessible feedback preview
+* [ ] Rubric criteria checklist
+* [ ] Writing quality indicators
+* [ ] Citation/reference validation
+
+=== Phase 2: Formative Feedback (v0.4.0)
+
+* [ ] Draft submission analysis
+* [ ] Improvement suggestions without scores
+* [ ] Learning resource recommendations
+* [ ] Progress tracking across assignments
+
+=== Phase 3: Peer Review Support (v0.5.0)
+
+* [ ] Anonymized peer feedback workflow
+* [ ] Structured peer review rubrics
+* [ ] Calibration exercises for peer assessors
+* [ ] Integration with discussion forums
+
+=== Potential Outcomes
+
+* Improved submission quality
+* Reduced tutor workload on basic feedback
+* Enhanced student learning outcomes
+
+---
+
+== Direction 6: Mobile & Cross-Platform
+
+_Focus: Mark anywhere, on any device_
+
+=== Phase 1: Responsive Web Interface (v0.3.0)
+
+* [ ] Progressive Web App (PWA) support
+* [ ] Touch-optimized feedback editing
+* [ ] Offline capability with sync
+* [ ] Voice dictation for feedback
+
+=== Phase 2: Native Mobile Apps (v0.4.0)
+
+* [ ] Tauri 2.0 mobile app (iOS/Android)
+* [ ] Document viewer with annotation
+* [ ] Push notifications for deadlines
+* [ ] Biometric authentication
+
+=== Phase 3: Cross-Device Continuity (v0.5.0)
+
+* [ ] Start on desktop, continue on mobile
+* [ ] Real-time sync across devices
+* [ ] Handoff between Word and mobile app
+* [ ] Wearable notifications (Apple Watch, etc.)
+
+=== Potential Outcomes
+
+* Marking during commute or travel
+* Flexible work patterns for tutors
+* Reduced time-to-feedback
+
+---
+
+== Direction 7: Research & Analytics Platform
+
+_Focus: Educational research capabilities_
+
+=== Phase 1: Anonymized Data Export (v0.3.0)
+
+* [ ] GDPR-compliant research data extraction
+* [ ] Configurable anonymization levels
+* [ ] Temporal analysis datasets
+* [ ] Opt-in research participation
+
+=== Phase 2: Learning Analytics (v0.4.0)
+
+* [ ] Student performance prediction
+* [ ] At-risk student identification
+* [ ] Intervention effectiveness tracking
+* [ ] Longitudinal cohort analysis
+
+=== Phase 3: Research API (v0.5.0)
+
+* [ ] Programmatic access for researchers
+* [ ] Jupyter notebook integration
+* [ ] Statistical analysis pipelines
+* [ ] Publication-ready visualizations
+
+=== Potential Outcomes
+
+* Evidence-based pedagogical improvements
+* Research publications on assessment
+* Data-driven curriculum development
+
+---
+
+== Direction 8: Enterprise & Compliance
+
+_Focus: Institution-wide deployment_
+
+=== Phase 1: IT-Friendly Deployment (v0.3.0)
+
+* [ ] MSI/PKG installers with silent install
+* [ ] Group Policy/MDM configuration
+* [ ] SAML/OIDC single sign-on
+* [ ] Active Directory integration
+
+=== Phase 2: Compliance & Governance (v0.4.0)
+
+* [ ] SOC 2 Type II audit preparation
+* [ ] ISO 27001 alignment
+* [ ] FERPA compliance documentation
+* [ ] Accessibility (WCAG 2.1 AA)
+
+=== Phase 3: Enterprise Features (v0.5.0)
+
+* [ ] Multi-tenant deployment
+* [ ] Custom branding per institution
+* [ ] SLA monitoring and reporting
+* [ ] Disaster recovery procedures
+
+=== Potential Outcomes
+
+* Large-scale institutional contracts
+* Sustainable funding model
+* Professional support offerings
+
+---
+
+== Technology Investment Areas
+
+=== Proven Library Integration
+
+[cols="1,2,1"]
+|===
+| Module | Application | Priority
+
+| SafeCrypto | Student ID hashing, encryption | HIGH
+| SafeJson | AI Jail IPC, API parsing | HIGH
+| SafeRegex | PII detection | MEDIUM
+| SafeStateMachine | Event sourcing | MEDIUM
+| SafeAudit | Compliance logging | LOW
+|===
+
+=== Container & Runtime
+
+* **Primary**: nerdctl + containerd (rootless)
+* **Fallback**: podman (rootless)
+* **Isolation**: gVisor/Firecracker for AI jail
+* **Orchestration**: None (single-machine focus)
+
+=== Build & Package
+
+* **Build**: just (contractiles pattern)
+* **Package**: Guix primary, Nix fallback
+* **JS Runtime**: Deno (no npm in production)
+* **Containers**: OCI-compliant images
+
+---
+
+== Decision Framework
+
+When choosing directions, consider:
+
+[cols="1,3"]
+|===
+| Factor | Questions
+
+| *User Impact*
+| How many tutors benefit? How much time saved?
+
+| *Privacy Alignment*
+| Does this strengthen or weaken privacy guarantees?
+
+| *Technical Debt*
+| Does this add complexity? Is it maintainable?
+
+| *Community*
+| Can contributors help? Is there external interest?
+
+| *Sustainability*
+| Does this enable funding? Reduce costs?
+|===
+
+---
+
+== Recommended Priority
+
+Based on current project state and user needs:
+
+1. **Direction 1** (Privacy) - Core differentiator, proven integration
+2. **Direction 2** (LMS) - Highest user-requested feature
+3. **Direction 3** (AI Models) - Flexibility and future-proofing
+4. **Direction 4** (Collaborative) - Team marking is common
+5. **Direction 6** (Mobile) - Quality of life improvement
+6. **Direction 5** (Student) - Scope expansion, later phase
+7. **Direction 7** (Research) - Requires user base first
+8. **Direction 8** (Enterprise) - When demand justifies
+
+---
+
+== Contributing to Roadmap
+
+This roadmap is a living document. To propose changes:
+
+1. Open a GitHub Discussion with your proposal
+2. Include: use case, affected users, technical approach
+3. Community feedback period (2 weeks)
+4. Maintainer decision and roadmap update
+
+== References
+
+* link:PROVEN_INTEGRATION.adoc[Proven Integration Guide]
+* link:ARCHITECTURE.md[System Architecture]
+* link:../README.adoc[Project README]

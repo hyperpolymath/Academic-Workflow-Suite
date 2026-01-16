@@ -960,6 +960,7 @@ aws-core stats export --module TM112 --format csv
 - *[API Reference](docs/API_REFERENCE.md)* - REST API specification
 - *[Security](docs/SECURITY.md)* - Security model and privacy guarantees
 - *[Proven Integration](docs/PROVEN_INTEGRATION.adoc)* - Formally verified library integration
+- *[Roadmap](docs/ROADMAP.adoc)* - Future directions and development paths
 - *[Development Guide](docs/DEVELOPMENT.md)* - Contributing and development
 - *[CI/CD](docs/CI-CD.md)* - Continuous integration and deployment
 
