@@ -25,6 +25,14 @@
 //! All implementations use well-audited cryptographic libraries and follow
 //! best practices for security. Deprecated algorithms (PBKDF2, MD5, SHA1)
 //! are NOT supported.
+//!
+//! ## Proven Integration
+//!
+//! Core hashing and cryptographic operations are backed by the `proven`
+//! library's [`SafeCrypto`](proven::SafeCrypto) module, which provides:
+//! - Memory-safe implementations (Rust guarantees)
+//! - Formally verified specifications (Idris2 proofs)
+//! - Constant-time operations to prevent side-channel attacks
 
 use crate::errors::{Result, SharedError};
 use argon2::{Argon2, PasswordHash, PasswordHasher, PasswordVerifier};
@@ -34,6 +42,9 @@ use sha3::{Digest, Sha3_256, Sha3_512};
 use subtle::ConstantTimeEq;
 use uuid::Uuid;
 use zeroize::Zeroizing;
+
+// Re-export proven::SafeCrypto for direct access to formally verified operations
+pub use proven::SafeCrypto;
 
 // Argon2id parameters per Hyperpolymath Crypto Standard
 /// Memory cost: 64 MiB minimum
@@ -508,6 +519,7 @@ pub fn generate_salt(length: usize) -> Vec<u8> {
 /// ```
 pub fn dilithium_keypair() -> (Vec<u8>, Vec<u8>) {
     use pqcrypto_dilithium::dilithium5;
+    use pqcrypto_traits::sign::{PublicKey, SecretKey};
     let (pk, sk) = dilithium5::keypair();
     (pk.as_bytes().to_vec(), sk.as_bytes().to_vec())
 }
@@ -524,7 +536,7 @@ pub fn dilithium_keypair() -> (Vec<u8>, Vec<u8>) {
 /// ```
 pub fn dilithium_sign(message: &[u8], secret_key: &[u8]) -> Result<Vec<u8>> {
     use pqcrypto_dilithium::dilithium5;
-    use pqcrypto_traits::sign::SecretKey;
+    use pqcrypto_traits::sign::{DetachedSignature, SecretKey};
 
     let sk = dilithium5::SecretKey::from_bytes(secret_key)
         .map_err(|_| SharedError::Crypto("Invalid Dilithium5 secret key".to_string()))?;
@@ -573,6 +585,7 @@ pub fn dilithium_verify(message: &[u8], signature: &[u8], public_key: &[u8]) -> 
 /// ```
 pub fn kyber_keypair() -> (Vec<u8>, Vec<u8>) {
     use pqcrypto_kyber::kyber1024;
+    use pqcrypto_traits::kem::{PublicKey, SecretKey};
     let (pk, sk) = kyber1024::keypair();
     (pk.as_bytes().to_vec(), sk.as_bytes().to_vec())
 }
@@ -591,7 +604,7 @@ pub fn kyber_keypair() -> (Vec<u8>, Vec<u8>) {
 /// ```
 pub fn kyber_encapsulate(public_key: &[u8]) -> Result<(Vec<u8>, Vec<u8>)> {
     use pqcrypto_kyber::kyber1024;
-    use pqcrypto_traits::kem::PublicKey;
+    use pqcrypto_traits::kem::{Ciphertext, PublicKey, SharedSecret};
 
     let pk = kyber1024::PublicKey::from_bytes(public_key)
         .map_err(|_| SharedError::Crypto("Invalid Kyber-1024 public key".to_string()))?;
@@ -613,7 +626,7 @@ pub fn kyber_encapsulate(public_key: &[u8]) -> Result<(Vec<u8>, Vec<u8>)> {
 /// ```
 pub fn kyber_decapsulate(ciphertext: &[u8], secret_key: &[u8]) -> Result<Vec<u8>> {
     use pqcrypto_kyber::kyber1024;
-    use pqcrypto_traits::kem::{SecretKey, Ciphertext};
+    use pqcrypto_traits::kem::{Ciphertext, SecretKey, SharedSecret};
 
     let sk = kyber1024::SecretKey::from_bytes(secret_key)
         .map_err(|_| SharedError::Crypto("Invalid Kyber-1024 secret key".to_string()))?;

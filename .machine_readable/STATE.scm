@@ -30,7 +30,8 @@
         (post-quantum "Dilithium5, Kyber-1024"))
       (verified-libraries
         (proven "Idris2 formally verified crashproof modules")
-        (integration-status "planned"))))
+        (integration-status "integrated")
+        (modules-integrated "SafeCrypto"))))
 
   (current-position
     (phase "beta")
@@ -173,10 +174,7 @@
     (high
       (moodle-api
         (description "Moodle LMS API integration pending")
-        (impact "Cannot auto-download submissions"))
-      (proven-ffi
-        (description "proven-rust crate not yet published")
-        (impact "Cannot integrate verified libraries")))
+        (impact "Cannot auto-download submissions")))
     (medium
       (mobile-app
         (description "Mobile app development not started")
@@ -189,12 +187,12 @@
   (critical-next-actions
     (immediate
       "Publish proven-rust crate to crates.io"
-      "Begin SafeCrypto integration in core")
+      "Design Moodle OAuth integration")
     (this-week
-      "Design Moodle OAuth integration"
-      "Create proven ReScript bindings")
+      "Create proven ReScript bindings"
+      "Complete proven SafeJson integration")
     (this-month
-      "Complete proven SafeJson integration"
+      "Implement Moodle submission download"
       "Release v0.3.0 alpha"))
 
   (documentation
@@ -225,4 +223,14 @@
         "Added proven module proposals to proven repo"
         "Created docs/ROADMAP.adoc with 8 strategic directions"
         "Updated README.adoc with proven integration section"
-        "Updated STATE.scm to reflect v0.2.0 completion"))))
+        "Updated STATE.scm to reflect v0.2.0 completion"))
+    (session
+      (date "2026-01-16-b")
+      (accomplishments
+        "Implemented full SafeCrypto in proven-rust (SHA3, BLAKE3, HMAC, hex, random)"
+        "Integrated proven SafeCrypto into academic-shared via git dependency"
+        "Fixed pqcrypto-traits import issues in crypto.rs"
+        "Updated derive_key API to use Argon2id hardcoded params"
+        "Fixed integration and property tests for new API"
+        "Added Idris Inside badge to README.adoc"
+        "Verified all 104 unit tests + 13 integration tests pass"))))

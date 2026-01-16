@@ -29,11 +29,11 @@ fn test_crypto_module_integration() {
     assert_eq!(uuid.len(), 36);
     assert_eq!(nanoid.len(), 21);
 
-    // Test key derivation
+    // Test key derivation (Argon2id with hardcoded secure parameters)
     let password = b"test-password";
     let salt = generate_salt(16);
-    let key = derive_key(password, &salt, 10000, 32);
-    assert_eq!(key.len(), 32);
+    let derived_key = derive_key(password, &salt, 32).unwrap();
+    assert_eq!(derived_key.len(), 32);
 }
 
 #[test]

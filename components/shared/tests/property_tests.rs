@@ -62,20 +62,20 @@ proptest! {
     }
 }
 
-// Property test: Key derivation
+// Property test: Key derivation (Argon2id with hardcoded secure parameters)
 proptest! {
     #[test]
-    fn prop_derive_key_deterministic(password: Vec<u8>, salt: Vec<u8>, iterations in 1000u32..2000u32, len in 16usize..64usize) {
-        prop_assume!(!password.is_empty() && !salt.is_empty());
-        let key1 = derive_key(&password, &salt, iterations, len);
-        let key2 = derive_key(&password, &salt, iterations, len);
-        prop_assert_eq!(key1, key2);
+    fn prop_derive_key_deterministic(password: Vec<u8>, salt: Vec<u8>, len in 16usize..64usize) {
+        prop_assume!(!password.is_empty() && salt.len() >= 8);
+        let key1 = derive_key(&password, &salt, len).unwrap();
+        let key2 = derive_key(&password, &salt, len).unwrap();
+        prop_assert_eq!(key1.to_vec(), key2.to_vec());
     }
 
     #[test]
     fn prop_derive_key_correct_length(password: Vec<u8>, salt: Vec<u8>, len in 16usize..64usize) {
-        prop_assume!(!password.is_empty() && !salt.is_empty());
-        let key = derive_key(&password, &salt, 1000, len);
+        prop_assume!(!password.is_empty() && salt.len() >= 8);
+        let key = derive_key(&password, &salt, len).unwrap();
         prop_assert_eq!(key.len(), len);
     }
 }

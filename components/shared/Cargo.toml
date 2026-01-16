@@ -14,10 +14,13 @@ name = "academic_shared"
 path = "src/lib.rs"
 
 [dependencies]
+# Proven - Formally verified safe modules (Hyperpolymath)
+proven = { git = "https://github.com/hyperpolymath/proven", features = ["crypto"] }
+
 # Cryptography - Hyperpolymath Crypto Standard (see CRYPTO-STANDARD.scm)
 # Password hashing: Argon2id (replaces PBKDF2)
 argon2 = "0.5"
-# Hashing: BLAKE3 (primary), SHA3 (secondary)
+# Hashing: BLAKE3 (primary), SHA3 (secondary) - also used by proven
 blake3 = "1.5"
 sha3 = "0.10"
 hmac = "0.12"
