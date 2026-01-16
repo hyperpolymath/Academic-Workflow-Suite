@@ -1,0 +1,570 @@
+// SPDX-License-Identifier: PMPL-1.0
+// SPDX-FileCopyrightText: 2026 Jonathan D.A. Jewell
+= Moodle OAuth 2.0 Integration Design
+:toc: macro
+:toclevels: 3
+:icons: font
+:source-highlighter: rouge
+
+Design document for secure OAuth 2.0 integration with Moodle LMS.
+
+toc::[]
+
+== Overview
+
+This document describes the OAuth 2.0 Authorization Code flow implementation for integrating Academic Workflow Suite with Moodle LMS instances, specifically targeting the Open University's VLE (Virtual Learning Environment) based on Moodle.
+
+=== Goals
+
+1. **Secure Authentication**: Use OAuth 2.0 Authorization Code flow with PKCE
+2. **Privacy First**: Minimal scope requests, no persistent credential storage
+3. **OU Compatibility**: Support OU's specific Moodle configuration
+4. **Multi-LMS Ready**: Architecture extensible to Canvas, Blackboard, etc.
+
+== Authentication Flows
+
+=== OAuth 2.0 Authorization Code Flow with PKCE
+
+[source,text]
+----
+┌──────────┐     ┌──────────────┐     ┌────────────┐     ┌──────────┐
+│  User    │     │  AWS CLI/UI  │     │  Browser   │     │  Moodle  │
+└────┬─────┘     └──────┬───────┘     └─────┬──────┘     └────┬─────┘
+     │                  │                   │                  │
+     │ 1. Login request │                   │                  │
+     │─────────────────>│                   │                  │
+     │                  │                   │                  │
+     │                  │ 2. Generate       │                  │
+     │                  │    code_verifier  │                  │
+     │                  │    code_challenge │                  │
+     │                  │                   │                  │
+     │                  │ 3. Auth URL       │                  │
+     │<─────────────────│                   │                  │
+     │                  │                   │                  │
+     │ 4. Open browser ─────────────────────>                  │
+     │                  │                   │ 5. Auth request  │
+     │                  │                   │─────────────────>│
+     │                  │                   │                  │
+     │                  │                   │ 6. Login page    │
+     │                  │                   │<─────────────────│
+     │                  │                   │                  │
+     │ 7. User authenticates ───────────────────────────────────>
+     │                  │                   │                  │
+     │                  │                   │ 8. Redirect w/   │
+     │                  │                   │<── auth code ────│
+     │                  │                   │                  │
+     │                  │ 9. Receive auth   │                  │
+     │                  │<── code callback ─│                  │
+     │                  │                   │                  │
+     │                  │ 10. Exchange code │                  │
+     │                  │    + code_verifier───────────────────>
+     │                  │                   │                  │
+     │                  │ 11. Access token  │                  │
+     │                  │<─────────────────────────────────────│
+     │                  │                   │                  │
+     │ 12. Authenticated│                   │                  │
+     │<─────────────────│                   │                  │
+----
+
+=== PKCE (Proof Key for Code Exchange)
+
+PKCE adds security for public clients (CLI, desktop apps):
+
+[source,rust]
+----
+// Generate code_verifier (43-128 chars, URL-safe)
+fn generate_code_verifier() -> String {
+    use rand::Rng;
+    let bytes: [u8; 32] = rand::thread_rng().gen();
+    base64url_encode(&bytes)
+}
+
+// Generate code_challenge from code_verifier
+fn generate_code_challenge(verifier: &str) -> String {
+    use sha2::{Sha256, Digest};
+    let hash = Sha256::digest(verifier.as_bytes());
+    base64url_encode(&hash)
+}
+----
+
+== Moodle Configuration
+
+=== Required Moodle Setup
+
+Moodle administrators must:
+
+1. **Enable OAuth 2.0 Services**
+   - Site administration > Server > OAuth 2 services
+   - Create new service for AWS
+
+2. **Configure OAuth 2.0 Client**
+   - Client ID: `aws-edu-marking-assistant`
+   - Redirect URI: `http://localhost:31415/callback` (CLI)
+   - Redirect URI: `https://aws-edu.org/oauth/callback` (Web)
+   - Scopes: See below
+
+3. **Enable Web Services**
+   - Site administration > Plugins > Web services > External services
+   - Create service with required functions
+
+=== Required Scopes & Capabilities
+
+[cols="1,2,3"]
+|===
+| Scope | Moodle Capability | Purpose
+
+| `mod/assign:view`
+| View assignments
+| List available TMAs
+
+| `mod/assign:viewownsubmission`
+| View own submissions
+| N/A for tutors
+
+| `mod/assign:grade`
+| Grade assignments
+| Submit marks and feedback
+
+| `mod/assign:exportownsubmission`
+| Export submissions
+| Download TMA documents
+
+| `moodle/user:viewdetails`
+| View user details
+| Display student info (anonymized)
+
+| `moodle/course:view`
+| View courses
+| List enrolled courses
+|===
+
+=== OU-Specific Configuration
+
+Open University's Moodle (StudentHome) requires:
+
+[source,toml]
+----
+[moodle.ou]
+base_url = "https://learn2.open.ac.uk"
+oauth2_authorize_endpoint = "/admin/oauth2/authorize.php"
+oauth2_token_endpoint = "/admin/oauth2/token.php"
+api_endpoint = "/webservice/rest/server.php"
+client_id = "aws-edu-ou"  # Assigned by OU IT
+scopes = ["mod/assign:view", "mod/assign:grade", "mod/assign:exportownsubmission"]
+----
+
+== Rust Implementation
+
+=== Module Structure
+
+[source,text]
+----
+components/shared/src/
+├── lms/
+│   ├── mod.rs           # LMS trait definitions
+│   ├── oauth2.rs        # OAuth 2.0 client (PKCE)
+│   ├── moodle/
+│   │   ├── mod.rs       # Moodle-specific implementation
+│   │   ├── auth.rs      # Moodle authentication
+│   │   ├── api.rs       # Moodle REST API client
+│   │   ├── types.rs     # Moodle data structures
+│   │   └── submission.rs # Submission handling
+│   ├── canvas/          # Future: Canvas LMS
+│   └── blackboard/      # Future: Blackboard
+----
+
+=== Core Types
+
+[source,rust]
+----
+/// LMS provider trait - implement for each LMS
+#[async_trait]
+pub trait LmsProvider: Send + Sync {
+    /// Get OAuth2 authorization URL
+    fn get_auth_url(&self, state: &str, code_challenge: &str) -> String;
+
+    /// Exchange authorization code for tokens
+    async fn exchange_code(
+        &self,
+        code: &str,
+        code_verifier: &str,
+    ) -> Result<TokenResponse>;
+
+    /// Refresh access token
+    async fn refresh_token(&self, refresh_token: &str) -> Result<TokenResponse>;
+
+    /// List courses for authenticated user
+    async fn list_courses(&self, token: &AccessToken) -> Result<Vec<Course>>;
+
+    /// List assignments for a course
+    async fn list_assignments(
+        &self,
+        token: &AccessToken,
+        course_id: CourseId,
+    ) -> Result<Vec<Assignment>>;
+
+    /// Download submissions for an assignment
+    async fn download_submissions(
+        &self,
+        token: &AccessToken,
+        assignment_id: AssignmentId,
+    ) -> Result<Vec<Submission>>;
+
+    /// Upload grade and feedback
+    async fn upload_grade(
+        &self,
+        token: &AccessToken,
+        grade: &Grade,
+    ) -> Result<()>;
+}
+
+/// OAuth2 token response
+#[derive(Debug, Clone, Deserialize)]
+pub struct TokenResponse {
+    pub access_token: String,
+    pub token_type: String,
+    pub expires_in: u64,
+    pub refresh_token: Option<String>,
+    pub scope: Option<String>,
+}
+
+/// Moodle-specific types
+pub mod moodle {
+    use serde::{Deserialize, Serialize};
+
+    #[derive(Debug, Clone, Deserialize)]
+    pub struct MoodleCourse {
+        pub id: i64,
+        pub shortname: String,
+        pub fullname: String,
+        pub enrolled_user_count: Option<i32>,
+    }
+
+    #[derive(Debug, Clone, Deserialize)]
+    pub struct MoodleAssignment {
+        pub id: i64,
+        pub cmid: i64,
+        pub course: i64,
+        pub name: String,
+        pub intro: String,
+        pub duedate: i64,
+        pub allowsubmissionsfromdate: i64,
+        pub grade: f64,
+    }
+
+    #[derive(Debug, Clone, Deserialize)]
+    pub struct MoodleSubmission {
+        pub id: i64,
+        pub userid: i64,
+        pub status: String,
+        pub timemodified: i64,
+        pub plugins: Vec<SubmissionPlugin>,
+    }
+
+    #[derive(Debug, Clone, Deserialize)]
+    pub struct SubmissionPlugin {
+        #[serde(rename = "type")]
+        pub plugin_type: String,
+        pub fileareas: Option<Vec<FileArea>>,
+    }
+
+    #[derive(Debug, Clone, Deserialize)]
+    pub struct FileArea {
+        pub area: String,
+        pub files: Vec<SubmissionFile>,
+    }
+
+    #[derive(Debug, Clone, Deserialize)]
+    pub struct SubmissionFile {
+        pub filename: String,
+        pub fileurl: String,
+        pub filesize: i64,
+        pub mimetype: String,
+    }
+}
+----
+
+=== OAuth2 Client
+
+[source,rust]
+----
+/// OAuth2 client with PKCE support
+pub struct OAuth2Client {
+    config: OAuth2Config,
+    http_client: reqwest::Client,
+}
+
+impl OAuth2Client {
+    pub fn new(config: OAuth2Config) -> Self {
+        Self {
+            config,
+            http_client: reqwest::Client::new(),
+        }
+    }
+
+    /// Start OAuth2 flow - returns auth URL and PKCE verifier
+    pub fn start_auth_flow(&self) -> (String, String) {
+        let code_verifier = generate_code_verifier();
+        let code_challenge = generate_code_challenge(&code_verifier);
+        let state = generate_state();
+
+        let auth_url = format!(
+            "{}?response_type=code&client_id={}&redirect_uri={}&scope={}&state={}&code_challenge={}&code_challenge_method=S256",
+            self.config.authorize_endpoint,
+            urlencoding::encode(&self.config.client_id),
+            urlencoding::encode(&self.config.redirect_uri),
+            urlencoding::encode(&self.config.scopes.join(" ")),
+            urlencoding::encode(&state),
+            urlencoding::encode(&code_challenge),
+        );
+
+        (auth_url, code_verifier)
+    }
+
+    /// Exchange authorization code for tokens
+    pub async fn exchange_code(
+        &self,
+        code: &str,
+        code_verifier: &str,
+    ) -> Result<TokenResponse> {
+        let params = [
+            ("grant_type", "authorization_code"),
+            ("code", code),
+            ("redirect_uri", &self.config.redirect_uri),
+            ("client_id", &self.config.client_id),
+            ("code_verifier", code_verifier),
+        ];
+
+        let response = self.http_client
+            .post(&self.config.token_endpoint)
+            .form(&params)
+            .send()
+            .await?;
+
+        if response.status().is_success() {
+            Ok(response.json().await?)
+        } else {
+            let error: OAuth2Error = response.json().await?;
+            Err(LmsError::OAuth2(error))
+        }
+    }
+}
+----
+
+== Security Considerations
+
+=== Token Storage
+
+Tokens must be stored securely:
+
+[source,rust]
+----
+/// Secure token storage using OS keyring
+pub struct SecureTokenStore {
+    service_name: String,
+}
+
+impl SecureTokenStore {
+    pub fn new(service_name: &str) -> Self {
+        Self {
+            service_name: service_name.to_string(),
+        }
+    }
+
+    /// Store token securely
+    pub fn store(&self, key: &str, token: &str) -> Result<()> {
+        let entry = keyring::Entry::new(&self.service_name, key)?;
+        entry.set_password(token)?;
+        Ok(())
+    }
+
+    /// Retrieve token
+    pub fn retrieve(&self, key: &str) -> Result<Option<String>> {
+        let entry = keyring::Entry::new(&self.service_name, key)?;
+        match entry.get_password() {
+            Ok(password) => Ok(Some(password)),
+            Err(keyring::Error::NoEntry) => Ok(None),
+            Err(e) => Err(e.into()),
+        }
+    }
+
+    /// Delete token
+    pub fn delete(&self, key: &str) -> Result<()> {
+        let entry = keyring::Entry::new(&self.service_name, key)?;
+        entry.delete_password()?;
+        Ok(())
+    }
+}
+----
+
+=== Privacy Protections
+
+1. **Minimal Scope**: Only request necessary permissions
+2. **No Credential Storage**: Use OAuth tokens, never store passwords
+3. **Token Encryption**: Encrypt tokens at rest using OS keyring
+4. **Automatic Expiry**: Respect token expiration, refresh as needed
+5. **Secure Transport**: HTTPS only, TLS 1.3 preferred
+
+=== Student Data Anonymization
+
+All student data is anonymized before processing:
+
+[source,rust]
+----
+/// Anonymize student ID using SHA3-512
+pub fn anonymize_student_id(student_id: &str) -> String {
+    use sha3::{Sha3_512, Digest};
+    let mut hasher = Sha3_512::new();
+    hasher.update(student_id.as_bytes());
+    hex::encode(hasher.finalize())
+}
+
+/// Submission with anonymized student data
+#[derive(Debug, Clone)]
+pub struct AnonymizedSubmission {
+    pub id: i64,
+    pub student_hash: String,  // SHA3-512 of student ID
+    pub files: Vec<SubmissionFile>,
+    pub submitted_at: DateTime<Utc>,
+}
+----
+
+== CLI Integration
+
+=== Login Flow
+
+[source,bash]
+----
+$ aws-edu login --lms moodle --instance ou
+
+Starting OAuth2 authorization flow...
+
+Opening browser for authentication:
+https://learn2.open.ac.uk/admin/oauth2/authorize.php?...
+
+Waiting for callback on http://localhost:31415/callback
+
+[Browser opens, user logs in]
+
+Authorization successful!
+Access token stored securely in system keyring.
+
+Logged in as: j.smith@open.ac.uk
+Courses available: 3
+
+$ aws-edu courses list
+┌────────────────┬──────────────────────────────────┬─────────┐
+│ Code           │ Name                             │ TMAs    │
+├────────────────┼──────────────────────────────────┼─────────┤
+│ TM470          │ The Computing and IT Project     │ 1       │
+│ M250           │ Object-Oriented Java Programming │ 5       │
+│ M269           │ Algorithms, Data Structures      │ 4       │
+└────────────────┴──────────────────────────────────┴─────────┘
+----
+
+=== Configuration File
+
+[source,toml]
+----
+# ~/.config/aws-edu/config.toml
+
+[default]
+lms = "moodle"
+instance = "ou"
+
+[instances.ou]
+name = "Open University"
+type = "moodle"
+base_url = "https://learn2.open.ac.uk"
+client_id = "aws-edu-ou"
+
+[instances.custom]
+name = "My University"
+type = "moodle"
+base_url = "https://moodle.myuni.edu"
+client_id = "aws-edu-custom"
+scopes = ["mod/assign:view", "mod/assign:grade"]
+----
+
+== Error Handling
+
+[source,rust]
+----
+#[derive(Debug, thiserror::Error)]
+pub enum LmsError {
+    #[error("OAuth2 error: {0}")]
+    OAuth2(#[from] OAuth2Error),
+
+    #[error("HTTP error: {0}")]
+    Http(#[from] reqwest::Error),
+
+    #[error("API error: {message}")]
+    Api { code: String, message: String },
+
+    #[error("Token expired")]
+    TokenExpired,
+
+    #[error("Insufficient permissions: {0}")]
+    InsufficientPermissions(String),
+
+    #[error("Rate limited, retry after {0} seconds")]
+    RateLimited(u64),
+
+    #[error("Network error: {0}")]
+    Network(String),
+}
+----
+
+== Testing Strategy
+
+=== Unit Tests
+
+- OAuth2 PKCE generation/verification
+- Token parsing and validation
+- API response parsing
+- Error handling
+
+=== Integration Tests
+
+- Mock Moodle server for OAuth flow
+- Token refresh scenarios
+- API endpoint coverage
+
+=== End-to-End Tests
+
+- Full login flow with test Moodle instance
+- Submission download and grade upload
+- Error recovery scenarios
+
+== Implementation Phases
+
+=== Phase 1: Core OAuth2 (Week 1)
+- [ ] OAuth2 client with PKCE
+- [ ] Secure token storage
+- [ ] CLI login command
+- [ ] Token refresh logic
+
+=== Phase 2: Moodle API (Week 2)
+- [ ] Course listing
+- [ ] Assignment listing
+- [ ] Submission download
+- [ ] File download handling
+
+=== Phase 3: Grade Upload (Week 3)
+- [ ] Grade submission
+- [ ] Feedback upload
+- [ ] Batch operations
+- [ ] Error recovery
+
+=== Phase 4: Production (Week 4)
+- [ ] OU instance configuration
+- [ ] Documentation
+- [ ] User testing
+- [ ] Release
+
+== References
+
+- link:https://tools.ietf.org/html/rfc6749[RFC 6749 - OAuth 2.0]
+- link:https://tools.ietf.org/html/rfc7636[RFC 7636 - PKCE]
+- link:https://docs.moodle.org/dev/Web_services_API[Moodle Web Services API]
+- link:https://docs.moodle.org/dev/OAuth_2_API[Moodle OAuth 2 API]
