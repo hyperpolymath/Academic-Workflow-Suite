@@ -1,0 +1,388 @@
+// SPDX-License-Identifier: PMPL-1.0
+// SPDX-FileCopyrightText: 2025 Jonathan D.A. Jewell
+= Proven Library Integration Guide
+:toc: auto
+:toclevels: 3
+
+== Overview
+
+This document tracks integration opportunities for the https://github.com/hyperpolymath/proven[proven library] - a formally verified, crashproof library written in Idris2 with 45 modules and 43 language FFI bindings.
+
+The `proven` library provides mathematically verified safety guarantees for common operations that can crash or behave unexpectedly. By integrating these modules, academic-workflow-suite can achieve stronger runtime guarantees for critical operations.
+
+== Integration Priority Matrix
+
+[cols="1,1,2,1"]
+|===
+| Module | Risk Level | Target Files | Status
+
+| *SafeCrypto*
+| CRITICAL
+| `security.rs`, `crypto.rs`
+| Planned
+
+| *SafeJson*
+| CRITICAL
+| `ipc.rs`, `BackendClient.res`
+| Planned
+
+| *SafeRegex*
+| HIGH
+| `validation.rs`, `security.rs`
+| Planned
+
+| *SafeStateMachine*
+| HIGH
+| `events.rs`
+| Planned
+
+| *SafePath*
+| MEDIUM
+| `sanitization.rs`
+| Planned
+
+| *SafeSQL*
+| MEDIUM
+| `sanitization.rs`
+| Planned
+|===
+
+== Module Integration Details
+
+=== SafeCrypto (CRITICAL)
+
+Formally verified cryptographic operations with guaranteed properties.
+
+==== Current Implementation Locations
+
+[source]
+----
+components/core/src/security.rs:121-165
+  └── SHA3 hashing for student ID anonymization
+  └── Key derivation for document encryption
+
+components/shared/src/crypto.rs:47-232
+  └── AES-256-GCM encryption
+  └── Hash verification routines
+  └── Constant-time comparison
+----
+
+==== Integration Benefits
+
+* *Crash Safety*: Guaranteed no panics on malformed input
+* *Timing Attack Prevention*: Verified constant-time operations
+* *Memory Safety*: Proven buffer bounds checking
+* *Correctness*: Mathematically verified implementations
+
+==== Migration Path
+
+1. Add `proven-rust` FFI crate as dependency
+2. Replace `sha3` crate calls with `SafeCrypto.SHA3`
+3. Replace `aes-gcm` calls with `SafeCrypto.AES256GCM`
+4. Run differential testing against current implementation
+
+=== SafeJson (CRITICAL)
+
+Crashproof JSON parsing and serialization.
+
+==== Current Implementation Locations
+
+[source]
+----
+components/core/src/ipc.rs:131-273
+  └── AI Jail communication protocol
+  └── JSON-RPC message parsing
+  └── Response serialization
+
+components/ai-jail/src/main.rs:181-200
+  └── Request deserialization
+  └── Response construction
+
+components/office-addin/src/BackendClient.res:45-120
+  └── API response parsing
+  └── Request body construction
+----
+
+==== Integration Benefits
+
+* *No Parse Failures*: Guaranteed graceful handling of malformed JSON
+* *Type Safety*: Verified schema compliance
+* *Memory Bounds*: Proven safe string handling
+* *UTF-8 Safety*: Verified encoding handling
+
+==== Migration Path
+
+1. Rust: Replace `serde_json` panic paths with `SafeJson`
+2. ReScript: Create bindings to `proven-js` package
+3. Add schema validation using `SafeJson.Schema`
+
+=== SafeRegex (HIGH)
+
+Crashproof regular expression matching.
+
+==== Current Implementation Locations
+
+[source]
+----
+components/shared/src/security.rs:66-252
+  └── PII detection patterns
+  └── Email validation
+  └── Student ID pattern matching
+
+components/shared/src/validation.rs:17-150
+  └── Input sanitization patterns
+  └── Module code validation
+  └── Assignment ID validation
+----
+
+==== Integration Benefits
+
+* *No ReDoS*: Guaranteed polynomial-time matching
+* *No Crashes*: Safe handling of invalid patterns
+* *Predictable Memory*: Bounded memory usage
+
+==== Migration Path
+
+1. Audit existing regex patterns for ReDoS vulnerability
+2. Replace `regex` crate with `SafeRegex` bindings
+3. Convert patterns to verified subset if needed
+
+=== SafeStateMachine (HIGH)
+
+Verified state machine implementation for event sourcing.
+
+==== Current Implementation Locations
+
+[source]
+----
+components/core/src/events.rs:14-228
+  └── Event sourcing state machine
+  └── TMA marking workflow states
+  └── Document lifecycle states
+  └── Audit trail state transitions
+----
+
+==== Integration Benefits
+
+* *No Invalid States*: Type-level guarantees on state transitions
+* *Determinism*: Verified reproducible state progression
+* *Completeness*: Proven handling of all events
+
+==== Migration Path
+
+1. Define state machine spec in `SafeStateMachine.DSL`
+2. Generate Rust state machine from spec
+3. Verify against current implementation behavior
+4. Replace manual state management
+
+=== SafePath (MEDIUM)
+
+Safe file path operations.
+
+==== Current Implementation Locations
+
+[source]
+----
+components/shared/src/sanitization.rs:123-150
+  └── Document path validation
+  └── Temporary file path construction
+  └── Export path sanitization
+----
+
+==== Integration Benefits
+
+* *Path Traversal Prevention*: Verified containment
+* *Cross-Platform*: Verified OS-agnostic behavior
+* *No Invalid Paths*: Type-level path correctness
+
+=== SafeSQL (MEDIUM)
+
+Safe SQL query construction (if PostgreSQL usage expands).
+
+==== Current Implementation Locations
+
+[source]
+----
+components/shared/src/sanitization.rs:85-122
+  └── Query parameter escaping
+  └── Table name validation
+----
+
+==== Integration Benefits
+
+* *No SQL Injection*: Type-level query safety
+* *Parameter Binding*: Verified safe interpolation
+
+== New Module Opportunities
+
+During integration analysis, the following new module ideas were identified:
+
+=== SafeOffice (New Module Proposal)
+
+Office.js operations with crashproof guarantees.
+
+[source]
+----
+Proposed operations:
+  - SafeDocumentRead: Guaranteed document content access
+  - SafeRangeInsert: Verified text insertion bounds
+  - SafeCommentCreate: Safe comment creation with validation
+  - SafePropertyAccess: Guaranteed custom property handling
+----
+
+*Target*: `components/office-addin/src/*.res`
+
+=== SafePII (New Module Proposal)
+
+Specialized PII detection and anonymization.
+
+[source]
+----
+Proposed operations:
+  - SafeDetect: Pattern-based PII detection with proof of completeness
+  - SafeAnonymize: Verified anonymization with no data leakage
+  - SafeHash: One-way hashing with timing attack resistance
+  - SafeRedact: Document redaction with position preservation
+----
+
+*Target*: `components/shared/src/security.rs`, `components/shared/src/pii.rs`
+
+=== SafeAudit (New Module Proposal)
+
+Audit trail operations with append-only guarantees.
+
+[source]
+----
+Proposed operations:
+  - SafeAppend: Verified append-only log entries
+  - SafeQuery: Time-range queries with guaranteed consistency
+  - SafeVerify: Chain integrity verification
+----
+
+*Target*: `components/core/src/events.rs`, `components/core/src/audit.rs`
+
+== FFI Binding Requirements
+
+=== Rust Bindings
+
+The `proven` library provides `proven-rust` crate with:
+
+* Direct FFI to Idris2 compiled libraries
+* Native Rust types with automatic conversion
+* `no_std` support for embedded contexts
+* Feature flags for selective module inclusion
+
+[source,toml]
+----
+[dependencies]
+proven-rust = { version = "0.1", features = ["crypto", "json", "regex", "path"] }
+----
+
+=== ReScript Bindings
+
+The `proven` library provides `proven-js` package:
+
+[source,json]
+----
+{
+  "imports": {
+    "proven": "npm:proven-js@^0.1"
+  }
+}
+----
+
+ReScript binding file:
+
+[source,rescript]
+----
+// src/bindings/Proven.res
+module SafeJson = {
+  @module("proven") external parse: string => result<Js.Json.t, string> = "SafeJson.parse"
+  @module("proven") external stringify: 'a => string = "SafeJson.stringify"
+}
+----
+
+== Testing Strategy
+
+=== Differential Testing
+
+Run current implementation and `proven` implementation in parallel:
+
+[source,rust]
+----
+#[cfg(test)]
+mod proven_tests {
+    #[test]
+    fn differential_sha3() {
+        let input = b"student_id_A1234567";
+        let current = current_sha3(input);
+        let proven = SafeCrypto::sha3_512(input);
+        assert_eq!(current, proven);
+    }
+}
+----
+
+=== Property-Based Testing
+
+Use QuickCheck to verify behavior matches:
+
+[source,rust]
+----
+#[quickcheck]
+fn prop_json_roundtrip(s: String) -> bool {
+    match SafeJson::parse(&s) {
+        Ok(json) => SafeJson::stringify(&json).is_ok(),
+        Err(_) => true // Invalid JSON gracefully handled
+    }
+}
+----
+
+== Implementation Timeline
+
+[cols="1,2,1"]
+|===
+| Phase | Work | Target
+
+| Phase 1
+| SafeJson + SafeCrypto (critical paths)
+| v0.3.0
+
+| Phase 2
+| SafeRegex + SafePath (security hardening)
+| v0.4.0
+
+| Phase 3
+| SafeStateMachine (event sourcing rewrite)
+| v0.5.0
+
+| Phase 4
+| New modules (SafeOffice, SafePII, SafeAudit)
+| v1.0.0
+|===
+
+== Tracking
+
+=== Integration Checklist
+
+* [ ] Add `proven-rust` to Cargo.toml
+* [ ] Add `proven-js` to deno.json
+* [ ] Create ReScript bindings for proven modules
+* [ ] Replace SHA3 implementation with SafeCrypto
+* [ ] Replace JSON parsing with SafeJson
+* [ ] Replace regex patterns with SafeRegex
+* [ ] Propose new modules to proven library maintainers
+* [ ] Complete differential testing suite
+* [ ] Update documentation with proven guarantees
+
+=== Related Issues
+
+* `proven` repo: Issue for SafeOffice proposal (TODO)
+* `proven` repo: Issue for SafePII proposal (TODO)
+* `proven` repo: Issue for SafeAudit proposal (TODO)
+
+== References
+
+* https://github.com/hyperpolymath/proven[proven library repository]
+* https://idris2.readthedocs.io/[Idris2 documentation]
+* link:ARCHITECTURE.md[Academic Workflow Suite Architecture]
+* link:SECURITY.md[Security Model]

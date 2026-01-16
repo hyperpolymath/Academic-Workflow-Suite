@@ -529,6 +529,48 @@ image:https://img.shields.io/badge/license-Palimpsest--MPL--1.0-purple.svg[Palim
 - *Containerization*: Docker/Podman, gVisor
 - *Cryptography*: SHA3 (FIPS 202), AES-256-GCM
 - *Build System*: Cargo, npm, Make
+- *Verified Libraries*: https://github.com/hyperpolymath/proven[proven] (Idris2 formally verified modules)
+
+=== Proven Library Integration
+
+Academic Workflow Suite integrates with the https://github.com/hyperpolymath/proven[proven library] - a formally verified, crashproof library written in Idris2 with 45 modules and 43 language FFI bindings.
+
+==== Integrated Modules
+
+[cols="1,2,2"]
+|===
+| Module | Purpose | Guarantee
+
+| *SafeCrypto*
+| SHA3-512 anonymization, AES-256-GCM encryption
+| Timing attack resistance, no panics
+
+| *SafeJson*
+| IPC communication, API parsing
+| No parse failures, memory safety
+
+| *SafeRegex*
+| PII detection, input validation
+| No ReDoS, polynomial-time matching
+
+| *SafeStateMachine*
+| Event sourcing, workflow states
+| No invalid states, deterministic
+
+| *SafePath*
+| Document path handling
+| Path traversal prevention
+
+|===
+
+==== Benefits
+
+* *Mathematical Guarantees*: Formally proven correctness
+* *Crash Safety*: No panics or undefined behavior
+* *Security Hardening*: Verified cryptographic implementations
+* *Auditability*: Proofs available for security review
+
+*See*: link:docs/PROVEN_INTEGRATION.adoc[Proven Integration Guide] for implementation details
 
 === Data Flow
 
@@ -917,6 +959,7 @@ aws-core stats export --module TM112 --format csv
 - *[Architecture](docs/ARCHITECTURE.md)* - System architecture and design
 - *[API Reference](docs/API_REFERENCE.md)* - REST API specification
 - *[Security](docs/SECURITY.md)* - Security model and privacy guarantees
+- *[Proven Integration](docs/PROVEN_INTEGRATION.adoc)* - Formally verified library integration
 - *[Development Guide](docs/DEVELOPMENT.md)* - Contributing and development
 - *[CI/CD](docs/CI-CD.md)* - Continuous integration and deployment
 
