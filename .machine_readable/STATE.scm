@@ -1,13 +1,14 @@
-;;  SPDX-License-Identifier: AGPL-3.0-or-later
+;; SPDX-License-Identifier: PMPL-1.0
+;; SPDX-FileCopyrightText: 2025 Jonathan D.A. Jewell
 ;; STATE.scm - Project state for academic-workflow-suite
 ;; Media-Type: application/vnd.state+scm
 
 (state
   (metadata
-    (version "0.1.0")
+    (version "0.2.0")
     (schema-version "1.0")
     (created "2025-11-22")
-    (updated "2026-01-04")
+    (updated "2026-01-16")
     (project "academic-workflow-suite")
     (repo "github.com/hyperpolymath/academic-workflow-suite"))
 
@@ -21,15 +22,19 @@
         (database "LMDB (via Heed)")
         (ai-runtime "ONNX Runtime, llama.cpp")
         (optional-backend "Elixir/Phoenix")
-        (containerization "Docker/Podman, gVisor"))
+        (containerization "nerdctl/podman (OCI-compliant), gVisor")
+        (build-system "just (contractiles pattern)"))
       (cryptography
         (hashing "SHA3-512 (FIPS 202), BLAKE3")
         (encryption "AES-256-GCM")
-        (post-quantum "Dilithium5, Kyber-1024"))))
+        (post-quantum "Dilithium5, Kyber-1024"))
+      (verified-libraries
+        (proven "Idris2 formally verified crashproof modules")
+        (integration-status "planned"))))
 
   (current-position
     (phase "beta")
-    (overall-completion 65)
+    (overall-completion 70)
     (components
       (core-engine
         (status "functional")
@@ -54,7 +59,8 @@
           "Network-isolated container"
           "ONNX Runtime inference"
           "Unix socket IPC"
-          "gVisor sandboxing"))
+          "gVisor sandboxing"
+          "Security hardening (cap_drop, read_only)"))
       (backend
         (status "scaffolded")
         (completion 40)
@@ -77,7 +83,15 @@
           "Cryptographic primitives"
           "Validation utilities"
           "Sanitization"
-          "Logging infrastructure")))
+          "Logging infrastructure"))
+      (build-infrastructure
+        (status "complete")
+        (completion 100)
+        (features
+          "contractiles pattern (Mustfile, Dustfile, justfile)"
+          "container-run.sh wrapper (nerdctl/podman)"
+          "OCI-compliant compose.yaml"
+          "RSR compliance")))
     (working-features
       "TMA document loading and parsing"
       "Student ID anonymization (SHA3-512)"
@@ -86,7 +100,8 @@
       "Event sourcing audit trail"
       "PDF/DOCX export"
       "CLI interface"
-      "Network-isolated AI inference"))
+      "Network-isolated AI inference"
+      "Rootless container deployment"))
 
   (route-to-mvp
     (milestones
@@ -103,38 +118,65 @@
           "CLI interface"
           "Documentation"))
       (v0.2.0
-        (name "Moodle Integration")
+        (name "Container & Build Migration")
+        (status "completed")
+        (date "2026-01-16")
+        (items
+          "Migration from Docker to nerdctl/podman"
+          "OCI-compliant compose.yaml"
+          "Contractiles build system (just/Mustfile/Dustfile)"
+          "container-run.sh runtime wrapper"
+          "Machine-readable metadata (.machine_readable/*.scm)"
+          "Proven library integration planning"
+          "Comprehensive roadmap documentation"))
+      (v0.3.0
+        (name "Privacy Enhancement & LMS Integration")
         (status "in-progress")
         (target "Q1 2026")
         (items
-          "Direct submission download from Moodle"
+          "Proven SafeCrypto integration"
+          "Proven SafeJson integration"
+          "Moodle LMS API integration"
+          "Direct submission download"
           "Automated grade upload"
-          "Batch processing improvements"
-          "Advanced analytics dashboard"))
-      (v0.3.0
-        (name "Collaboration Features")
+          "Batch processing improvements"))
+      (v0.4.0
+        (name "AI Model Ecosystem")
         (status "planned")
         (target "Q2 2026")
         (items
-          "Collaborative marking"
-          "Plagiarism detection (Turnitin API)"
-          "Grade moderation"
-          "Student progress tracking"))
+          "Model abstraction layer"
+          "Fine-tuning pipeline (LoRA/QLoRA)"
+          "Multi-LMS support (Canvas, Blackboard)"
+          "Proven SafeRegex integration"))
+      (v0.5.0
+        (name "Collaborative Marking")
+        (status "planned")
+        (target "Q3 2026")
+        (items
+          "Multi-tutor support"
+          "Cross-tutor consistency metrics"
+          "Moderation workflow"
+          "Proven SafeStateMachine integration"))
       (v1.0.0
         (name "Production Release")
         (status "planned")
         (target "2026")
         (items
-          "Browser extension"
-          "Automated grading for objective questions"
-          "Research analytics"))))
+          "Mobile apps (Tauri 2.0)"
+          "Enterprise SSO (SAML/OIDC)"
+          "Research analytics API"
+          "Full proven library integration"))))
 
   (blockers-and-issues
     (critical)
     (high
       (moodle-api
         (description "Moodle LMS API integration pending")
-        (impact "Cannot auto-download submissions")))
+        (impact "Cannot auto-download submissions"))
+      (proven-ffi
+        (description "proven-rust crate not yet published")
+        (impact "Cannot integrate verified libraries")))
     (medium
       (mobile-app
         (description "Mobile app development not started")
@@ -146,18 +188,41 @@
 
   (critical-next-actions
     (immediate
-      "Complete Moodle OAuth integration"
-      "Implement batch download API")
+      "Publish proven-rust crate to crates.io"
+      "Begin SafeCrypto integration in core")
     (this-week
-      "Design analytics dashboard wireframes"
-      "Write integration tests for Moodle API")
+      "Design Moodle OAuth integration"
+      "Create proven ReScript bindings")
     (this-month
-      "Release v0.2.0 beta"
-      "Begin mobile app architecture"))
+      "Complete proven SafeJson integration"
+      "Release v0.3.0 alpha"))
+
+  (documentation
+    (completed
+      "README.adoc - Project overview"
+      "docs/PROVEN_INTEGRATION.adoc - Verified library integration guide"
+      "docs/ROADMAP.adoc - Strategic directions"
+      ".machine_readable/STATE.scm - Project state"
+      ".machine_readable/META.scm - Architecture decisions"
+      ".machine_readable/ECOSYSTEM.scm - Ecosystem position"
+      ".machine_readable/AGENTIC.scm - AI agent patterns"
+      ".machine_readable/NEUROSYM.scm - Neurosymbolic config"
+      ".machine_readable/PLAYBOOK.scm - Operational runbook")
+    (pending
+      "docs/ARCHITECTURE.md - Detailed architecture"
+      "docs/API_REFERENCE.md - REST API spec"))
 
   (session-history
     (session
       (date "2026-01-04")
       (accomplishments
         "Populated SCM files with comprehensive project metadata"
-        "Documented architecture and component status"))))
+        "Documented architecture and component status"))
+    (session
+      (date "2026-01-16")
+      (accomplishments
+        "Created docs/PROVEN_INTEGRATION.adoc with integration targets"
+        "Added proven module proposals to proven repo"
+        "Created docs/ROADMAP.adoc with 8 strategic directions"
+        "Updated README.adoc with proven integration section"
+        "Updated STATE.scm to reflect v0.2.0 completion"))))
