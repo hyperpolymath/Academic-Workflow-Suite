@@ -22,7 +22,7 @@ image:https://img.shields.io/badge/license-Palimpsest--MPL--1.0-purple.svg[Palim
 === AI-Assisted TMA Marking for OU Associate Lecturers
 
 [![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)](https://github.com/academic-workflow-suite/actions)
-[![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](LICENSE)
+[![License: PMPL 1.0](https://img.shields.io/badge/License-PMPL%201.0-blue.svg)](LICENSE)
 [![Version](https://img.shields.io/badge/version-0.1.0-blue.svg)](https://github.com/academic-workflow-suite/releases)
 image:https://img.shields.io/badge/Idris-Inside-blueviolet?style=flat&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iI2ZmZiIgZD0iTTEyIDJMMyA3djEwbDkgNSA5LTVWN2wtOS01em0wIDJsNyA0djhsLTcgNC03LTRWOGw3LTR6Ii8+PC9zdmc+[Idris Inside,link="https://github.com/hyperpolymath/proven"]
 [![Docker](https://img.shields.io/badge/docker-ready-blue.svg)](https://hub.docker.com/r/aws-edu/core)
@@ -1420,29 +1420,29 @@ We are committed to providing a welcoming and inclusive environment. All contrib
 
 === Software License
 
-This project is licensed under the *GNU Affero General Public License v3.0 (AGPL-3.0)*.
+This project is licensed under the *Palimpsest-MPL License v3.0 (PMPL-1.0)*.
 
 ```
 Academic Workflow Suite
 Copyright (C) 2025 Academic Workflow Suite Contributors
 
 This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU Affero General Public License as published
+it under the terms of the Palimpsest-MPL License as published
 by the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-GNU Affero General Public License for more details.
+Palimpsest-MPL License for more details.
 
-You should have received a copy of the GNU Affero General Public License
+You should have received a copy of the Palimpsest-MPL License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 ```
 
 *Why AGPL?*
 
-We chose AGPL-3.0 to ensure that:
+We chose PMPL-1.0 to ensure that:
 
 1. *AWS remains free and open source* for all users
 2. *Improvements are shared with the community* (even for web services)
@@ -1488,7 +1488,7 @@ https://github.com/academic-workflow-suite
   year         = 2025,
   version      = {0.1.0},
   url          = {https://github.com/academic-workflow-suite},
-  license      = {AGPL-3.0},
+  license      = {PMPL-1.0},
   keywords     = {education, AI, privacy, marking, assessment}
 }
 ```
