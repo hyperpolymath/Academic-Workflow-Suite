@@ -32,8 +32,11 @@ async fn main() -> std::io::Result<()> {
     info!("Server will bind to: {}", bind_address);
 
     // Initialize event store
-    let event_store = aws_core::events::EventStore::new(&config.database.path)
-        .expect("Failed to initialize event store");
+    let event_store = aws_core::events::LmdbEventStore::new(
+        &config.database.path,
+        Some(config.database.max_size_mb * 1024 * 1024),
+    )
+    .expect("Failed to initialize event store");
     let event_store = web::Data::new(event_store);
 
     // Initialize GraphQL schema

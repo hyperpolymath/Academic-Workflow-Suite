@@ -62,7 +62,7 @@ pub struct DocumentMetadata {
 
 /// POST /api/v1/documents - Load and parse a document
 pub async fn load_document(
-    event_store: web::Data<EventStore>,
+    event_store: web::Data<aws_core::events::LmdbEventStore>,
     request: web::Json<LoadDocumentRequest>,
 ) -> impl Responder {
     tracing::info!(
@@ -144,7 +144,7 @@ pub async fn load_document(
 
 /// GET /api/v1/documents/{document_id} - Get document details
 pub async fn get_document(
-    event_store: web::Data<EventStore>,
+    event_store: web::Data<aws_core::events::LmdbEventStore>,
     document_id: web::Path<Uuid>,
 ) -> impl Responder {
     tracing::info!("Retrieving document: {}", document_id);
@@ -164,7 +164,7 @@ pub async fn get_document(
 
 /// DELETE /api/v1/documents/{document_id} - Delete a document
 pub async fn delete_document(
-    event_store: web::Data<EventStore>,
+    event_store: web::Data<aws_core::events::LmdbEventStore>,
     document_id: web::Path<Uuid>,
 ) -> impl Responder {
     tracing::info!("Deleting document: {}", document_id);
@@ -192,7 +192,7 @@ pub struct ExportDocumentRequest {
 
 /// POST /api/v1/documents/{document_id}/export - Export document with feedback
 pub async fn export_document(
-    event_store: web::Data<EventStore>,
+    event_store: web::Data<aws_core::events::LmdbEventStore>,
     document_id: web::Path<Uuid>,
     request: web::Json<ExportDocumentRequest>,
 ) -> impl Responder {
@@ -215,7 +215,7 @@ pub async fn export_document(
 
 /// GET /api/v1/documents/{document_id}/student - Get student info (anonymized)
 pub async fn get_student_info(
-    event_store: web::Data<EventStore>,
+    event_store: web::Data<aws_core::events::LmdbEventStore>,
     document_id: web::Path<Uuid>,
 ) -> impl Responder {
     tracing::info!("Retrieving student info for document: {}", document_id);

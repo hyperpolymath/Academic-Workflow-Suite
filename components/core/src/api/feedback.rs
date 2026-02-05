@@ -61,7 +61,7 @@ pub struct FeedbackUpdate {
 
 /// GET /api/v1/feedback/{analysis_id}
 pub async fn get_feedback(
-    event_store: web::Data<EventStore>,
+    event_store: web::Data<aws_core::events::LmdbEventStore>,
     analysis_id: web::Path<Uuid>,
 ) -> impl Responder {
     tracing::info!("Retrieving feedback for analysis: {}", analysis_id);
@@ -81,13 +81,14 @@ pub async fn get_feedback(
 
 /// PUT /api/v1/feedback/{analysis_id}
 pub async fn update_feedback(
-    event_store: web::Data<EventStore>,
+    event_store: web::Data<aws_core::events::LmdbEventStore>,
     analysis_id: web::Path<Uuid>,
     request: web::Json<UpdateFeedbackRequest>,
 ) -> impl Responder {
     tracing::info!("Updating feedback for analysis: {}", analysis_id);
 
-    if let Err(e) = event_store.store_feedback_updated_event(*analysis_id, &request.updates) {
+    // Store that feedback was updated by tutor
+    if let Err(e) = event_store.store_feedback_updated_event(*analysis_id, true) {
         return HttpResponse::InternalServerError().json(ErrorResponse::new(
             "StorageError",
             format!("Failed to update feedback: {}", e),
@@ -102,7 +103,7 @@ pub async fn update_feedback(
 
 /// POST /api/v1/feedback/{analysis_id}/accept
 pub async fn accept_feedback(
-    event_store: web::Data<EventStore>,
+    event_store: web::Data<aws_core::events::LmdbEventStore>,
     analysis_id: web::Path<Uuid>,
 ) -> impl Responder {
     tracing::info!("Accepting feedback for analysis: {}", analysis_id);
@@ -122,7 +123,7 @@ pub async fn accept_feedback(
 
 /// POST /api/v1/feedback/{analysis_id}/reject
 pub async fn reject_feedback(
-    event_store: web::Data<EventStore>,
+    event_store: web::Data<aws_core::events::LmdbEventStore>,
     analysis_id: web::Path<Uuid>,
 ) -> impl Responder {
     tracing::info!("Rejecting feedback for analysis: {}", analysis_id);

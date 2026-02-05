@@ -77,7 +77,7 @@ pub struct ScoreItem {
 
 /// POST /api/v1/analyze - Analyze a document
 pub async fn analyze_document(
-    event_store: web::Data<EventStore>,
+    event_store: web::Data<aws_core::events::LmdbEventStore>,
     request: web::Json<AnalyzeRequest>,
 ) -> impl Responder {
     tracing::info!(
@@ -152,7 +152,7 @@ pub async fn analyze_document(
 
 /// GET /api/v1/analyze/{analysis_id} - Get analysis result
 pub async fn get_analysis(
-    event_store: web::Data<EventStore>,
+    event_store: web::Data<aws_core::events::LmdbEventStore>,
     analysis_id: web::Path<Uuid>,
 ) -> impl Responder {
     tracing::info!("Retrieving analysis: {}", analysis_id);
@@ -172,7 +172,7 @@ pub async fn get_analysis(
 
 /// GET /api/v1/analyze/{analysis_id}/status - Get analysis status only
 pub async fn get_analysis_status(
-    event_store: web::Data<EventStore>,
+    event_store: web::Data<aws_core::events::LmdbEventStore>,
     analysis_id: web::Path<Uuid>,
 ) -> impl Responder {
     tracing::info!("Checking analysis status: {}", analysis_id);

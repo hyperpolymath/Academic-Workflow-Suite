@@ -74,7 +74,7 @@ pub struct ListRubricsQuery {
 
 /// GET /api/v1/rubrics
 pub async fn list_rubrics(
-    event_store: web::Data<EventStore>,
+    event_store: web::Data<aws_core::events::LmdbEventStore>,
     query: web::Query<ListRubricsQuery>,
 ) -> impl Responder {
     tracing::info!("Listing rubrics (module: {:?}, assignment: {:?})", query.module, query.assignment);
@@ -95,7 +95,7 @@ pub async fn list_rubrics(
 
 /// POST /api/v1/rubrics
 pub async fn create_rubric(
-    event_store: web::Data<EventStore>,
+    event_store: web::Data<aws_core::events::LmdbEventStore>,
     request: web::Json<CreateRubricRequest>,
 ) -> impl Responder {
     tracing::info!("Creating rubric: {} ({}/{})", request.name, request.module, request.assignment);
@@ -112,7 +112,7 @@ pub async fn create_rubric(
         updated_at: None,
     };
 
-    if let Err(e) = event_store.store_rubric_created_event(&rubric) {
+    if let Err(e) = event_store.store_rubric_created_event(rubric.id, &rubric.module, &rubric.assignment) {
         return HttpResponse::InternalServerError().json(ErrorResponse::new(
             "StorageError",
             format!("Failed to create rubric: {}", e),
@@ -124,7 +124,7 @@ pub async fn create_rubric(
 
 /// GET /api/v1/rubrics/{rubric_id}
 pub async fn get_rubric(
-    event_store: web::Data<EventStore>,
+    event_store: web::Data<aws_core::events::LmdbEventStore>,
     rubric_id: web::Path<Uuid>,
 ) -> impl Responder {
     tracing::info!("Retrieving rubric: {}", rubric_id);
@@ -144,13 +144,13 @@ pub async fn get_rubric(
 
 /// PUT /api/v1/rubrics/{rubric_id}
 pub async fn update_rubric(
-    event_store: web::Data<EventStore>,
+    event_store: web::Data<aws_core::events::LmdbEventStore>,
     rubric_id: web::Path<Uuid>,
     request: web::Json<UpdateRubricRequest>,
 ) -> impl Responder {
     tracing::info!("Updating rubric: {}", rubric_id);
 
-    if let Err(e) = event_store.store_rubric_updated_event(*rubric_id, &request) {
+    if let Err(e) = event_store.store_rubric_updated_event(*rubric_id) {
         return HttpResponse::InternalServerError().json(ErrorResponse::new(
             "StorageError",
             format!("Failed to update rubric: {}", e),
@@ -165,7 +165,7 @@ pub async fn update_rubric(
 
 /// DELETE /api/v1/rubrics/{rubric_id}
 pub async fn delete_rubric(
-    event_store: web::Data<EventStore>,
+    event_store: web::Data<aws_core::events::LmdbEventStore>,
     rubric_id: web::Path<Uuid>,
 ) -> impl Responder {
     tracing::info!("Deleting rubric: {}", rubric_id);

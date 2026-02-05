@@ -9,13 +9,13 @@ use async_graphql::{
 use async_graphql_actix_web::{GraphQLRequest, GraphQLResponse};
 use uuid::Uuid;
 
-use aws_core::events::EventStore;
+use aws_core::events::LmdbEventStore;
 
 // GraphQL Schema Type
 pub type AWSchema = Schema<QueryRoot, MutationRoot, EmptySubscription>;
 
 // Create the GraphQL schema
-pub fn create_schema(event_store: web::Data<EventStore>) -> AWSchema {
+pub fn create_schema(event_store: web::Data<LmdbEventStore>) -> AWSchema {
     Schema::build(QueryRoot, MutationRoot, EmptySubscription)
         .data(event_store.into_inner())
         .finish()
@@ -37,7 +37,7 @@ impl QueryRoot {
 
     /// Get a document by ID
     async fn document(&self, ctx: &Context<'_>, id: String) -> async_graphql::Result<Option<DocumentGQL>> {
-        let event_store = ctx.data::<EventStore>()?;
+        let event_store = ctx.data::<LmdbEventStore>()?;
         let uuid = Uuid::parse_str(&id)?;
 
         // TODO: Implement actual document retrieval from event store
@@ -52,7 +52,7 @@ impl QueryRoot {
         assignment: Option<String>,
         limit: Option<i32>,
     ) -> async_graphql::Result<Vec<RubricGQL>> {
-        let _event_store = ctx.data::<EventStore>()?;
+        let _event_store = ctx.data::<LmdbEventStore>()?;
 
         // TODO: Implement actual rubric listing from event store
         Ok(vec![])
@@ -60,7 +60,7 @@ impl QueryRoot {
 
     /// Get analysis result by ID
     async fn analysis(&self, ctx: &Context<'_>, id: String) -> async_graphql::Result<Option<AnalysisGQL>> {
-        let _event_store = ctx.data::<EventStore>()?;
+        let _event_store = ctx.data::<LmdbEventStore>()?;
         let _uuid = Uuid::parse_str(&id)?;
 
         // TODO: Implement actual analysis retrieval from event store
@@ -81,7 +81,7 @@ impl MutationRoot {
         module: String,
         assignment: String,
     ) -> async_graphql::Result<LoadDocumentResult> {
-        let _event_store = ctx.data::<EventStore>()?;
+        let _event_store = ctx.data::<LmdbEventStore>()?;
 
         // TODO: Implement actual document loading
         Ok(LoadDocumentResult {
@@ -98,7 +98,7 @@ impl MutationRoot {
         document_id: String,
         rubric_id: String,
     ) -> async_graphql::Result<AnalyzeResult> {
-        let _event_store = ctx.data::<EventStore>()?;
+        let _event_store = ctx.data::<LmdbEventStore>()?;
         let _doc_uuid = Uuid::parse_str(&document_id)?;
         let _rubric_uuid = Uuid::parse_str(&rubric_id)?;
 
@@ -117,7 +117,7 @@ impl MutationRoot {
         analysis_id: String,
         updates: Vec<FeedbackUpdateInput>,
     ) -> async_graphql::Result<UpdateFeedbackResult> {
-        let _event_store = ctx.data::<EventStore>()?;
+        let _event_store = ctx.data::<LmdbEventStore>()?;
         let _uuid = Uuid::parse_str(&analysis_id)?;
 
         // TODO: Implement actual feedback updating
@@ -133,7 +133,7 @@ impl MutationRoot {
         ctx: &Context<'_>,
         input: CreateRubricInput,
     ) -> async_graphql::Result<RubricGQL> {
-        let _event_store = ctx.data::<EventStore>()?;
+        let _event_store = ctx.data::<LmdbEventStore>()?;
 
         // TODO: Implement actual rubric creation
         Ok(RubricGQL {
