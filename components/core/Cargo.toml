@@ -42,7 +42,7 @@ uuid = { version = "1.19", features = ["v4", "serde"] }
 regex = "1.10"
 hex = "0.4"
 chrono = { version = "0.4", features = ["serde"] }
-bytes = "1.8"
+bytes = "1.11"
 futures = "0.3"
 
 # Logging
