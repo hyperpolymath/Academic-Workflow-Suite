@@ -91,6 +91,83 @@ pub trait EventStore: Send + Sync {
 
     /// Get events by type
     fn get_events_by_type(&self, event_type_name: &str) -> Result<Vec<Event>>;
+
+    // High-level domain methods (implemented via events)
+
+    /// Store a document loaded event
+    fn store_document_loaded_event(
+        &self,
+        document_id: Uuid,
+        student_id_hash: &str,
+        module: &str,
+        assignment: &str,
+        parsed: &crate::tma::ParsedDocument,
+    ) -> Result<()>;
+
+    /// Get document by ID
+    fn get_document(&self, document_id: Uuid) -> Result<Option<serde_json::Value>>;
+
+    /// Delete document
+    fn delete_document(&self, document_id: Uuid) -> Result<()>;
+
+    /// Get student info for document
+    fn get_student_info(&self, document_id: Uuid) -> Result<Option<serde_json::Value>>;
+
+    /// Store analysis queued event
+    fn store_analysis_queued_event(
+        &self,
+        analysis_id: Uuid,
+        document_id: Uuid,
+        rubric_id: Uuid,
+        questions: &[u32],
+    ) -> Result<()>;
+
+    /// Get analysis by ID
+    fn get_analysis(&self, analysis_id: Uuid) -> Result<Option<serde_json::Value>>;
+
+    /// Get analysis status
+    fn get_analysis_status(&self, analysis_id: Uuid) -> Result<Option<String>>;
+
+    /// Get feedback for analysis
+    fn get_feedback(&self, analysis_id: Uuid) -> Result<Option<serde_json::Value>>;
+
+    /// Store feedback updated event
+    fn store_feedback_updated_event(
+        &self,
+        analysis_id: Uuid,
+        updates: &[crate::api::feedback::FeedbackUpdate],
+    ) -> Result<()>;
+
+    /// Store feedback accepted event
+    fn store_feedback_accepted_event(&self, analysis_id: Uuid) -> Result<()>;
+
+    /// Store feedback rejected event
+    fn store_feedback_rejected_event(&self, analysis_id: Uuid) -> Result<()>;
+
+    /// Get rubric by ID
+    fn get_rubric(&self, rubric_id: Uuid) -> Result<Option<crate::api::rubrics::Rubric>>;
+
+    /// List rubrics
+    fn list_rubrics(
+        &self,
+        module: Option<&str>,
+        assignment: Option<&str>,
+        limit: Option<usize>,
+        offset: Option<usize>,
+    ) -> Result<Vec<crate::api::rubrics::Rubric>>;
+
+    /// Store rubric created event
+    fn store_rubric_created_event(&self, rubric: &crate::api::rubrics::Rubric) -> Result<()>;
+
+    /// Store rubric updated event
+    fn store_rubric_updated_event(
+        &self,
+        rubric_id: Uuid,
+        request: &crate::api::rubrics::UpdateRubricRequest,
+    ) -> Result<()>;
+
+    /// Delete rubric
+    fn delete_rubric(&self, rubric_id: Uuid) -> Result<()>;
 }
 
 /// LMDB-based event store implementation
@@ -201,6 +278,208 @@ impl EventStore for LmdbEventStore {
             .collect();
 
         Ok(filtered)
+    }
+
+    // High-level domain method implementations
+
+    fn store_document_loaded_event(
+        &self,
+        document_id: Uuid,
+        student_id_hash: &str,
+        module: &str,
+        assignment: &str,
+        _parsed: &crate::tma::ParsedDocument,
+    ) -> Result<()> {
+        let event = Event::new(
+            EventType::TMASubmitted {
+                student_id: student_id_hash.to_string(),
+                module_code: module.to_string(),
+                question_number: 1,
+                content_hash: document_id.to_string(),
+            },
+            document_id.to_string(),
+            1,
+        );
+        self.append(event)
+    }
+
+    fn get_document(&self, document_id: Uuid) -> Result<Option<serde_json::Value>> {
+        let events = self.get_events(&document_id.to_string())?;
+        if events.is_empty() {
+            return Ok(None);
+        }
+        // TODO: Rebuild document state from events
+        Ok(Some(serde_json::json!({
+            "id": document_id,
+            "status": "loaded"
+        })))
+    }
+
+    fn delete_document(&self, _document_id: Uuid) -> Result<()> {
+        // TODO: Store deletion event
+        Ok(())
+    }
+
+    fn get_student_info(&self, document_id: Uuid) -> Result<Option<serde_json::Value>> {
+        let events = self.get_events(&document_id.to_string())?;
+        for event in events {
+            if let EventType::TMASubmitted { student_id, .. } = event.event_type {
+                return Ok(Some(serde_json::json!({
+                    "student_id_hash": student_id,
+                    "document_id": document_id
+                })));
+            }
+        }
+        Ok(None)
+    }
+
+    fn store_analysis_queued_event(
+        &self,
+        analysis_id: Uuid,
+        document_id: Uuid,
+        rubric_id: Uuid,
+        _questions: &[u32],
+    ) -> Result<()> {
+        let event = Event::new(
+            EventType::FeedbackGenerated {
+                tma_id: document_id,
+                feedback: format!("Analysis {} queued for rubric {}", analysis_id, rubric_id),
+                rubric_scores: vec![],
+            },
+            analysis_id.to_string(),
+            1,
+        );
+        self.append(event)
+    }
+
+    fn get_analysis(&self, analysis_id: Uuid) -> Result<Option<serde_json::Value>> {
+        let events = self.get_events(&analysis_id.to_string())?;
+        if events.is_empty() {
+            return Ok(None);
+        }
+        Ok(Some(serde_json::json!({
+            "analysis_id": analysis_id,
+            "status": "queued"
+        })))
+    }
+
+    fn get_analysis_status(&self, analysis_id: Uuid) -> Result<Option<String>> {
+        let events = self.get_events(&analysis_id.to_string())?;
+        if events.is_empty() {
+            return Ok(None);
+        }
+        Ok(Some("queued".to_string()))
+    }
+
+    fn get_feedback(&self, analysis_id: Uuid) -> Result<Option<serde_json::Value>> {
+        let events = self.get_events(&analysis_id.to_string())?;
+        if events.is_empty() {
+            return Ok(None);
+        }
+        Ok(Some(serde_json::json!({
+            "analysis_id": analysis_id,
+            "feedback_items": []
+        })))
+    }
+
+    fn store_feedback_updated_event(
+        &self,
+        analysis_id: Uuid,
+        _updates: &[crate::api::feedback::FeedbackUpdate],
+    ) -> Result<()> {
+        let event = Event::new(
+            EventType::FeedbackGenerated {
+                tma_id: analysis_id,
+                feedback: "Feedback updated".to_string(),
+                rubric_scores: vec![],
+            },
+            analysis_id.to_string(),
+            2,
+        );
+        self.append(event)
+    }
+
+    fn store_feedback_accepted_event(&self, analysis_id: Uuid) -> Result<()> {
+        let event = Event::new(
+            EventType::GradeAssigned {
+                tma_id: analysis_id,
+                grade: 0.0,
+                max_grade: 100.0,
+            },
+            analysis_id.to_string(),
+            3,
+        );
+        self.append(event)
+    }
+
+    fn store_feedback_rejected_event(&self, analysis_id: Uuid) -> Result<()> {
+        let event = Event::new(
+            EventType::GradeAssigned {
+                tma_id: analysis_id,
+                grade: 0.0,
+                max_grade: 100.0,
+            },
+            analysis_id.to_string(),
+            3,
+        );
+        self.append(event)
+    }
+
+    fn get_rubric(&self, rubric_id: Uuid) -> Result<Option<crate::api::rubrics::Rubric>> {
+        let events = self.get_events(&rubric_id.to_string())?;
+        if events.is_empty() {
+            return Ok(None);
+        }
+        // TODO: Rebuild rubric from events
+        Ok(None)
+    }
+
+    fn list_rubrics(
+        &self,
+        _module: Option<&str>,
+        _assignment: Option<&str>,
+        _limit: Option<usize>,
+        _offset: Option<usize>,
+    ) -> Result<Vec<crate::api::rubrics::Rubric>> {
+        // TODO: Implement rubric listing from events
+        Ok(vec![])
+    }
+
+    fn store_rubric_created_event(&self, rubric: &crate::api::rubrics::Rubric) -> Result<()> {
+        let event = Event::new(
+            EventType::TMASubmitted {
+                student_id: format!("rubric::{}", rubric.id),
+                module_code: rubric.module.clone(),
+                question_number: 0,
+                content_hash: rubric.id.to_string(),
+            },
+            rubric.id.to_string(),
+            1,
+        );
+        self.append(event)
+    }
+
+    fn store_rubric_updated_event(
+        &self,
+        rubric_id: Uuid,
+        _request: &crate::api::rubrics::UpdateRubricRequest,
+    ) -> Result<()> {
+        let event = Event::new(
+            EventType::TMASubmitted {
+                student_id: format!("rubric::update::{}", rubric_id),
+                module_code: "update".to_string(),
+                question_number: 0,
+                content_hash: rubric_id.to_string(),
+            },
+            rubric_id.to_string(),
+            2,
+        );
+        self.append(event)
+    }
+
+    fn delete_rubric(&self, _rubric_id: Uuid) -> Result<()> {
+        // TODO: Store deletion event
+        Ok(())
     }
 }
 
