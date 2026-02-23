@@ -2,8 +2,9 @@
 name = "awap-rust-client"
 version = "0.1.0"
 edition = "2021"
-authors = ["Academic Workflow Suite Contributors"]
+authors = ["Jonathan D.A. Jewell <jonathan.jewell@open.ac.uk>"]
 description = "Rust client for Academic Workflow API"
+license = "PMPL-1.0-or-later"
 
 [dependencies]
 tokio = { version = "1.35", features = ["full"] }
