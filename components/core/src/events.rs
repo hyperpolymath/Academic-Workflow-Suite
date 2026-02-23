@@ -39,6 +39,56 @@ pub enum EventType {
         anonymized_id: String,
         timestamp: DateTime<Utc>,
     },
+    /// Document loaded event
+    DocumentLoaded {
+        document_id: Uuid,
+        student_id_hash: String,
+        module: String,
+        assignment: String,
+        word_count: usize,
+    },
+    /// Document deleted
+    DocumentDeleted {
+        document_id: Uuid,
+    },
+    /// Analysis queued
+    AnalysisQueued {
+        analysis_id: Uuid,
+        document_id: Uuid,
+        rubric_id: Uuid,
+    },
+    /// Analysis completed
+    AnalysisCompleted {
+        analysis_id: Uuid,
+        status: String,
+    },
+    /// Feedback updated
+    FeedbackUpdated {
+        analysis_id: Uuid,
+        tutor_modified: bool,
+    },
+    /// Feedback accepted
+    FeedbackAccepted {
+        analysis_id: Uuid,
+    },
+    /// Feedback rejected
+    FeedbackRejected {
+        analysis_id: Uuid,
+    },
+    /// Rubric created
+    RubricCreated {
+        rubric_id: Uuid,
+        module: String,
+        assignment: String,
+    },
+    /// Rubric updated
+    RubricUpdated {
+        rubric_id: Uuid,
+    },
+    /// Rubric deleted
+    RubricDeleted {
+        rubric_id: Uuid,
+    },
 }
 
 /// Rubric scoring component
@@ -91,6 +141,84 @@ pub trait EventStore: Send + Sync {
 
     /// Get events by type
     fn get_events_by_type(&self, event_type_name: &str) -> Result<Vec<Event>>;
+
+    // High-level domain methods (implemented via events)
+
+    /// Store a document loaded event
+    fn store_document_loaded_event(
+        &self,
+        document_id: Uuid,
+        student_id_hash: &str,
+        module: &str,
+        assignment: &str,
+        parsed: &crate::tma::ParsedDocument,
+    ) -> Result<()>;
+
+    /// Get document by ID
+    fn get_document(&self, document_id: Uuid) -> Result<Option<serde_json::Value>>;
+
+    /// Delete document
+    fn delete_document(&self, document_id: Uuid) -> Result<()>;
+
+    /// Get student info for document
+    fn get_student_info(&self, document_id: Uuid) -> Result<Option<serde_json::Value>>;
+
+    /// Store analysis queued event
+    fn store_analysis_queued_event(
+        &self,
+        analysis_id: Uuid,
+        document_id: Uuid,
+        rubric_id: Uuid,
+        questions: &[u32],
+    ) -> Result<()>;
+
+    /// Get analysis by ID
+    fn get_analysis(&self, analysis_id: Uuid) -> Result<Option<serde_json::Value>>;
+
+    /// Get analysis status
+    fn get_analysis_status(&self, analysis_id: Uuid) -> Result<Option<String>>;
+
+    /// Get feedback for analysis
+    fn get_feedback(&self, analysis_id: Uuid) -> Result<Option<serde_json::Value>>;
+
+    /// Store feedback updated event
+    fn store_feedback_updated_event(
+        &self,
+        analysis_id: Uuid,
+        tutor_modified: bool,
+    ) -> Result<()>;
+
+    /// Store feedback accepted event
+    fn store_feedback_accepted_event(&self, analysis_id: Uuid) -> Result<()>;
+
+    /// Store feedback rejected event
+    fn store_feedback_rejected_event(&self, analysis_id: Uuid) -> Result<()>;
+
+    /// Get rubric by ID
+    fn get_rubric(&self, rubric_id: Uuid) -> Result<Option<serde_json::Value>>;
+
+    /// List rubrics
+    fn list_rubrics(
+        &self,
+        module: Option<&str>,
+        assignment: Option<&str>,
+        limit: Option<usize>,
+        offset: Option<usize>,
+    ) -> Result<Vec<serde_json::Value>>;
+
+    /// Store rubric created event
+    fn store_rubric_created_event(
+        &self,
+        rubric_id: Uuid,
+        module: &str,
+        assignment: &str,
+    ) -> Result<()>;
+
+    /// Store rubric updated event
+    fn store_rubric_updated_event(&self, rubric_id: Uuid) -> Result<()>;
+
+    /// Delete rubric
+    fn delete_rubric(&self, rubric_id: Uuid) -> Result<()>;
 }
 
 /// LMDB-based event store implementation
@@ -195,12 +323,388 @@ impl EventStore for LmdbEventStore {
                     (EventType::FeedbackGenerated { .. }, "FeedbackGenerated") => true,
                     (EventType::GradeAssigned { .. }, "GradeAssigned") => true,
                     (EventType::StudentAnonymized { .. }, "StudentAnonymized") => true,
+                    (EventType::DocumentLoaded { .. }, "DocumentLoaded") => true,
+                    (EventType::DocumentDeleted { .. }, "DocumentDeleted") => true,
+                    (EventType::AnalysisQueued { .. }, "AnalysisQueued") => true,
+                    (EventType::AnalysisCompleted { .. }, "AnalysisCompleted") => true,
+                    (EventType::FeedbackUpdated { .. }, "FeedbackUpdated") => true,
+                    (EventType::FeedbackAccepted { .. }, "FeedbackAccepted") => true,
+                    (EventType::FeedbackRejected { .. }, "FeedbackRejected") => true,
+                    (EventType::RubricCreated { .. }, "RubricCreated") => true,
+                    (EventType::RubricUpdated { .. }, "RubricUpdated") => true,
+                    (EventType::RubricDeleted { .. }, "RubricDeleted") => true,
                     _ => false,
                 }
             })
             .collect();
 
         Ok(filtered)
+    }
+
+    // High-level domain method implementations
+
+    fn store_document_loaded_event(
+        &self,
+        document_id: Uuid,
+        student_id_hash: &str,
+        module: &str,
+        assignment: &str,
+        parsed: &crate::tma::ParsedDocument,
+    ) -> Result<()> {
+        let version = self.get_events(&document_id.to_string())?.len() as u64 + 1;
+        let event = Event::new(
+            EventType::DocumentLoaded {
+                document_id,
+                student_id_hash: student_id_hash.to_string(),
+                module: module.to_string(),
+                assignment: assignment.to_string(),
+                word_count: parsed.total_word_count(),
+            },
+            document_id.to_string(),
+            version,
+        );
+        self.append(event)
+    }
+
+    fn get_document(&self, document_id: Uuid) -> Result<Option<serde_json::Value>> {
+        let events = self.get_events(&document_id.to_string())?;
+        if events.is_empty() {
+            return Ok(None);
+        }
+
+        // Rebuild document state from events
+        let mut doc_data = serde_json::json!({
+            "id": document_id,
+            "status": "unknown"
+        });
+
+        for event in events {
+            match &event.event_type {
+                EventType::DocumentLoaded {
+                    student_id_hash,
+                    module,
+                    assignment,
+                    word_count,
+                    ..
+                } => {
+                    doc_data["status"] = "loaded".into();
+                    doc_data["student_id_hash"] = student_id_hash.clone().into();
+                    doc_data["module"] = module.clone().into();
+                    doc_data["assignment"] = assignment.clone().into();
+                    doc_data["word_count"] = (*word_count).into();
+                    doc_data["loaded_at"] = event.timestamp.to_rfc3339().into();
+                }
+                EventType::DocumentDeleted { .. } => {
+                    doc_data["status"] = "deleted".into();
+                    doc_data["deleted_at"] = event.timestamp.to_rfc3339().into();
+                }
+                _ => {}
+            }
+        }
+
+        Ok(Some(doc_data))
+    }
+
+    fn delete_document(&self, document_id: Uuid) -> Result<()> {
+        let version = self.get_events(&document_id.to_string())?.len() as u64 + 1;
+        let event = Event::new(
+            EventType::DocumentDeleted { document_id },
+            document_id.to_string(),
+            version,
+        );
+        self.append(event)
+    }
+
+    fn get_student_info(&self, document_id: Uuid) -> Result<Option<serde_json::Value>> {
+        let events = self.get_events(&document_id.to_string())?;
+        for event in events {
+            match &event.event_type {
+                EventType::DocumentLoaded { student_id_hash, .. } => {
+                    return Ok(Some(serde_json::json!({
+                        "student_id_hash": student_id_hash,
+                        "document_id": document_id
+                    })));
+                }
+                _ => {}
+            }
+        }
+        Ok(None)
+    }
+
+    fn store_analysis_queued_event(
+        &self,
+        analysis_id: Uuid,
+        document_id: Uuid,
+        rubric_id: Uuid,
+        _questions: &[u32],
+    ) -> Result<()> {
+        let version = self.get_events(&analysis_id.to_string())?.len() as u64 + 1;
+        let event = Event::new(
+            EventType::AnalysisQueued {
+                analysis_id,
+                document_id,
+                rubric_id,
+            },
+            analysis_id.to_string(),
+            version,
+        );
+        self.append(event)
+    }
+
+    fn get_analysis(&self, analysis_id: Uuid) -> Result<Option<serde_json::Value>> {
+        let events = self.get_events(&analysis_id.to_string())?;
+        if events.is_empty() {
+            return Ok(None);
+        }
+
+        // Rebuild analysis state from events
+        let mut analysis_data = serde_json::json!({
+            "analysis_id": analysis_id,
+            "status": "unknown"
+        });
+
+        for event in events {
+            match &event.event_type {
+                EventType::AnalysisQueued {
+                    document_id,
+                    rubric_id,
+                    ..
+                } => {
+                    analysis_data["status"] = "queued".into();
+                    analysis_data["document_id"] = document_id.to_string().into();
+                    analysis_data["rubric_id"] = rubric_id.to_string().into();
+                    analysis_data["queued_at"] = event.timestamp.to_rfc3339().into();
+                }
+                EventType::AnalysisCompleted { status, .. } => {
+                    analysis_data["status"] = status.clone().into();
+                    analysis_data["completed_at"] = event.timestamp.to_rfc3339().into();
+                }
+                _ => {}
+            }
+        }
+
+        Ok(Some(analysis_data))
+    }
+
+    fn get_analysis_status(&self, analysis_id: Uuid) -> Result<Option<String>> {
+        let events = self.get_events(&analysis_id.to_string())?;
+        if events.is_empty() {
+            return Ok(None);
+        }
+
+        // Find the most recent status from events
+        let mut status = "queued".to_string();
+        for event in events {
+            match &event.event_type {
+                EventType::AnalysisQueued { .. } => {
+                    status = "queued".to_string();
+                }
+                EventType::AnalysisCompleted { status: s, .. } => {
+                    status = s.clone();
+                }
+                _ => {}
+            }
+        }
+
+        Ok(Some(status))
+    }
+
+    fn get_feedback(&self, analysis_id: Uuid) -> Result<Option<serde_json::Value>> {
+        let events = self.get_events(&analysis_id.to_string())?;
+        if events.is_empty() {
+            return Ok(None);
+        }
+
+        // Rebuild feedback state from events
+        let mut feedback_data = serde_json::json!({
+            "analysis_id": analysis_id,
+            "status": "pending",
+            "feedback_items": [],
+            "tutor_modified": false
+        });
+
+        for event in events {
+            match &event.event_type {
+                EventType::AnalysisCompleted { .. } => {
+                    feedback_data["generated_at"] = event.timestamp.to_rfc3339().into();
+                }
+                EventType::FeedbackUpdated { tutor_modified, .. } => {
+                    feedback_data["tutor_modified"] = (*tutor_modified).into();
+                    feedback_data["updated_at"] = event.timestamp.to_rfc3339().into();
+                }
+                EventType::FeedbackAccepted { .. } => {
+                    feedback_data["status"] = "accepted".into();
+                    feedback_data["accepted_at"] = event.timestamp.to_rfc3339().into();
+                }
+                EventType::FeedbackRejected { .. } => {
+                    feedback_data["status"] = "rejected".into();
+                    feedback_data["rejected_at"] = event.timestamp.to_rfc3339().into();
+                }
+                _ => {}
+            }
+        }
+
+        Ok(Some(feedback_data))
+    }
+
+    fn store_feedback_updated_event(
+        &self,
+        analysis_id: Uuid,
+        tutor_modified: bool,
+    ) -> Result<()> {
+        let version = self.get_events(&analysis_id.to_string())?.len() as u64 + 1;
+        let event = Event::new(
+            EventType::FeedbackUpdated {
+                analysis_id,
+                tutor_modified,
+            },
+            analysis_id.to_string(),
+            version,
+        );
+        self.append(event)
+    }
+
+    fn store_feedback_accepted_event(&self, analysis_id: Uuid) -> Result<()> {
+        let version = self.get_events(&analysis_id.to_string())?.len() as u64 + 1;
+        let event = Event::new(
+            EventType::FeedbackAccepted { analysis_id },
+            analysis_id.to_string(),
+            version,
+        );
+        self.append(event)
+    }
+
+    fn store_feedback_rejected_event(&self, analysis_id: Uuid) -> Result<()> {
+        let version = self.get_events(&analysis_id.to_string())?.len() as u64 + 1;
+        let event = Event::new(
+            EventType::FeedbackRejected { analysis_id },
+            analysis_id.to_string(),
+            version,
+        );
+        self.append(event)
+    }
+
+    fn get_rubric(&self, rubric_id: Uuid) -> Result<Option<serde_json::Value>> {
+        let events = self.get_events(&rubric_id.to_string())?;
+        if events.is_empty() {
+            return Ok(None);
+        }
+
+        // Rebuild rubric from events
+        let mut rubric_data = serde_json::json!({
+            "id": rubric_id,
+            "status": "active"
+        });
+
+        for event in events {
+            match &event.event_type {
+                EventType::RubricCreated {
+                    module,
+                    assignment,
+                    ..
+                } => {
+                    rubric_data["module"] = module.clone().into();
+                    rubric_data["assignment"] = assignment.clone().into();
+                    rubric_data["created_at"] = event.timestamp.to_rfc3339().into();
+                }
+                EventType::RubricUpdated { .. } => {
+                    rubric_data["updated_at"] = event.timestamp.to_rfc3339().into();
+                }
+                EventType::RubricDeleted { .. } => {
+                    rubric_data["status"] = "deleted".into();
+                    rubric_data["deleted_at"] = event.timestamp.to_rfc3339().into();
+                    return Ok(None); // Deleted rubrics are not returned
+                }
+                _ => {}
+            }
+        }
+
+        Ok(Some(rubric_data))
+    }
+
+    fn list_rubrics(
+        &self,
+        module: Option<&str>,
+        assignment: Option<&str>,
+        limit: Option<usize>,
+        offset: Option<usize>,
+    ) -> Result<Vec<serde_json::Value>> {
+        // Get all RubricCreated events
+        let all_events = self.get_events_by_type("RubricCreated")?;
+
+        // Filter by module and assignment if specified
+        let mut rubrics: Vec<serde_json::Value> = Vec::new();
+
+        for event in all_events {
+            if let EventType::RubricCreated {
+                rubric_id,
+                module: event_module,
+                assignment: event_assignment,
+            } = &event.event_type
+            {
+                // Apply filters
+                if let Some(filter_module) = module {
+                    if event_module != filter_module {
+                        continue;
+                    }
+                }
+                if let Some(filter_assignment) = assignment {
+                    if event_assignment != filter_assignment {
+                        continue;
+                    }
+                }
+
+                // Check if rubric was deleted
+                if let Ok(Some(rubric)) = self.get_rubric(*rubric_id) {
+                    rubrics.push(rubric);
+                }
+            }
+        }
+
+        // Apply pagination
+        let start = offset.unwrap_or(0);
+        let end = limit.map(|l| start + l).unwrap_or(rubrics.len());
+
+        Ok(rubrics.into_iter().skip(start).take(end - start).collect())
+    }
+
+    fn store_rubric_created_event(
+        &self,
+        rubric_id: Uuid,
+        module: &str,
+        assignment: &str,
+    ) -> Result<()> {
+        let version = self.get_events(&rubric_id.to_string())?.len() as u64 + 1;
+        let event = Event::new(
+            EventType::RubricCreated {
+                rubric_id,
+                module: module.to_string(),
+                assignment: assignment.to_string(),
+            },
+            rubric_id.to_string(),
+            version,
+        );
+        self.append(event)
+    }
+
+    fn store_rubric_updated_event(&self, rubric_id: Uuid) -> Result<()> {
+        let version = self.get_events(&rubric_id.to_string())?.len() as u64 + 1;
+        let event = Event::new(
+            EventType::RubricUpdated { rubric_id },
+            rubric_id.to_string(),
+            version,
+        );
+        self.append(event)
+    }
+
+    fn delete_rubric(&self, rubric_id: Uuid) -> Result<()> {
+        let version = self.get_events(&rubric_id.to_string())?.len() as u64 + 1;
+        let event = Event::new(
+            EventType::RubricDeleted { rubric_id },
+            rubric_id.to_string(),
+            version,
+        );
+        self.append(event)
     }
 }
 

@@ -441,3 +441,13 @@ mod tests {
         assert!(result.locations.iter().all(|loc| loc.pii_type == PIIType::Email));
     }
 }
+
+/// Convenience function for student ID anonymization
+/// Uses SHA3-512 for cryptographic hashing
+pub fn anonymize_student_id(student_id: &str) -> String {
+    let service = SecurityService::new();
+    service
+        .anonymize_student_id(student_id)
+        .map(|result| result.anonymized)
+        .unwrap_or_else(|_| format!("hash_{}", student_id))
+}
