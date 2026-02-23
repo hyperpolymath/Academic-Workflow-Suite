@@ -226,3 +226,275 @@ let onSelectionChanged = (handler: eventHandler): unit => {
   let _ = handler
   ()
 }
+
+// ============================================================================
+// Word-specific API bindings (Word.run context)
+// ============================================================================
+
+module Word = {
+  // Word.run() context binding
+  @val @scope("Word")
+  external run: (. {..} => promise<unit>) => promise<unit> = "run"
+
+  // Document body type
+  type body = {
+    insertText: (. string, string) => unit,
+    insertHtml: (. string, string) => unit,
+    clear: (. unit) => unit,
+    getText: (. unit) => string,
+  }
+
+  // Range type
+  type range = {
+    insertText: (. string, string) => unit,
+    insertComment: (. string) => unit,
+    select: (. string) => unit,
+  }
+
+  // Comment type
+  type comment = {
+    content: string,
+    resolved: bool,
+  }
+
+  // Content control type
+  type contentControl = {
+    tag: string,
+    title: string,
+    insertText: (. string, string) => unit,
+    delete: (. bool) => unit,
+  }
+
+  // Document type
+  type document = {
+    body: body,
+    getSelection: (. unit) => range,
+    contentControls: {
+      getByTag: (. string) => array<contentControl>,
+      add: (. string, range) => contentControl,
+    },
+    properties: {
+      customProperties: {
+        add: (. string, string) => unit,
+        getItem: (. string) => {..},
+        deleteAll: (. unit) => unit,
+      },
+    },
+  }
+
+  // Context type
+  type context = {
+    document: document,
+    sync: (. unit) => promise<unit>,
+    load: (. {..}, string) => unit,
+  }
+
+  // Insert positions
+  @val @scope(("Word", "InsertLocation"))
+  external before: string = "Before"
+
+  @val @scope(("Word", "InsertLocation"))
+  external after: string = "After"
+
+  @val @scope(("Word", "InsertLocation"))
+  external start: string = "Start"
+
+  @val @scope(("Word", "InsertLocation"))
+  external end_: string = "End"
+
+  @val @scope(("Word", "InsertLocation"))
+  external replace: string = "Replace"
+
+  // Get full document text using Word.run()
+  let getDocumentText = async (): result<string, string> => {
+    try {
+      let textRef = ref("")
+
+      await run(. async context => {
+        let doc = context["document"]
+        let body = doc["body"]
+        context["load"](. body, "text")
+        await context["sync"](.)
+        textRef := body["text"]
+      })
+
+      Ok(textRef.contents)
+    } catch {
+    | Js.Exn.Error(err) =>
+      Error(Js.Exn.message(err)->Option.getOr("Failed to get document text"))
+    | _ => Error("Unexpected error getting document text")
+    }
+  }
+
+  // Insert feedback as comment at current selection
+  let insertFeedbackComment = async (feedbackText: string): result<unit, string> => {
+    try {
+      await run(. async context => {
+        let range = context["document"]["getSelection"](.)
+        range["insertComment"](. feedbackText)
+        await context["sync"](.)
+      })
+
+      Ok()
+    } catch {
+    | Js.Exn.Error(err) =>
+      Error(Js.Exn.message(err)->Option.getOr("Failed to insert comment"))
+    | _ => Error("Unexpected error inserting comment")
+    }
+  }
+
+  // Insert formatted feedback at end of document
+  let appendFormattedFeedback = async (
+    feedback: string,
+    score: option<float>,
+  ): result<unit, string> => {
+    try {
+      await run(. async context => {
+        let body = context["document"]["body"]
+
+        // Build feedback HTML
+        let scoreHtml = switch score {
+        | Some(s) => `<p><strong>Score:</strong> ${Float.toString(s)}</p>`
+        | None => ""
+        }
+
+        let html = `
+          <div style="border-top: 2px solid #0078d4; margin-top: 20px; padding-top: 10px;">
+            <h2 style="color: #0078d4;">Feedback</h2>
+            ${scoreHtml}
+            <div style="background: #f5f5f5; padding: 15px; border-left: 4px solid #0078d4;">
+              ${feedback}
+            </div>
+          </div>
+        `
+
+        body["insertHtml"](. html, end_)
+        await context["sync"](.)
+      })
+
+      Ok()
+    } catch {
+    | Js.Exn.Error(err) =>
+      Error(Js.Exn.message(err)->Option.getOr("Failed to append feedback"))
+    | _ => Error("Unexpected error appending feedback")
+    }
+  }
+
+  // Get student ID from custom document properties
+  let getStudentId = async (): result<option<string>, string> => {
+    try {
+      let studentIdRef = ref(None)
+
+      await run(. async context => {
+        let props = context["document"]["properties"]["customProperties"]
+        try {
+          let studentIdProp = props["getItem"](. "StudentID")
+          context["load"](. studentIdProp, "value")
+          await context["sync"](.)
+          studentIdRef := Some(studentIdProp["value"])
+        } catch {
+        | _ => studentIdRef := None
+        }
+      })
+
+      Ok(studentIdRef.contents)
+    } catch {
+    | Js.Exn.Error(err) =>
+      Error(Js.Exn.message(err)->Option.getOr("Failed to get student ID"))
+    | _ => Error("Unexpected error getting student ID")
+    }
+  }
+
+  // Set student ID in custom document properties
+  let setStudentId = async (studentId: string): result<unit, string> => {
+    try {
+      await run(. async context => {
+        let props = context["document"]["properties"]["customProperties"]
+
+        // Delete existing StudentID property if it exists
+        try {
+          let existing = props["getItem"](. "StudentID")
+          existing["delete"](.)
+        } catch {
+        | _ => ()
+        }
+
+        // Add new StudentID property
+        props["add"](. "StudentID", studentId)
+        await context["sync"](.)
+      })
+
+      Ok()
+    } catch {
+    | Js.Exn.Error(err) =>
+      Error(Js.Exn.message(err)->Option.getOr("Failed to set student ID"))
+    | _ => Error("Unexpected error setting student ID")
+    }
+  }
+
+  // Extract student ID from document text (fallback if not in properties)
+  let extractStudentIdFromText = (text: string): option<string> => {
+    // Look for patterns like "Student ID: A1234567" or just "A1234567"
+    let patterns = [
+      %re("/Student ID:\s*([A-Z]\d{7})/i"),
+      %re("/ID:\s*([A-Z]\d{7})/i"),
+      %re("/\b([A-Z]\d{7})\b/"),
+    ]
+
+    let rec tryPatterns = (patterns: array<Js.Re.t>): option<string> => {
+      switch patterns {
+      | [] => None
+      | [pattern, ...rest] =>
+        switch Js.Re.exec_(pattern, text) {
+        | Some(result) =>
+          switch Js.Re.captures(result)[1] {
+          | Some(id) => Some(id)
+          | None => tryPatterns(rest)
+          }
+        | None => tryPatterns(rest)
+        }
+      }
+    }
+
+    tryPatterns(patterns)
+  }
+
+  // Get or extract student ID (tries properties first, then text extraction)
+  let getOrExtractStudentId = async (): result<option<string>, string> => {
+    // Try getting from properties first
+    let propResult = await getStudentId()
+
+    switch propResult {
+    | Ok(Some(id)) => Ok(Some(id))
+    | Ok(None) | Error(_) => {
+        // Fallback: extract from document text
+        let textResult = await getDocumentText()
+        switch textResult {
+        | Ok(text) => Ok(extractStudentIdFromText(text))
+        | Error(e) => Error(e)
+        }
+      }
+    }
+  }
+
+  // Insert content control for feedback section
+  let insertFeedbackContentControl = async (tag: string, title: string): result<
+    unit,
+    string,
+  > => {
+    try {
+      await run(. async context => {
+        let range = context["document"]["getSelection"](.)
+        let _ = context["document"]["contentControls"]["add"](. tag, range)
+        // Set title would go here if we had the API binding
+        await context["sync"](.)
+      })
+
+      Ok()
+    } catch {
+    | Js.Exn.Error(err) =>
+      Error(Js.Exn.message(err)->Option.getOr("Failed to insert content control"))
+    | _ => Error("Unexpected error inserting content control")
+    }
+  }
+}
