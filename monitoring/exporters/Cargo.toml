@@ -2,8 +2,9 @@
 name = "aws-exporter"
 version = "0.1.0"
 edition = "2021"
-authors = ["Academic Workflow Suite Team"]
+authors = ["Jonathan D.A. Jewell <jonathan.jewell@open.ac.uk>"]
 description = "Custom Prometheus exporter for Academic Workflow Suite metrics"
+license = "PMPL-1.0-or-later"
 
 [dependencies]
 # Web framework
