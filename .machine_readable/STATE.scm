@@ -1,4 +1,4 @@
-;; SPDX-License-Identifier: PMPL-1.0
+;; SPDX-License-Identifier: PMPL-1.0-or-later
 ;; SPDX-FileCopyrightText: 2025 Jonathan D.A. Jewell
 ;; STATE.scm - Project state for academic-workflow-suite
 ;; Media-Type: application/vnd.state+scm

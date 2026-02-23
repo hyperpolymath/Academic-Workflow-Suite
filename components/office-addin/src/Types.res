@@ -21,6 +21,29 @@ type feedback = {
   generatedAt: float,
 }
 
+// Rubric types
+type rubric = {
+  id: string,
+  name: string,
+  module: string,
+  assignment: string,
+  totalMarks: float,
+  criteria: array<rubricCriterion>,
+}
+
+and rubricCriterion = {
+  name: string,
+  description: string,
+  maxMarks: float,
+}
+
+// Analysis status
+type analysisStatus =
+  | Queued
+  | InProgress
+  | Completed
+  | Failed
+
 // Plagiarism check result
 and plagiarismResult = {
   score: float,

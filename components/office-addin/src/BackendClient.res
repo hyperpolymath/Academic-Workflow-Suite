@@ -272,3 +272,263 @@ let healthCheck = async (baseUrl: string): result<bool, string> => {
   | _ => Error("Unexpected error during health check")
   }
 }
+
+// ============================================================================
+// Rubric Management API
+// ============================================================================
+
+// List rubrics with optional filtering
+let listRubrics = async (
+  baseUrl: string,
+  apiKey: option<string>,
+  moduleCode: option<string>,
+  assignment: option<string>,
+): result<array<Types.rubric>, string> => {
+  try {
+    // Build query parameters
+    let params = []
+    switch moduleCode {
+    | Some(code) => params->Array.push(`module=${code}`)
+    | None => ()
+    }
+    switch assignment {
+    | Some(assign) => params->Array.push(`assignment=${assign}`)
+    | None => ()
+    }
+
+    let queryString = if Array.length(params) > 0 {
+      "?" ++ Array.join(params, "&")
+    } else {
+      ""
+    }
+
+    let options = {
+      "method": "GET",
+      "headers": createHeaders(apiKey),
+    }
+
+    let response = await fetch(`${baseUrl}/api/v1/rubrics${queryString}`, options)
+    let status = response["status"]
+
+    if status >= 200 && status < 300 {
+      let json = await response["json"](.)
+      let rubrics = json->Array.map(item => {
+        {
+          id: item["id"],
+          name: item["name"],
+          module: item["module"],
+          assignment: item["assignment"],
+          totalMarks: item["total_marks"],
+          criteria: item["criteria"]->Array.map(c => {
+            {
+              name: c["name"],
+              description: c["description"],
+              maxMarks: c["max_marks"],
+            }: Types.rubricCriterion
+          }),
+        }: Types.rubric
+      })
+
+      Ok(rubrics)
+    } else {
+      let errorText = await response["text"](.)
+      Error(`Failed to list rubrics: ${errorText}`)
+    }
+  } catch {
+  | Js.Exn.Error(err) => {
+      let message = Js.Exn.message(err)->Option.getOr("Network error")
+      Error(`Failed to list rubrics: ${message}`)
+    }
+  | _ => Error("Unexpected error listing rubrics")
+  }
+}
+
+// ============================================================================
+// Analysis API
+// ============================================================================
+
+// Trigger analysis for a document
+let triggerAnalysis = async (
+  baseUrl: string,
+  apiKey: option<string>,
+  documentId: string,
+  rubricId: string,
+): result<string, string> => {
+  try {
+    let body = {
+      "document_id": documentId,
+      "rubric_id": rubricId,
+    }
+
+    let options = {
+      "method": "POST",
+      "headers": createHeaders(apiKey),
+      "body": Types.Json.stringify(body),
+    }
+
+    let response = await fetch(`${baseUrl}/api/v1/analyze`, options)
+    let status = response["status"]
+
+    if status >= 200 && status < 300 {
+      let json = await response["json"](.)
+      let analysisId = json["analysis_id"]
+      Ok(analysisId)
+    } else {
+      let errorText = await response["text"](.)
+      Error(`Failed to trigger analysis: ${errorText}`)
+    }
+  } catch {
+  | Js.Exn.Error(err) => {
+      let message = Js.Exn.message(err)->Option.getOr("Network error")
+      Error(`Failed to trigger analysis: ${message}`)
+    }
+  | _ => Error("Unexpected error triggering analysis")
+  }
+}
+
+// Get analysis status
+let getAnalysisStatus = async (
+  baseUrl: string,
+  apiKey: option<string>,
+  analysisId: string,
+): result<Types.analysisStatus, string> => {
+  try {
+    let options = {
+      "method": "GET",
+      "headers": createHeaders(apiKey),
+    }
+
+    let response = await fetch(`${baseUrl}/api/v1/analyze/${analysisId}/status`, options)
+    let status = response["status"]
+
+    if status >= 200 && status < 300 {
+      let json = await response["json"](.)
+
+      let analysisStatus = switch json["status"] {
+      | "queued" => Types.Queued
+      | "in_progress" => Types.InProgress
+      | "completed" => Types.Completed
+      | "failed" => Types.Failed
+      | _ => Types.Queued
+      }
+
+      Ok(analysisStatus)
+    } else {
+      let errorText = await response["text"](.)
+      Error(`Failed to get analysis status: ${errorText}`)
+    }
+  } catch {
+  | Js.Exn.Error(err) => {
+      let message = Js.Exn.message(err)->Option.getOr("Network error")
+      Error(`Failed to get analysis status: ${message}`)
+    }
+  | _ => Error("Unexpected error getting analysis status")
+  }
+}
+
+// ============================================================================
+// Feedback Management API
+// ============================================================================
+
+// Accept feedback (tutor approves AI-generated feedback)
+let acceptFeedback = async (
+  baseUrl: string,
+  apiKey: option<string>,
+  analysisId: string,
+): result<unit, string> => {
+  try {
+    let options = {
+      "method": "POST",
+      "headers": createHeaders(apiKey),
+      "body": Types.Json.stringify({}),
+    }
+
+    let response = await fetch(`${baseUrl}/api/v1/feedback/${analysisId}/accept`, options)
+    let status = response["status"]
+
+    if status >= 200 && status < 300 {
+      Ok()
+    } else {
+      let errorText = await response["text"](.)
+      Error(`Failed to accept feedback: ${errorText}`)
+    }
+  } catch {
+  | Js.Exn.Error(err) => {
+      let message = Js.Exn.message(err)->Option.getOr("Network error")
+      Error(`Failed to accept feedback: ${message}`)
+    }
+  | _ => Error("Unexpected error accepting feedback")
+  }
+}
+
+// Reject feedback (tutor rejects AI-generated feedback)
+let rejectFeedback = async (
+  baseUrl: string,
+  apiKey: option<string>,
+  analysisId: string,
+): result<unit, string> => {
+  try {
+    let options = {
+      "method": "POST",
+      "headers": createHeaders(apiKey),
+      "body": Types.Json.stringify({}),
+    }
+
+    let response = await fetch(`${baseUrl}/api/v1/feedback/${analysisId}/reject`, options)
+    let status = response["status"]
+
+    if status >= 200 && status < 300 {
+      Ok()
+    } else {
+      let errorText = await response["text"](.)
+      Error(`Failed to reject feedback: ${errorText}`)
+    }
+  } catch {
+  | Js.Exn.Error(err) => {
+      let message = Js.Exn.message(err)->Option.getOr("Network error")
+      Error(`Failed to reject feedback: ${message}`)
+    }
+  | _ => Error("Unexpected error rejecting feedback")
+  }
+}
+
+// Load document for analysis
+let loadDocument = async (
+  baseUrl: string,
+  apiKey: option<string>,
+  filePath: string,
+  moduleCode: string,
+  assignment: string,
+): result<string, string> => {
+  try {
+    let body = {
+      "file_path": filePath,
+      "module": moduleCode,
+      "assignment": assignment,
+    }
+
+    let options = {
+      "method": "POST",
+      "headers": createHeaders(apiKey),
+      "body": Types.Json.stringify(body),
+    }
+
+    let response = await fetch(`${baseUrl}/api/v1/documents`, options)
+    let status = response["status"]
+
+    if status >= 200 && status < 300 {
+      let json = await response["json"](.)
+      let documentId = json["document_id"]
+      Ok(documentId)
+    } else {
+      let errorText = await response["text"](.)
+      Error(`Failed to load document: ${errorText}`)
+    }
+  } catch {
+  | Js.Exn.Error(err) => {
+      let message = Js.Exn.message(err)->Option.getOr("Network error")
+      Error(`Failed to load document: ${message}`)
+    }
+  | _ => Error("Unexpected error loading document")
+  }
+}
