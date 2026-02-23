@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: PMPL-1.0
+// SPDX-License-Identifier: PMPL-1.0-or-later
 // SPDX-FileCopyrightText: 2025 Jonathan D.A. Jewell
 = Academic Workflow Suite Roadmap
 :toc: auto
@@ -8,23 +8,25 @@
 
 This document outlines potential development directions for Academic Workflow Suite. Each direction represents a strategic path that could be pursued based on user needs, resource availability, and ecosystem evolution.
 
-== Current State (v0.2.0)
+== Current State (v0.1.0)
 
-=== Completed
+=== Foundation Complete
 
-* Core engine with event sourcing (Rust/LMDB)
-* Office Add-in for Word (ReScript/Office.js)
-* AI isolation with network-jailed container
-* SHA3-512 student ID anonymization
-* Basic rubric support and feedback generation
-* Container migration to nerdctl/podman
+* Core engine skeleton with event sourcing (Rust/LMDB)
+* AI Jail skeleton with Candle ML (Rust)
+* Office Add-in skeleton (ReScript/Office.js)
+* SHA3-512 anonymization framework
+* Basic project structure and infrastructure
+* Container configuration templates
 * Contractiles build system (just/Mustfile/Dustfile)
 
-=== In Progress
+=== In Progress (v0.2.0 Target)
 
-* Proven library integration planning
-* Moodle LMS integration research
-* Batch processing improvements
+* Core Engine REST API implementation (Actix-Web)
+* AI Jail inference implementation (llama.cpp/Ollama)
+* Office Add-in UI development (React/ReScript)
+* End-to-end workflow integration
+* Testing and documentation
 
 ---
 
