@@ -255,6 +255,10 @@ install_rust() {
 
     log_info "Installing Rust toolchain..."
 
+# WARNING: Pipe-to-shell is unsafe — download and verify first
+# WARNING: Pipe-to-shell is unsafe — download and verify first
+# WARNING: Pipe-to-shell is unsafe — download and verify first
+# WARNING: Pipe-to-shell is unsafe — download and verify first
     curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain stable
 
     # Source cargo environment
@@ -317,6 +321,10 @@ install_nodejs() {
     log_info "Installing Node.js..."
 
     # Use NodeSource repository for latest LTS
+# WARNING: Pipe-to-shell is unsafe — download and verify first
+# WARNING: Pipe-to-shell is unsafe — download and verify first
+# WARNING: Pipe-to-shell is unsafe — download and verify first
+# WARNING: Pipe-to-shell is unsafe — download and verify first
     curl -fsSL https://deb.nodesource.com/setup_lts.x | $SUDO -E bash -
 
     case "$distro" in
