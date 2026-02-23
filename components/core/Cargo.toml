@@ -2,24 +2,61 @@
 name = "aws-core"
 version = "0.1.0"
 edition = "2021"
-authors = ["Academic Workflow Suite Team"]
+authors = ["Jonathan D.A. Jewell <jonathan.jewell@open.ac.uk>"]
 description = "Core engine for TMA marking automation system"
-license = "MIT"
+license = "PMPL-1.0-or-later"
 
 [dependencies]
+# Async runtime
 tokio = { version = "1.49", features = ["full"] }
+
+# Web frameworks
+actix-web = "4.9"
+actix-cors = "0.7"
+actix-files = "0.6"
+async-graphql = "7.0"
+async-graphql-actix-web = "7.0"
+
+# Serialization
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
-uuid = { version = "1.19", features = ["v4", "serde"] }
-sha3 = "0.10"
+serde_yaml = "0.9"
+
+# Database (event store)
 heed = "0.22"  # Modern LMDB wrapper
-tracing = "0.1"
-tracing-subscriber = { version = "0.3", features = ["env-filter"] }
-anyhow = "1.0"
-thiserror = "2.0"
+
+# Cryptography
+sha3 = "0.10"
+blake3 = "1.5"
+aes-gcm = "0.10"
+argon2 = "0.5"
+
+# Document parsing
+zip = "2.2"  # For DOCX (Office Open XML)
+quick-xml = "0.36"
+
+# Identifiers
+uuid = { version = "1.20", features = ["v4", "serde"] }
+
+# Utilities
 regex = "1.10"
 hex = "0.4"
 chrono = { version = "0.4", features = ["serde"] }
+bytes = "1.11"
+futures = "0.3"
+
+# Logging
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }
+tracing-actix-web = "0.7"
+
+# Error handling
+anyhow = "1.0"
+thiserror = "2.0"
+
+# Configuration
+config = "0.15"
+dotenvy = "0.15"
 
 [dev-dependencies]
 tempfile = "3.24"

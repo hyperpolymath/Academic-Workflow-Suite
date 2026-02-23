@@ -2,9 +2,9 @@
 name = "aws-cli"
 version = "0.1.0"
 edition = "2021"
-authors = ["Academic Workflow Suite Team"]
+authors = ["Jonathan D.A. Jewell <jonathan.jewell@open.ac.uk>"]
 description = "Command-line interface for the Academic Workflow Suite"
-license = "GPL-3.0"
+license = "PMPL-1.0-or-later"
 repository = "https://github.com/yourusername/academic-workflow-suite"
 
 [[bin]]

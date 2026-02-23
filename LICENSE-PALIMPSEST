@@ -1,193 +1,153 @@
-Palimpsest License v0.8
+SPDX-License-Identifier: PMPL-1.0-or-later
+SPDX-FileCopyrightText: 2024-2025 Palimpsest Stewardship Council
 
-Copyright (c) 2025 Academic Workflow Suite Contributors
+================================================================================
+PALIMPSEST-MPL LICENSE VERSION 1.0
+================================================================================
 
-SPDX-License-Identifier: Palimpsest-0.8
+File-level copyleft with ethical use and quantum-safe provenance
 
-Preamble
---------
+Based on Mozilla Public License 2.0
 
-The Palimpsest License is designed for works that value attribution,
-solidarity economics, and collaborative improvement while remaining
-compatible with common open-source licenses.
+--------------------------------------------------------------------------------
+PREAMBLE
+--------------------------------------------------------------------------------
 
-This license allows you to:
-- Use the software for any purpose
-- Study and modify the source code
-- Redistribute original or modified versions
-- Dual-license with MIT, Apache-2.0, or GPL family licenses
+This License extends the Mozilla Public License 2.0 (MPL-2.0) with provisions
+for ethical use, post-quantum cryptographic provenance, and emotional lineage
+protection. The base MPL-2.0 terms apply except where explicitly modified by
+the Exhibits below.
 
-Terms and Conditions
---------------------
+Like a palimpsest manuscript where each layer builds upon what came before,
+this license recognizes that creative works carry history, context, and meaning
+that transcend mere code or text.
 
-1. DEFINITIONS
+--------------------------------------------------------------------------------
+SECTION 1: BASE LICENSE
+--------------------------------------------------------------------------------
 
-   "Work" refers to the software, documentation, and associated materials
-   covered by this license.
+This License incorporates the full text of Mozilla Public License 2.0 by
+reference. The complete MPL-2.0 text is available at:
+https://www.mozilla.org/en-US/MPL/2.0/
 
-   "You" refers to the individual or legal entity exercising rights under
-   this license.
+All terms, conditions, and definitions from MPL-2.0 apply except where
+explicitly modified by the Exhibits in this License.
 
-   "Attribution" means clearly crediting the original authors and
-   contributors in documentation and derivative works.
+--------------------------------------------------------------------------------
+SECTION 2: ADDITIONAL DEFINITIONS
+--------------------------------------------------------------------------------
 
-   "Solidarity Economics" means economic arrangements that prioritize
-   mutual benefit, cooperation, and community well-being over pure profit
-   maximization.
+2.1. "Emotional Lineage"
+    means the narrative, cultural, symbolic, and contextual meaning embedded
+    in Covered Software, including but not limited to: protest traditions,
+    cultural heritage, trauma narratives, and community stories.
 
-2. GRANT OF RIGHTS
+2.2. "Provenance Metadata"
+    means cryptographically signed attribution information attached to or
+    associated with Covered Software, including author identities, timestamps,
+    modification history, and lineage references.
 
-   Subject to the terms of this license, you are granted:
+2.3. "Non-Interpretive System"
+    means any automated system that processes Covered Software without
+    preserving or considering its Emotional Lineage, including but not
+    limited to: AI training pipelines, content aggregators, and automated
+    summarization tools.
 
-   a) Perpetual, worldwide, non-exclusive, royalty-free rights to:
-      - Use the Work for any purpose
-      - Study the Work's source code
-      - Modify the Work
-      - Distribute copies of the Work
-      - Distribute modified versions of the Work
+2.4. "Quantum-Safe Signature"
+    means a cryptographic signature using algorithms resistant to attacks
+    by quantum computers, as specified in Exhibit B.
 
-   b) Patent rights to the extent necessary to use, modify, and
-      distribute the Work
+--------------------------------------------------------------------------------
+SECTION 3: ETHICAL USE REQUIREMENTS
+--------------------------------------------------------------------------------
 
-3. ATTRIBUTION REQUIREMENTS
+In addition to the rights and obligations under MPL-2.0:
 
-   All distributions (original or modified) must:
+3.1. Emotional Lineage Preservation
+    You must make reasonable efforts to preserve and communicate the
+    Emotional Lineage of Covered Software when distributing or creating
+    derivative works. This includes maintaining narrative context, cultural
+    attributions, and symbolic meaning where documented.
 
-   a) Include this license text
-   b) Clearly identify the original authors and contributors
-   c) Acknowledge the Palimpsest License in documentation
-   d) Preserve all copyright, attribution, and license notices
+3.2. Non-Interpretive System Notice
+    If You use Covered Software as input to a Non-Interpretive System, You
+    must:
+    (a) document such use in a publicly accessible manner; and
+    (b) not claim that outputs of such systems carry the Emotional Lineage
+        of the original work without explicit permission from Contributors.
 
-   Attribution format:
-   ```
-   Based on Academic Workflow Suite
-   Copyright (c) 2025 Academic Workflow Suite Contributors
-   Licensed under Palimpsest License v0.8
-   https://github.com/Hyperpolymath/academic-workflow-suite
-   ```
+3.3. Ethical Use Declaration
+    Commercial use of Covered Software requires acknowledgment that You have
+    read and understood Exhibit A (Ethical Use Guidelines) and agree to act
+    in good faith accordance with its principles.
 
-4. SOLIDARITY ECONOMICS (RECOMMENDED, NOT REQUIRED)
+See Exhibit A for complete Ethical Use Guidelines.
 
-   We encourage (but do not require) downstream users to:
+--------------------------------------------------------------------------------
+SECTION 4: PROVENANCE REQUIREMENTS
+--------------------------------------------------------------------------------
 
-   a) Share improvements back to the community
-   b) Support the original project financially if commercially successful
-   c) Prioritize cooperative economic models
-   d) Consider collective ownership structures
-   e) Contribute to Commons-based initiatives
+4.1. Metadata Preservation
+    You must not strip, alter, or obscure Provenance Metadata from Covered
+    Software except where technically necessary and with clear documentation
+    of any changes.
 
-   Recommended support mechanisms:
-   - Open Collective: https://opencollective.com/aws-edu
-   - Direct contributions to upstream project
-   - In-kind support (documentation, bug fixes, testing)
+4.2. Quantum-Safe Provenance (Optional)
+    Contributors may sign their Contributions using Quantum-Safe Signatures.
+    If Quantum-Safe Signatures are present, You must preserve them in all
+    distributions.
 
-5. SHARING IMPROVEMENTS (ENCOURAGED)
+4.3. Lineage Chain
+    When creating derivative works, You should extend the provenance chain
+    to include Your own contributions, maintaining cryptographic linkage to
+    prior Contributors where feasible.
 
-   While not legally required, we strongly encourage:
+See Exhibit B for Quantum-Safe Provenance specifications.
 
-   a) Publishing modifications under compatible licenses
-   b) Contributing improvements upstream
-   c) Documenting changes and rationale
-   d) Participating in community governance
+--------------------------------------------------------------------------------
+SECTION 5: GOVERNANCE
+--------------------------------------------------------------------------------
 
-6. DUAL LICENSING
+5.1. Stewardship Council
+    This License is maintained by the Palimpsest Stewardship Council, which
+    may issue clarifications, interpretive guidance, and future versions.
 
-   This work may be used under either:
+5.2. Version Selection
+    You may use Covered Software under this version of the License or any
+    later version published by the Palimpsest Stewardship Council.
 
-   a) This Palimpsest License v0.8, OR
-   b) MIT License (see LICENSE-MIT), OR
-   c) Apache License 2.0, OR
-   d) GNU General Public License v3.0 (AGPL-3.0)
+5.3. Dispute Resolution
+    Disputes regarding interpretation of Ethical Use Requirements (Section 3)
+    should first be submitted to the Palimpsest Stewardship Council for
+    non-binding guidance before pursuing legal remedies.
 
-   You may choose the license that best fits your use case.
-   Commercial users may prefer MIT or Apache-2.0.
-   Community-focused projects may prefer Palimpsest or GPL.
+--------------------------------------------------------------------------------
+SECTION 6: COMPATIBILITY
+--------------------------------------------------------------------------------
 
-7. COMPATIBILITY
+6.1. MPL-2.0 Compatibility
+    Covered Software under this License may be combined with software under
+    MPL-2.0. The combined work must comply with both licenses.
 
-   The Palimpsest License is compatible with:
-   - MIT License
-   - Apache License 2.0
-   - GNU General Public License v3.0+
-   - GNU Affero General Public License v3.0+
-   - Creative Commons Attribution-ShareAlike 4.0
+6.2. Secondary Licenses
+    The Secondary License provisions of MPL-2.0 Section 3.3 apply to this
+    License.
 
-   Works combining Palimpsest-licensed and GPL-licensed code may be
-   distributed under GPL terms.
+--------------------------------------------------------------------------------
+EXHIBITS
+--------------------------------------------------------------------------------
 
-8. NO WARRANTY
+Exhibit A - Ethical Use Guidelines
+Exhibit B - Quantum-Safe Provenance Specification
 
-   THE WORK IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+See separate files:
+- EXHIBIT-A-ETHICAL-USE.txt
+- EXHIBIT-B-QUANTUM-SAFE.txt
 
-   IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-   CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-   TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE WORK
-   OR THE USE OR OTHER DEALINGS IN THE WORK.
+--------------------------------------------------------------------------------
+END OF PALIMPSEST-MPL LICENSE VERSION 1.0
+--------------------------------------------------------------------------------
 
-9. LIMITATION OF LIABILITY
-
-   In no event will the authors or contributors be held liable for any
-   damages arising from the use of this Work, except as required by
-   applicable law.
-
-10. GOVERNANCE AND AMENDMENTS
-
-    This license may be updated by the Palimpsest License Stewards.
-    Major version changes (0.x → 1.0) require community consultation.
-    Minor updates may clarify terms without changing intent.
-
-11. TERMINATION
-
-    Your rights under this license terminate automatically if you:
-    a) Violate the attribution requirements
-    b) Claim the Work as entirely your own creation
-    c) Remove or modify license notices without permission
-
-    Termination does not affect downstream recipients who remain compliant.
-
-12. ACCEPTANCE
-
-    By using, modifying, or distributing the Work, you indicate acceptance
-    of these terms.
-
-Philosophy
-----------
-
-The Palimpsest License embodies:
-
-- **Attribution**: Credit where credit is due
-- **Freedom**: Permissive like MIT, but encourages sharing
-- **Solidarity**: Economic cooperation over extraction
-- **Community**: Collective improvement benefits all
-- **Pragmatism**: Compatible with existing licenses
-- **Reversibility**: Easy to switch to other licenses if needed
-
-Name Origin
------------
-
-A palimpsest is a manuscript where the original text has been scraped off
-and overwritten, yet traces remain visible. Like a palimpsest, software
-evolves through layers of contribution, each building on what came before.
-
-The Palimpsest License honors this layered history while allowing new
-writing to emerge.
-
-Contact
--------
-
-Questions about this license:
-- Email: license@palimpsest-license.org
-- Repository: https://github.com/palimpsest-license/spec
-- Discussion: https://discuss.palimpsest-license.org
-
-For Academic Workflow Suite specifically:
-- Email: legal@academic-workflow-suite.org
-- Issues: https://github.com/Hyperpolymath/academic-workflow-suite/issues
-
----
-
-Palimpsest License v0.8
-Last Updated: 2025-11-22
-SPDX-License-Identifier: Palimpsest-0.8
+For questions about this License:
+- Repository: https://github.com/hyperpolymath/palimpsest-license
+- Council: contact via repository Issues
