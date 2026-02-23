@@ -455,6 +455,8 @@ image:https://img.shields.io/badge/License-PMPL--1.0-blue.svg[License: PMPL-1.0,
 
 == Architecture
 
+See link:TOPOLOGY.md[TOPOLOGY.md] for a visual architecture map and completion dashboard.
+
 === High-Level System Overview
 
 ```
