@@ -1,3 +1,24 @@
+// SPDX-License-Identifier: PMPL-1.0-or-later
+
+//! Academic Workflow Suite (AWS) — Command Line Interface.
+//!
+//! This binary provides the primary administrative interface for managing 
+//! academic workflows, specifically tailored for Open University (OU) tutors. 
+//! It orchestrates the lifecycle of Tutor-Marked Assignments (TMAs), including 
+//! ingestion, automated marking assistance, feedback generation, and 
+//! synchronization with Moodle.
+//!
+//! ARCHITECTURE:
+//! - **Clap**: High-fidelity CLI argument parsing with subcommand dispatch.
+//! - **Tokio**: Asynchronous runtime for concurrent marking and network IO.
+//! - **Anyhow**: Semantic error propagation with diagnostic context.
+//!
+//! WORKFLOW STAGES:
+//! 1. `Init`: Scaffolds a new project silo with RSR-compliant manifests.
+//! 2. `Login/Sync`: Authenticates with Moodle and retrieves student submissions.
+//! 3. `Mark/Batch`: Executes the marking kernel (Julia/Rust) on assignments.
+//! 4. `Feedback`: Generates and manages student-facing feedback reports.
+
 use anyhow::Result;
 use clap::{Parser, Subcommand};
 use colored::*;
@@ -12,6 +33,7 @@ mod output;
 
 use commands::*;
 
+/// CLI SCHEMA: Defines the global options and the command-space for AWS.
 #[derive(Parser)]
 #[command(name = "aws")]
 #[command(author, version, about, long_about = None)]
@@ -20,226 +42,84 @@ struct Cli {
     #[command(subcommand)]
     command: Commands,
 
-    /// Enable verbose output
+    /// VERBOSITY: Enables detailed logging for troubleshooting.
     #[arg(short, long, global = true)]
     verbose: bool,
 
-    /// Disable colored output
+    /// APPEARANCE: Disables ANSI color codes for legacy terminals or piping.
     #[arg(long, global = true)]
     no_color: bool,
 
-    /// Path to configuration file
+    /// CONFIGURATION: Explicit path to the `aws.toml` manifest.
     #[arg(short, long, global = true)]
     config: Option<String>,
 
-    /// Output format (text, json)
+    /// SERIALIZATION: Switches between human-readable text and JSON output.
     #[arg(long, global = true, default_value = "text")]
     format: String,
 }
 
 #[derive(Subcommand)]
 enum Commands {
-    /// Initialize AWS in the current directory
-    Init {
-        /// Project name
-        #[arg(short, long)]
-        name: Option<String>,
+    /// INITIALIZE: Prepares the local environment for a specific module/presentation.
+    Init { name: Option<String>, yes: bool },
 
-        /// Skip interactive prompts
-        #[arg(short, long)]
-        yes: bool,
-    },
+    /// SERVICE CONTROL: Manages the background worker cluster.
+    Start { services: Vec<String>, detach: bool },
+    Stop { services: Vec<String>, force: bool },
+    Status { detailed: bool },
 
-    /// Start AWS services
-    Start {
-        /// Services to start (all if not specified)
-        services: Vec<String>,
-
-        /// Run in detached mode
-        #[arg(short, long)]
-        detach: bool,
-    },
-
-    /// Stop AWS services
-    Stop {
-        /// Services to stop (all if not specified)
-        services: Vec<String>,
-
-        /// Force stop
-        #[arg(short, long)]
-        force: bool,
-    },
-
-    /// Show service status
-    Status {
-        /// Show detailed status
-        #[arg(short, long)]
-        detailed: bool,
-    },
-
-    /// Mark a TMA (Tutor-Marked Assignment)
+    /// MARKING: Triggers the analysis of a single TMA file.
     Mark {
-        /// TMA file path
         file: Option<String>,
-
-        /// Student ID
-        #[arg(short, long)]
         student: Option<String>,
-
-        /// Assignment ID
-        #[arg(short, long)]
         assignment: Option<String>,
-
-        /// Interactive mode
-        #[arg(short, long)]
         interactive: bool,
     },
 
-    /// Batch mark multiple TMAs
+    /// BATCH: High-concurrency marking of an entire submission directory.
     Batch {
-        /// Directory containing TMAs
         directory: String,
-
-        /// Pattern to match TMA files
-        #[arg(short, long, default_value = "*.pdf")]
-        pattern: String,
-
-        /// Maximum concurrent marking jobs
-        #[arg(short, long, default_value = "5")]
-        concurrency: usize,
+        #[arg(short, long, default_value = "*.pdf")] pattern: String,
+        #[arg(short, long, default_value = "5")] concurrency: usize,
     },
 
-    /// View or edit generated feedback
-    Feedback {
-        /// TMA ID or student ID
-        id: String,
+    /// FEEDBACK: CRUD operations for generated student reports.
+    Feedback { id: String, edit: bool, output: Option<String> },
 
-        /// Edit the feedback
-        #[arg(short, long)]
-        edit: bool,
+    /// CONFIG: Management of the tutor's local preferences and API keys.
+    Config { #[command(subcommand)] action: ConfigAction },
 
-        /// Export feedback to file
-        #[arg(short, long)]
-        output: Option<String>,
-    },
+    /// AUTHENTICATION: Authenticates the suite with the OU Moodle instance.
+    Login { username: Option<String>, url: Option<String>, save: bool },
 
-    /// Manage configuration
-    Config {
-        #[command(subcommand)]
-        action: ConfigAction,
-    },
+    /// SYNCHRONIZATION: Bidirectional state sync with the cloud VLE.
+    Sync { download: bool, upload: bool, dry_run: bool },
 
-    /// Login to Moodle
-    Login {
-        /// Moodle username
-        #[arg(short, long)]
-        username: Option<String>,
-
-        /// Moodle URL
-        #[arg(short = 'u', long)]
-        url: Option<String>,
-
-        /// Save credentials
-        #[arg(short, long)]
-        save: bool,
-    },
-
-    /// Sync with Moodle
-    Sync {
-        /// Download new assignments
-        #[arg(short, long)]
-        download: bool,
-
-        /// Upload marked assignments
-        #[arg(short = 'u', long)]
-        upload: bool,
-
-        /// Dry run (show what would be synced)
-        #[arg(short = 'n', long)]
-        dry_run: bool,
-    },
-
-    /// Update AWS to the latest version
-    Update {
-        /// Update to specific version
-        #[arg(short, long)]
-        version: Option<String>,
-
-        /// Check for updates without installing
-        #[arg(short, long)]
-        check: bool,
-    },
-
-    /// Diagnose and fix common issues
-    Doctor {
-        /// Fix issues automatically
-        #[arg(short, long)]
-        fix: bool,
-    },
+    /// MAINTENANCE: Self-update and system health diagnostics.
+    Update { version: Option<String>, check: bool },
+    Doctor { fix: bool },
 }
 
-#[derive(Subcommand)]
-enum ConfigAction {
-    /// Show current configuration
-    Show,
-
-    /// Set a configuration value
-    Set {
-        /// Configuration key
-        key: String,
-
-        /// Configuration value
-        value: String,
-    },
-
-    /// Get a configuration value
-    Get {
-        /// Configuration key
-        key: String,
-    },
-
-    /// Reset configuration to defaults
-    Reset {
-        /// Skip confirmation
-        #[arg(short, long)]
-        yes: bool,
-    },
-
-    /// Edit configuration interactively
-    Edit,
-}
-
+/// MAIN ENTRY: Boots the async runtime and dispatches to subcommand handlers.
 #[tokio::main]
 async fn main() {
     let cli = Cli::parse();
 
-    // Disable colors if requested
-    if cli.no_color {
-        colored::control::set_override(false);
-    }
+    // POLICY: Enforce no-color mandate if requested.
+    if cli.no_color { colored::control::set_override(false); }
 
-    // Set verbose mode
-    if cli.verbose {
-        std::env::set_var("RUST_LOG", "debug");
-    }
+    // LOGGING: Configure internal tracing based on verbosity.
+    if cli.verbose { std::env::set_var("RUST_LOG", "debug"); }
 
-    // Run the command
+    // DISPATCH: Routes to the appropriate functional command module.
     let result = match cli.command {
         Commands::Init { name, yes } => init::run(name, yes).await,
         Commands::Start { services, detach } => start::run(services, detach).await,
         Commands::Stop { services, force } => stop::run(services, force).await,
         Commands::Status { detailed } => status::run(detailed).await,
-        Commands::Mark {
-            file,
-            student,
-            assignment,
-            interactive,
-        } => mark::run(file, student, assignment, interactive).await,
-        Commands::Batch {
-            directory,
-            pattern,
-            concurrency,
-        } => batch::run(directory, pattern, concurrency).await,
+        Commands::Mark { file, student, assignment, interactive } => mark::run(file, student, assignment, interactive).await,
+        Commands::Batch { directory, pattern, concurrency } => batch::run(directory, pattern, concurrency).await,
         Commands::Feedback { id, edit, output } => feedback::run(id, edit, output).await,
         Commands::Config { action } => match action {
             ConfigAction::Show => config_cmd::show().await,
@@ -248,27 +128,16 @@ async fn main() {
             ConfigAction::Reset { yes } => config_cmd::reset(yes).await,
             ConfigAction::Edit => config_cmd::edit().await,
         },
-        Commands::Login {
-            username,
-            url,
-            save,
-        } => login::run(username, url, save).await,
-        Commands::Sync {
-            download,
-            upload,
-            dry_run,
-        } => sync::run(download, upload, dry_run).await,
+        Commands::Login { username, url, save } => login::run(username, url, save).await,
+        Commands::Sync { download, upload, dry_run } => sync::run(download, upload, dry_run).await,
         Commands::Update { version, check } => update::run(version, check).await,
         Commands::Doctor { fix } => doctor::run(fix).await,
     };
 
-    // Handle errors
+    // ERROR HANDLING: Provides high-signal failure reports with red-bold headers.
     if let Err(e) = result {
         eprintln!("{} {}", "Error:".red().bold(), e);
-        if cli.verbose {
-            eprintln!("\n{}", "Backtrace:".yellow());
-            eprintln!("{:?}", e);
-        }
+        if cli.verbose { eprintln!("\n{}\n{:?}", "Backtrace:".yellow(), e); }
         process::exit(1);
     }
 }
