@@ -6,6 +6,7 @@
 use serde::{Deserialize, Serialize};
 use thiserror::Error;
 use uuid::Uuid;
+use std::path::Path;
 
 /// Errors that can occur during TMA validation
 #[derive(Debug, Error)]
@@ -453,5 +454,88 @@ mod tests {
         let criteria = tma.parse_rubric_criteria();
         assert_eq!(criteria.len(), 1);
         assert_eq!(criteria[0].number, 1);
+    }
+}
+
+// Document parsing types for DOCX files
+
+/// Document metadata
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct DocumentMetadata {
+    pub author: Option<String>,
+    pub created_at: Option<chrono::DateTime<chrono::Utc>>,
+    pub modified_at: Option<chrono::DateTime<chrono::Utc>>,
+}
+
+/// A question within a TMA document
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Question {
+    pub number: u32,
+    pub text: String,
+    pub answer: String,
+}
+
+/// Parsed TMA document
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ParsedDocument {
+    pub questions: Vec<Question>,
+    pub metadata: DocumentMetadata,
+    raw_text: String,
+}
+
+impl ParsedDocument {
+    /// Create a new parsed document
+    pub fn new(questions: Vec<Question>, metadata: DocumentMetadata, raw_text: String) -> Self {
+        Self {
+            questions,
+            metadata,
+            raw_text,
+        }
+    }
+
+    /// Extract student ID from document
+    pub fn extract_student_id(&self) -> Option<String> {
+        // Simple regex to find student ID patterns like A1234567
+        let re = regex::Regex::new(r"[A-Z]\d{7}").ok()?;
+        re.find(&self.raw_text).map(|m| m.as_str().to_string())
+    }
+
+    /// Get total word count
+    pub fn total_word_count(&self) -> usize {
+        self.questions
+            .iter()
+            .map(|q| q.answer.split_whitespace().count())
+            .sum()
+    }
+}
+
+/// Student information
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct StudentInfo {
+    pub student_id_hash: String,
+    pub document_id: Uuid,
+}
+
+/// Document for parsing
+pub struct Document;
+
+impl Document {
+    /// Parse a DOCX file
+    pub async fn parse_from_file<P: AsRef<Path>>(path: P) -> anyhow::Result<ParsedDocument> {
+        // TODO: Implement actual DOCX parsing using zip crate
+        // For now, return a placeholder
+        Ok(ParsedDocument::new(
+            vec![Question {
+                number: 1,
+                text: "Placeholder question".to_string(),
+                answer: "Placeholder answer".to_string(),
+            }],
+            DocumentMetadata {
+                author: Some("Student".to_string()),
+                created_at: Some(chrono::Utc::now()),
+                modified_at: None,
+            },
+            format!("Document from {:?}", path.as_ref()),
+        ))
     }
 }
