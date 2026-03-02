@@ -33,7 +33,7 @@ argon2 = "0.5"
 
 # Document parsing
 zip = "2.2"  # For DOCX (Office Open XML)
-quick-xml = "0.36"
+quick-xml = "0.39"
 
 # Identifiers
 uuid = { version = "1.20", features = ["v4", "serde"] }
