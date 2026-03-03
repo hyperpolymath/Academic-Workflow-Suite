@@ -346,7 +346,7 @@ ci:
     just build
 
 # Validate RSR compliance
-rsr-validate:
+rsr-validate: sync-metadata
     @echo "Validating RSR compliance..."
     @echo "✅ Type safety: Rust + Elixir + ReScript"
     @echo "✅ Memory safety: Rust ownership model, zero unsafe"
@@ -378,3 +378,7 @@ help:
 # Show detailed help for a recipe
 help-recipe RECIPE:
     @just --show {{RECIPE}}
+
+# Synchronize A2ML metadata to SCM (Shadow Sync)
+sync-metadata:
+    just -f ../justfile sync-metadata
