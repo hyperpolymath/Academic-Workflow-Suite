@@ -20,7 +20,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
+        uses: actions/checkout@0c366fd6a839edf440554fa01a7085ccba70ac98 # v4
         with:
           fetch-depth: 0  # Full history for better pattern analysis
 
@@ -75,7 +75,7 @@ jobs:
           echo "- Medium: $MEDIUM" >> $GITHUB_STEP_SUMMARY
 
       - name: Upload findings artifact
-        uses: actions/upload-artifact@65c79d7f54e76e4e3c7a8f34db0f4ac8b515c478 # v4
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v4
         with:
           name: hypatia-findings
           path: hypatia-findings.json
