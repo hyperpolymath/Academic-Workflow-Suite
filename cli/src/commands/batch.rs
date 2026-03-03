@@ -91,7 +91,7 @@ pub async fn run(directory: String, pattern: String, concurrency: usize) -> Resu
             };
 
             let result = match client.upload_tma(&submission).await {
-                Ok(upload_result) => match client.mark_tma(&upload_result.id).await {
+                Ok(upload_result) => match client.mark_tma(&upload_result.tma_id).await {
                     Ok(marking_result) => {
                         pb.finish_with_message(format!(
                             "{} {} - Grade: {}/100",
@@ -101,8 +101,8 @@ pub async fn run(directory: String, pattern: String, concurrency: usize) -> Resu
                         ));
 
                         // Save feedback
-                        let feedback_path = format!(".aws/feedback/{}.txt", upload_result.id);
-                        if let Some(feedback) = &marking_result.feedback {
+                        let feedback_path = format!(".aws/feedback/{}.txt", upload_result.tma_id);
+                        if let feedback = &marking_result.feedback {
                             let _ = std::fs::write(&feedback_path, feedback);
                         }
 

@@ -14,7 +14,7 @@ pub async fn run(services: Vec<String>, detach: bool) -> Result<()> {
     println!("{}", "Starting AWS services...".cyan().bold());
     println!();
 
-    let all_services = vec![
+    let all_services: Vec<&str> = vec![
         "backend",
         "frontend",
         "database",
@@ -22,8 +22,8 @@ pub async fn run(services: Vec<String>, detach: bool) -> Result<()> {
         "moodle-connector",
     ];
 
-    let services_to_start = if services.is_empty() {
-        all_services.clone()
+    let services_to_start: Vec<String> = if services.is_empty() {
+        all_services.iter().map(|s| s.to_string()).collect()
     } else {
         services
             .iter()
@@ -37,7 +37,6 @@ pub async fn run(services: Vec<String>, detach: bool) -> Result<()> {
         return Ok(());
     }
 
-    // Start services using docker-compose
     let pb = ProgressBar::new(services_to_start.len() as u64);
     pb.set_style(
         ProgressStyle::default_bar()
@@ -77,7 +76,6 @@ pub async fn run(services: Vec<String>, detach: bool) -> Result<()> {
 
     pb.finish_and_clear();
 
-    // Wait for services to be healthy
     if !detach {
         println!();
         println!("{}", "Waiting for services to be healthy...".cyan());
@@ -91,7 +89,6 @@ pub async fn run(services: Vec<String>, detach: bool) -> Result<()> {
 
         health_pb.set_message("Checking backend health...");
 
-        // Try to connect to the backend
         let client = ApiClient::new(&config.backend_url)?;
         let mut attempts = 0;
         let max_attempts = 30;

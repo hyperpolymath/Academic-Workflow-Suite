@@ -12,6 +12,7 @@ name = "aws"
 path = "src/main.rs"
 
 [dependencies]
+futures = "0.3"
 # CLI argument parsing
 clap = { version = "4.4", features = ["derive", "cargo", "env"] }
 
@@ -22,7 +23,7 @@ indicatif = "0.17"
 dialoguer = "0.11"
 
 # HTTP client
-reqwest = { version = "0.12", features = ["json", "blocking", "cookies"] }
+reqwest = { version = "0.12", features = ["json", "blocking", "cookies", "multipart", "stream"] }
 
 # Serialization
 serde = { version = "1.0", features = ["derive"] }

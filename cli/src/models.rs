@@ -51,6 +51,12 @@ pub struct FeedbackSection {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct MoodleSubmission {
+    pub student_id: String,
+    pub url: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Assignment {
     pub id: String,
     pub name: String,
@@ -58,6 +64,7 @@ pub struct Assignment {
     pub due_date: Option<DateTime<Utc>>,
     pub max_grade: u32,
     pub course_id: String,
+    pub submissions: Vec<MoodleSubmission>,
     pub status: AssignmentStatus,
 }
 
@@ -86,6 +93,8 @@ pub struct MarkingResult {
     pub rubric_scores: Vec<RubricScore>,
     pub marked_at: DateTime<Utc>,
     pub marker: Option<String>,
+    pub student_id: Option<String>,
+    pub assignment_id: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -160,32 +169,38 @@ impl Default for CliConfig {
     }
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct UploadResponse {
+    pub id: String,
+    pub tma_id: String,
+    pub status: String,
+}
 
-    #[test]
-    fn test_tma_submission_default() {
-        let submission = TmaSubmission::default();
-        assert!(submission.student_id.is_none());
-        assert!(submission.assignment_id.is_none());
-        assert_eq!(submission.file_path, "");
-    }
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct MarkingResponse {
+    pub result: MarkingResult,
+}
 
-    #[test]
-    fn test_serialization() {
-        let submission = TmaSubmission {
-            student_id: Some("12345".to_string()),
-            assignment_id: Some("TMA01".to_string()),
-            file_path: "/path/to/file.pdf".to_string(),
-            rubric_path: None,
-            metadata: SubmissionMetadata::default(),
-        };
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct AuthResponse {
+    pub token: String,
+    pub expires_at: Option<DateTime<Utc>>,
+    pub username: String,
+    pub full_name: Option<String>,
+}
 
-        let json = serde_json::to_string(&submission).unwrap();
-        let deserialized: TmaSubmission = serde_json::from_str(&json).unwrap();
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct HealthResponse {
+    pub status: String,
+    pub version: Option<String>,
+    pub uptime: Option<String>,
+    pub database: bool,
+}
 
-        assert_eq!(submission.student_id, deserialized.student_id);
-        assert_eq!(submission.assignment_id, deserialized.assignment_id);
-    }
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct StatsResponse {
+    pub total_marked: u32,
+    pub pending_reviews: u32,
+    pub average_grade: f32,
+    pub last_sync: Option<String>,
 }

@@ -66,7 +66,7 @@ pub async fn run(name: Option<String>, skip_prompts: bool) -> Result<()> {
             .interact_text()?;
         config.backend_url = backend_url;
 
-        let moodle_url = Input::new()
+        let moodle_url: String = Input::new()
             .with_prompt("Moodle URL (optional)")
             .allow_empty(true)
             .interact_text()?;

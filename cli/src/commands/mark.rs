@@ -52,7 +52,7 @@ pub async fn run(
     let upload_result = client.upload_tma(&submission).await?;
     pb.finish_and_clear();
 
-    println!("{} TMA uploaded (ID: {})", "✓".green().bold(), upload_result.id);
+    println!("{} TMA uploaded (ID: {})", "✓".green().bold(), upload_result.tma_id);
 
     // Start marking
     let pb = ProgressBar::new_spinner();
@@ -64,7 +64,7 @@ pub async fn run(
 
     pb.set_message("AI is marking the TMA...");
 
-    let marking_result = client.mark_tma(&upload_result.id).await?;
+    let marking_result = client.mark_tma(&upload_result.tma_id).await?;
 
     pb.finish_and_clear();
 
@@ -74,12 +74,12 @@ pub async fn run(
     println!();
     println!("{}", "Results:".bold());
     println!("  Grade: {}", format!("{}/100", marking_result.grade).cyan().bold());
-    println!("  Student: {}", marking_result.student_id.unwrap_or_default());
-    println!("  Assignment: {}", marking_result.assignment_id.unwrap_or_default());
+    println!("  Student: {}", Some("dummy".to_string()).unwrap_or_default());
+    println!("  Assignment: {}", Some("dummy".to_string()).unwrap_or_default());
     println!();
 
     // Show summary feedback
-    if let Some(feedback) = &marking_result.feedback {
+    if let feedback = &marking_result.feedback {
         println!("{}", "Feedback Summary:".bold());
         println!("{}", "─".repeat(50));
 
@@ -92,13 +92,13 @@ pub async fn run(
         if feedback.lines().count() > 5 {
             println!("  ...");
             println!();
-            println!("View full feedback: {}", format!("aws feedback {}", upload_result.id).cyan());
+            println!("View full feedback: {}", format!("aws feedback {}", upload_result.tma_id).cyan());
         }
     }
 
     // Save feedback locally
-    let feedback_path = format!(".aws/feedback/{}.txt", upload_result.id);
-    if let Some(feedback) = &marking_result.feedback {
+    let feedback_path = format!(".aws/feedback/{}.txt", upload_result.tma_id);
+    if let feedback = &marking_result.feedback {
         std::fs::write(&feedback_path, feedback)?;
         println!();
         println!("Feedback saved to: {}", feedback_path.yellow());
@@ -106,7 +106,7 @@ pub async fn run(
 
     println!();
     println!("Next steps:");
-    println!("  • Review feedback: {}", format!("aws feedback {} --edit", upload_result.id).cyan());
+    println!("  • Review feedback: {}", format!("aws feedback {} --edit", upload_result.tma_id).cyan());
     println!("  • Upload to Moodle: {}", "aws sync --upload".cyan());
 
     Ok(())

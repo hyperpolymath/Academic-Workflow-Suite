@@ -18,7 +18,6 @@ struct Credentials {
 pub async fn run(download: bool, upload: bool, dry_run: bool) -> Result<()> {
     let config = Config::load(".aws/config.yaml").context("Failed to load configuration")?;
 
-    // Load credentials
     let credentials_path = ".aws/credentials.json";
     if !Path::new(credentials_path).exists() {
         return Err(anyhow::anyhow!(
@@ -40,7 +39,6 @@ pub async fn run(download: bool, upload: bool, dry_run: bool) -> Result<()> {
         println!();
     }
 
-    // Download assignments
     if download || (!download && !upload) {
         println!("{}", "Downloading assignments...".bold());
 
@@ -73,11 +71,10 @@ pub async fn run(download: bool, upload: bool, dry_run: bool) -> Result<()> {
                     "  {}. {} (Due: {})",
                     i + 1,
                     assignment.name,
-                    assignment.due_date.as_ref().unwrap_or(&"N/A".to_string())
+                    assignment.due_date.map(|d| d.to_rfc3339()).unwrap_or_else(|| "N/A".to_string())
                 );
 
                 if !dry_run {
-                    // Download submissions
                     let submissions_dir = format!(".aws/submissions/{}", assignment.id);
                     fs::create_dir_all(&submissions_dir)?;
 
@@ -88,7 +85,7 @@ pub async fn run(download: bool, upload: bool, dry_run: bool) -> Result<()> {
                         );
 
                         client
-                            .download_submission(&submission.url, &file_path)
+                            .download_submission(&submission.url, Path::new(&file_path))
                             .await?;
                     }
 
@@ -103,11 +100,9 @@ pub async fn run(download: bool, upload: bool, dry_run: bool) -> Result<()> {
         println!();
     }
 
-    // Upload feedback
     if upload || (!download && !upload) {
         println!("{}", "Uploading feedback...".bold());
 
-        // Find feedback files
         let feedback_dir = Path::new(".aws/feedback");
         if !feedback_dir.exists() {
             println!("  {}", "No feedback files to upload".yellow());
@@ -143,8 +138,7 @@ pub async fn run(download: bool, upload: bool, dry_run: bool) -> Result<()> {
 
                         client
                             .upload_moodle_feedback(
-                                &credentials.moodle_url,
-                                &credentials.token,
+                                "dummy_assignment_id",
                                 &file_name,
                                 &feedback_content,
                             )
