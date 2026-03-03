@@ -1,0 +1,16 @@
+# Academic Workflow Suite State Manifest (A2ML)
+@state { version: "0.2.0", last-updated: "2026-03-03", status: "active" }
+
+@project-context:
+name: "Academic Workflow Suite"
+tagline: "Privacy-First AI-Assisted TMA Marking"
+repo: "github.com/hyperpolymath/academic-workflow-suite"
+completion-percentage: 70
+phase: "beta"
+@end
+
+@attestation:
+originalBytes: [Attested by Gemini CLI]
+signature: PLACEHOLDER-ED25519-SIGNATURE
+timestamp: 2026-03-03T12:00:00Z
+@end
