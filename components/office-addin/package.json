@@ -22,11 +22,11 @@
   "license": "MIT",
   "dependencies": {
     "@rescript/core": "^1.6.1",
-    "rescript": "^12.1.0"
+    "rescript": "^12.2.0"
   },
   "devDependencies": {
     "@babel/core": "^7.29.0",
-    "@babel/preset-env": "^7.28.5",
+    "@babel/preset-env": "^7.29.0",
     "@babel/preset-react": "^7.28.5",
     "@types/office-js": "^1.0.574",
     "@types/office-runtime": "^1.0.36",
@@ -40,7 +40,7 @@
     "office-addin-manifest": "^2.1.2",
     "rescript-jest": "^0.10.0",
     "style-loader": "^4.0.0",
-    "webpack": "^5.105.2",
+    "webpack": "^5.105.3",
     "webpack-cli": "^6.0.1",
     "webpack-dev-server": "^5.2.3"
   },
