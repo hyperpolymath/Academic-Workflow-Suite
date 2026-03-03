@@ -91,7 +91,7 @@ if [ -f "${PROJECT_ROOT}/Cargo.toml" ]; then
     # Install cargo-license if not present
     if ! command -v cargo-license &> /dev/null; then
         echo "Installing cargo-license..." | tee -a "${REPORT_FILE}"
-        cargo install cargo-license
+        cargo install cargo-license --locked --version "^0.5.1"
     fi
 
     cd "${PROJECT_ROOT}"
@@ -182,7 +182,7 @@ if [ -f "${PROJECT_ROOT}/package.json" ]; then
     # Install license-checker if not present
     if ! command -v license-checker &> /dev/null; then
         echo "Installing license-checker..." | tee -a "${REPORT_FILE}"
-        npm install -g license-checker 2>/dev/null || npm install license-checker
+        npm install -g license-checker@25.0.1 2>/dev/null || npm install license-checker@25.0.1
     fi
 
     cd "${PROJECT_ROOT}"

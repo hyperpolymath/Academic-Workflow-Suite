@@ -753,7 +753,7 @@ build_office_addin() {
 
     (
         cd "$office_dir"
-        npm install 2>&1 | tee -a "$LOG_FILE" || exit 1
+        npm ci 2>&1 | tee -a "$LOG_FILE" || exit 1
         npm run build 2>&1 | tee -a "$LOG_FILE" || exit 1
     ) &
 

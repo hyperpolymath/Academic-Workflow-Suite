@@ -409,7 +409,7 @@ rebuild_office_addin() {
 
     (
         cd "$office_addin_dir"
-        npm install
+        npm ci
         npm run build
     )
 

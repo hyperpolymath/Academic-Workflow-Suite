@@ -249,7 +249,7 @@ install_node_dependencies() {
 
     (
         cd "$office_addin_dir"
-        npm install --prefer-offline
+        npm ci --prefer-offline
     )
 
     log SUCCESS "Node.js dependencies installed"
@@ -263,7 +263,7 @@ install_node_dependencies() {
     for tool in "${global_tools[@]}"; do
         if ! command -v "$tool" &> /dev/null; then
             log INFO "Installing global tool: $tool..."
-            npm install -g "$tool" || log WARN "Failed to install $tool"
+            npm install -g "$tool@latest" || log WARN "Failed to install $tool"
         fi
     done
 }
