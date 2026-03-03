@@ -1,7 +1,7 @@
 # Dockerfile for Academic Workflow Suite - Nginx Reverse Proxy
 # Optimized for performance and security
 
-FROM nginx:1.25-alpine AS base
+FROM nginx:1.25-alpine@sha256:455c39cca5705cadd0ef9ef700da0bb300966ccba377d999ed89da99263f748c AS base
 
 LABEL maintainer="Academic Workflow Suite Team"
 LABEL description="Nginx Reverse Proxy - Load balancer and SSL termination"

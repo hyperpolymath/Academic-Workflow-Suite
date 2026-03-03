@@ -90,7 +90,7 @@ CMD ["cargo", "test", "--all-features"]
 # ============================================================================
 # Stage 6: Production - MAXIMUM SECURITY runtime image
 # ============================================================================
-FROM debian:bookworm-slim AS production
+FROM debian:bookworm-slim@sha256:3d8675ca55654acdd0ef9ef700da0bb300966ccba377d999ed89da99263f748c AS production
 
 # Install ONLY essential runtime dependencies
 RUN apt-get update && apt-get install -y \

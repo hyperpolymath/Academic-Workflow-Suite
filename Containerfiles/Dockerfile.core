@@ -99,7 +99,7 @@ CMD ["cargo", "test", "--all-features", "--no-fail-fast"]
 # ============================================================================
 # Stage 6: Production - Minimal runtime image
 # ============================================================================
-FROM debian:bookworm-slim AS production
+FROM debian:bookworm-slim@sha256:3d8675ca55654acdd0ef9ef700da0bb300966ccba377d999ed89da99263f748c AS production
 
 # Install only runtime dependencies
 RUN apt-get update && apt-get install -y \
