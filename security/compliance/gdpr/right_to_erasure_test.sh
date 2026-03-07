@@ -3,7 +3,7 @@
 
 set -euo pipefail
 
-REPORT_FILE="/tmp/gdpr_erasure_test.txt"
+REPORT_FILE=""$HYPATIA_TMPDIR/gdpr_erasure_test.txt""
 echo "GDPR Right to Erasure Test" | tee "${REPORT_FILE}"
 echo "===========================" | tee -a "${REPORT_FILE}"
 echo "" | tee -a "${REPORT_FILE}"

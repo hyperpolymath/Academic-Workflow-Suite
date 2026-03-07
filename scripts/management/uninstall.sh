@@ -460,7 +460,7 @@ cleanup_cache() {
 
     local cache_locations=(
         "$HOME/.cache/aws"
-        "/tmp/aws-*"
+        ""$HYPATIA_TMPDIR/aws-"*"
     )
 
     for cache_path in "${cache_locations[@]}"; do

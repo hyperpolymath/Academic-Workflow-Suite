@@ -4,7 +4,7 @@
 
 set -euo pipefail
 
-REPORT_FILE="/tmp/audit_trail_report.txt"
+REPORT_FILE=""$HYPATIA_TMPDIR/audit_trail_report.txt""
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'

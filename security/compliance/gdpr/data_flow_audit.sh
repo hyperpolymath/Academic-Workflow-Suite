@@ -3,7 +3,7 @@
 
 set -euo pipefail
 
-REPORT_FILE="/tmp/gdpr_data_flow_audit.txt"
+REPORT_FILE=""$HYPATIA_TMPDIR/gdpr_data_flow_audit.txt""
 echo "=========================================" | tee "${REPORT_FILE}"
 echo "GDPR Data Flow Audit" | tee -a "${REPORT_FILE}"
 echo "Date: $(date)" | tee -a "${REPORT_FILE}"

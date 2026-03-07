@@ -3,8 +3,8 @@
 
 set -euo pipefail
 
-REPORT_FILE="/tmp/gdpr_portability_test.txt"
-TEST_EXPORT="/tmp/test_export.json"
+REPORT_FILE=""$HYPATIA_TMPDIR/gdpr_portability_test.txt""
+TEST_EXPORT=""$HYPATIA_TMPDIR/test_export.json""
 
 echo "GDPR Data Portability Test" | tee "${REPORT_FILE}"
 echo "===========================" | tee -a "${REPORT_FILE}"

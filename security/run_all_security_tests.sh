@@ -32,7 +32,7 @@ run_test() {
     echo -e "${YELLOW}[${TOTAL_TESTS}] Running: ${name}${NC}"
 
     if [ -f "$script" ]; then
-        if bash "$script" 2>&1 | tee "/tmp/test_${TOTAL_TESTS}.log"; then
+        if bash "$script" 2>&1 | tee ""$HYPATIA_TMPDIR/test_"${TOTAL_TESTS}.log"; then
             echo -e "${GREEN}✓ PASS${NC}"
             PASSED_TESTS=$((PASSED_TESTS + 1))
         else
@@ -129,7 +129,7 @@ else
     echo -e "${RED}║  ✗ SOME SECURITY TESTS FAILED                             ║${NC}"
     echo -e "${RED}╚════════════════════════════════════════════════════════════╝${NC}"
     echo ""
-    echo "Review individual test logs in /tmp/test_*.log"
-    echo "See security report for details: /tmp/security_report_*.html"
+    echo "Review individual test logs in "$HYPATIA_TMPDIR/test_"*.log"
+    echo "See security report for details: "$HYPATIA_TMPDIR/security_report_"*.html"
     exit 1
 fi

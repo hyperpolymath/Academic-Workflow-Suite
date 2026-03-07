@@ -88,7 +88,7 @@ check_pii_redacted() {
 # Test 1: Verify PII detection in submission content
 run_test "PII detection in TMA submission" bash << 'TESTSCRIPT'
 # Create test submission with PII
-cat > /tmp/test_pii_submission.txt << EOF
+cat > "$HYPATIA_TMPDIR/test_pii_submission.txt" << EOF
 Question: Test question
 
 Answer: This is a test submission. My email is student@university.ac.uk and
@@ -97,7 +97,7 @@ EOF
 
 # Simulate processing (would normally call AI grading)
 # For this test, we just check if PII would be detected
-CONTENT=$(cat /tmp/test_pii_submission.txt)
+CONTENT=$(cat "$HYPATIA_TMPDIR/test_pii_submission.txt")
 
 # Check if our system would detect email
 if echo "$CONTENT" | grep -Eq "[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}"; then
@@ -183,13 +183,13 @@ TESTSCRIPT
 # Test 7: Check log files for PII leakage
 echo -e "${YELLOW}Test $test_number: Log file PII protection${NC}"
 # Create test log directory if it doesn't exist
-mkdir -p /tmp/test_logs
-echo "Test log entry with no PII - Student ANON-123 submitted TMA" > /tmp/test_logs/test.log
+mkdir -p "$HYPATIA_TMPDIR/test_logs"
+echo "Test log entry with no PII - Student ANON-123 submitted TMA" > "$HYPATIA_TMPDIR/test_logs"/test.log
 
 # Check logs don't contain PII
 PII_FOUND=false
 for pattern in "${TEST_EMAIL}" "${TEST_NAME}" "${TEST_PHONE}" "${TEST_ADDRESS}"; do
-    if grep -r "$pattern" /tmp/test_logs/ 2>/dev/null; then
+    if grep -r "$pattern" "$HYPATIA_TMPDIR/test_logs"/ 2>/dev/null; then
         PII_FOUND=true
         break
     fi
@@ -223,7 +223,7 @@ TESTSCRIPT
 echo -e "${YELLOW}Test $test_number: Database encryption configuration${NC}"
 # This would normally check actual database configuration
 # For this test, we verify the configuration file specifies encryption
-if [ -f "/tmp/test_db_config.json" ] || true; then
+if [ -f ""$HYPATIA_TMPDIR/test_db_config.json"" ] || true; then
     echo -e "${GREEN}✓ PASSED${NC} - Database encryption configured"
     PASS_COUNT=$((PASS_COUNT + 1))
 else
@@ -308,11 +308,11 @@ echo ""
 # Test 15: Check for PII in temporary files
 echo -e "${YELLOW}Test $test_number: Temporary file cleanup${NC}"
 # Create temp file with PII and verify it should be cleaned
-echo "Test data with no PII" > /tmp/test_temp_file.txt
+echo "Test data with no PII" > "$HYPATIA_TMPDIR/test_temp_file.txt"
 
 # Verify temp files don't persist with PII
-if [ -f /tmp/test_temp_file.txt ]; then
-    if ! grep -q "${TEST_EMAIL}\|${TEST_NAME}" /tmp/test_temp_file.txt; then
+if [ -f "$HYPATIA_TMPDIR/test_temp_file.txt" ]; then
+    if ! grep -q "${TEST_EMAIL}\|${TEST_NAME}" "$HYPATIA_TMPDIR/test_temp_file.txt"; then
         echo -e "${GREEN}✓ PASSED${NC} - Temp files cleaned"
         PASS_COUNT=$((PASS_COUNT + 1))
     else
@@ -324,8 +324,8 @@ else
     PASS_COUNT=$((PASS_COUNT + 1))
 fi
 
-rm -f /tmp/test_temp_file.txt /tmp/test_pii_submission.txt
-rm -rf /tmp/test_logs
+rm -f "$HYPATIA_TMPDIR/test_temp_file.txt" "$HYPATIA_TMPDIR/test_pii_submission.txt"
+rm -rf "$HYPATIA_TMPDIR/test_logs"
 
 test_number=$((test_number + 1))
 echo ""

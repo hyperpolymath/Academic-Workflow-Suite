@@ -4,7 +4,7 @@
 
 set -euo pipefail
 
-REPORT_FILE="/tmp/filesystem_access_report.txt"
+REPORT_FILE=""$HYPATIA_TMPDIR/filesystem_access_report.txt""
 
 # Colors
 RED='\033[0;31m'

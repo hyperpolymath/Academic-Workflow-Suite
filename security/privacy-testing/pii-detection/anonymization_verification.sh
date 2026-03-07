@@ -4,7 +4,7 @@
 
 set -euo pipefail
 
-REPORT_FILE="/tmp/anonymization_verification.txt"
+REPORT_FILE=""$HYPATIA_TMPDIR/anonymization_verification.txt""
 
 # Colors
 RED='\033[0;31m'

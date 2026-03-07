@@ -31,7 +31,7 @@ echo
 # Note: This requires adding clap_complete to the build dependencies
 
 # Create a temporary program to generate completions
-cat > /tmp/generate_completions.rs << 'EOF'
+cat > "$HYPATIA_TMPDIR/generate_completions.rs" << 'EOF'
 use clap::CommandFactory;
 use clap_complete::{generate_to, shells::*};
 use std::env;

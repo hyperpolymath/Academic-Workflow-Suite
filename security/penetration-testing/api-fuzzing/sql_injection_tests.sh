@@ -6,7 +6,7 @@ set -euo pipefail
 
 # Configuration
 API_BASE_URL="${API_BASE_URL:-http://localhost:8000}"
-REPORT_FILE="/tmp/sql_injection_report.txt"
+REPORT_FILE=""$HYPATIA_TMPDIR/sql_injection_report.txt""
 
 # Colors
 RED='\033[0;31m'

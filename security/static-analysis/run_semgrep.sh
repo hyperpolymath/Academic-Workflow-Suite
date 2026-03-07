@@ -25,15 +25,15 @@ semgrep scan \
     --severity=ERROR \
     --severity=WARNING \
     --json \
-    --output=/tmp/semgrep_results.json \
+    --output="$HYPATIA_TMPDIR/semgrep_results.json" \
     .
 
 # Print summary
 echo ""
-echo "Semgrep results saved to: /tmp/semgrep_results.json"
+echo "Semgrep results saved to: "$HYPATIA_TMPDIR/semgrep_results.json""
 
 # Check for findings
-findings=$(jq '.results | length' /tmp/semgrep_results.json 2>/dev/null || echo "0")
+findings=$(jq '.results | length' "$HYPATIA_TMPDIR/semgrep_results.json" 2>/dev/null || echo "0")
 
 if [ "$findings" -gt 0 ]; then
     echo "Findings: ${findings}"

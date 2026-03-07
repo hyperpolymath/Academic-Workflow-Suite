@@ -25,10 +25,10 @@ codeql database create ./codeql-db --language=javascript,python,rust
 echo "Running security queries..."
 codeql database analyze ./codeql-db \
     --format=sarif-latest \
-    --output=/tmp/codeql_results.sarif \
+    --output="$HYPATIA_TMPDIR/codeql_results.sarif" \
     security-and-quality
 
 # Print results
 echo ""
-echo "CodeQL results saved to: /tmp/codeql_results.sarif"
+echo "CodeQL results saved to: "$HYPATIA_TMPDIR/codeql_results.sarif""
 echo "CodeQL Security Analysis: COMPLETE ✓"

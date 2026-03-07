@@ -3,7 +3,7 @@
 
 set -euo pipefail
 
-REPORT_FILE="/tmp/gdpr_retention_check.txt"
+REPORT_FILE=""$HYPATIA_TMPDIR/gdpr_retention_check.txt""
 echo "GDPR Data Retention Policy Check" | tee "${REPORT_FILE}"
 echo "=================================" | tee -a "${REPORT_FILE}"
 echo "" | tee -a "${REPORT_FILE}"

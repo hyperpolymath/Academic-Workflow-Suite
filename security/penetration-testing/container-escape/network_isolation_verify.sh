@@ -4,7 +4,7 @@
 
 set -euo pipefail
 
-REPORT_FILE="/tmp/network_isolation_report.txt"
+REPORT_FILE=""$HYPATIA_TMPDIR/network_isolation_report.txt""
 
 # Colors
 RED='\033[0;31m'

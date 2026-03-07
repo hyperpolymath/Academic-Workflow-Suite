@@ -114,7 +114,7 @@ deploy_prometheus() {
 
     # Create Prometheus config
     log_info "Creating Prometheus configuration..."
-    cat > /tmp/prometheus.yml <<EOF
+    cat > "$HYPATIA_TMPDIR/prometheus.yml" <<EOF
 global:
   scrape_interval: 15s
   evaluation_interval: 15s
@@ -162,7 +162,7 @@ scrape_configs:
       - targets: ['cadvisor:8080']
 EOF
 
-    sudo mv /tmp/prometheus.yml /etc/prometheus/prometheus.yml
+    sudo mv "$HYPATIA_TMPDIR/prometheus.yml" /etc/prometheus/prometheus.yml
     log_info "Prometheus configuration created"
 }
 
@@ -172,7 +172,7 @@ deploy_grafana() {
 
     # Create datasource configuration
     log_info "Creating Grafana datasources..."
-    cat > /tmp/datasources.yml <<EOF
+    cat > "$HYPATIA_TMPDIR/datasources.yml" <<EOF
 apiVersion: 1
 
 datasources:
@@ -201,11 +201,11 @@ datasources:
     editable: false
 EOF
 
-    sudo mv /tmp/datasources.yml /etc/grafana/provisioning/datasources/datasources.yml
+    sudo mv "$HYPATIA_TMPDIR/datasources.yml" /etc/grafana/provisioning/datasources/datasources.yml
 
     # Create dashboard provisioning
     log_info "Creating Grafana dashboard provisioning..."
-    cat > /tmp/dashboards.yml <<EOF
+    cat > "$HYPATIA_TMPDIR/dashboards.yml" <<EOF
 apiVersion: 1
 
 providers:
@@ -220,7 +220,7 @@ providers:
       path: /etc/grafana/dashboards
 EOF
 
-    sudo mv /tmp/dashboards.yml /etc/grafana/provisioning/dashboards/dashboards.yml
+    sudo mv "$HYPATIA_TMPDIR/dashboards.yml" /etc/grafana/provisioning/dashboards/dashboards.yml
 
     # Copy dashboard files
     log_info "Copying Grafana dashboards..."

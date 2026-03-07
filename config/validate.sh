@@ -215,8 +215,8 @@ diff_configs() {
     print_info "Comparing ${env1} and ${env2} configurations..."
     echo ""
 
-    local temp1="/tmp/cue_${env1}.${format}"
-    local temp2="/tmp/cue_${env2}.${format}"
+    local temp1=""$HYPATIA_TMPDIR/cue_"${env1}.${format}"
+    local temp2=""$HYPATIA_TMPDIR/cue_"${env2}.${format}"
 
     cue export "${ENVIRONMENTS_DIR}/${env1}.cue" --out "${format}" > "${temp1}"
     cue export "${ENVIRONMENTS_DIR}/${env2}.cue" --out "${format}" > "${temp2}"

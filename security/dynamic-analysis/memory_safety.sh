@@ -26,14 +26,14 @@ valgrind --leak-check=full \
     --show-leak-kinds=all \
     --track-origins=yes \
     --verbose \
-    --log-file=/tmp/valgrind_report.txt \
+    --log-file="$HYPATIA_TMPDIR/valgrind_report.txt" \
     ./target/release/academic-workflow-suite || true
 
 # Check results
-if grep -q "no leaks are possible" /tmp/valgrind_report.txt; then
+if grep -q "no leaks are possible" "$HYPATIA_TMPDIR/valgrind_report.txt"; then
     echo "Memory Safety: PASS ✓"
     exit 0
 else
-    echo "Memory leaks detected. See /tmp/valgrind_report.txt"
+    echo "Memory leaks detected. See "$HYPATIA_TMPDIR/valgrind_report.txt""
     exit 1
 fi

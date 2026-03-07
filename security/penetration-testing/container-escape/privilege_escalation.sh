@@ -4,7 +4,7 @@
 
 set -euo pipefail
 
-REPORT_FILE="/tmp/privilege_escalation_report.txt"
+REPORT_FILE=""$HYPATIA_TMPDIR/privilege_escalation_report.txt""
 
 # Colors
 RED='\033[0;31m'
