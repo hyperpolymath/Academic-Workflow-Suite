@@ -1,6 +1,9 @@
 # SPDX-License-Identifier: PMPL-1.0-or-later
 name: Container Policy
 on: [push, pull_request]
+
+permissions: read-all
+
 npermissions: read-all
 
 jobs:
