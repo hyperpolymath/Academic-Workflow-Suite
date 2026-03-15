@@ -1,16 +1,14 @@
-# Academic Workflow Suite State Manifest (A2ML)
-@state { version: "0.2.0", last-updated: "2026-03-03", status: "active" }
+# SPDX-License-Identifier: PMPL-1.0-or-later
+# STATE.a2ml — Project state checkpoint
+# Converted from STATE.scm on 2026-03-15
 
-@project-context:
-name: "Academic Workflow Suite"
-tagline: "Privacy-First AI-Assisted TMA Marking"
-repo: "github.com/hyperpolymath/academic-workflow-suite"
-completion-percentage: 70
-phase: "beta"
-@end
+[metadata]
+project = "academic-workflow-suite"
+version = "0.1.0"
+last-updated = "2026-03-15"
+status = "active"
 
-@attestation:
-originalBytes: [Attested by Gemini CLI]
-signature: PLACEHOLDER-ED25519-SIGNATURE
-timestamp: 2026-03-03T12:00:00Z
-@end
+[project-context]
+name = "academic-workflow-suite"
+completion-percentage = 0
+phase = "In development"
