@@ -1,0 +1,26 @@
+# SPDX-License-Identifier: PMPL-1.0-or-later
+# Clade declaration — part of the gv-clade-index registry
+# See: https://github.com/hyperpolymath/gv-clade-index
+
+[identity]
+uuid = "6eb2b24e-802c-5a2b-9900-71469664961b"
+primary-forge = "github"
+primary-owner = "hyperpolymath"
+canonical-name = "academic-workflow-suite"
+prefixed-name = "dx-academic-workflow-suite"
+
+[clade]
+primary = "dx"
+secondary = []
+assigned = "2026-03-16"
+rationale = ""
+
+[forges]
+github = "hyperpolymath/academic-workflow-suite"
+gitlab = "hyperpolymath/academic-workflow-suite"
+bitbucket = "hyperpolymath/academic-workflow-suite"
+
+[lineage]
+type = "standalone"
+parent = "Academic workflow tools"
+born = "2026-03-16"
