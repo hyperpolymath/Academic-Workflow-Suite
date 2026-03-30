@@ -36,7 +36,7 @@ zip = "8.4"  # For DOCX (Office Open XML)
 quick-xml = "0.39"
 
 # Identifiers
-uuid = { version = "1.20", features = ["v4", "serde"] }
+uuid = { version = "1.23", features = ["v4", "serde"] }
 
 # Utilities
 regex = "1.12"
