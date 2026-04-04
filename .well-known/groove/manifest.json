@@ -1,0 +1,26 @@
+{
+  "applicability": [
+    "individual",
+    "team"
+  ],
+  "capabilities": {
+    "primary": {
+      "description": "TODO: describe this service's primary capability",
+      "panel_compatible": true,
+      "protocol": "cli",
+      "requires_auth": false,
+      "type": "custom"
+    }
+  },
+  "consumes": [],
+  "groove_version": "1",
+  "health": null,
+  "invoke_patterns": {
+    "ci": "academic-workflow-suite --ci --format json",
+    "local": "academic-workflow-suite --interactive",
+    "mcp": "boj cartridge_invoke academic-workflow-suite"
+  },
+  "mode": "passive",
+  "service_id": "academic-workflow-suite",
+  "service_version": "0.1.0"
+}

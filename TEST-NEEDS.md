@@ -1,5 +1,7 @@
 # Test & Benchmark Requirements
 
+## CRG Grade: C — ACHIEVED 2026-04-04
+
 ## Current State (UPDATED 2026-04-04 — CRG C ACHIEVED)
 
 ### CLI crate (`cli/`)
