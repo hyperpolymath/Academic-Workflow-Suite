@@ -50,27 +50,68 @@ pub enum ConfigAction {
 
 #[derive(Subcommand)]
 enum Commands {
-    Init { name: Option<String>, yes: bool },
-    Start { services: Vec<String>, detach: bool },
-    Stop { services: Vec<String>, force: bool },
-    Status { detailed: bool },
+    Init {
+        name: Option<String>,
+        #[arg(short, long)]
+        yes: bool,
+    },
+    Start {
+        services: Vec<String>,
+        #[arg(short, long)]
+        detach: bool,
+    },
+    Stop {
+        services: Vec<String>,
+        #[arg(short, long)]
+        force: bool,
+    },
+    Status {
+        #[arg(short, long)]
+        detailed: bool,
+    },
     Mark {
         file: Option<String>,
         student: Option<String>,
         assignment: Option<String>,
+        #[arg(short, long)]
         interactive: bool,
     },
     Batch {
         directory: String,
         #[arg(short, long, default_value = "*.pdf")] pattern: String,
-        #[arg(short, long, default_value = "5")] concurrency: usize,
+        #[arg(long, default_value = "5")] concurrency: usize,
     },
-    Feedback { id: String, edit: bool, output: Option<String> },
+    Feedback {
+        id: String,
+        #[arg(short, long)]
+        edit: bool,
+        output: Option<String>,
+    },
     Config { #[command(subcommand)] action: ConfigAction },
-    Login { username: Option<String>, url: Option<String>, save: bool },
-    Sync { download: bool, upload: bool, dry_run: bool },
-    Update { version: Option<String>, check: bool },
-    Doctor { fix: bool },
+    Login {
+        username: Option<String>,
+        url: Option<String>,
+        #[arg(short, long)]
+        save: bool,
+    },
+    Sync {
+        #[arg(long)]
+        download: bool,
+        #[arg(long)]
+        upload: bool,
+        #[arg(long)]
+        dry_run: bool,
+    },
+    Update {
+        #[arg(long, name = "target-version")]
+        target_version: Option<String>,
+        #[arg(long)]
+        check: bool,
+    },
+    Doctor {
+        #[arg(short, long)]
+        fix: bool,
+    },
 }
 
 #[tokio::main]
@@ -97,7 +138,7 @@ async fn main() {
         },
         Commands::Login { username, url, save } => login::run(username, url, save).await,
         Commands::Sync { download, upload, dry_run } => sync::run(download, upload, dry_run).await,
-        Commands::Update { version, check } => update::run(version, check).await,
+        Commands::Update { target_version, check } => update::run(target_version, check).await,
         Commands::Doctor { fix } => doctor::run(fix).await,
     };
 

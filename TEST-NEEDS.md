@@ -1,19 +1,34 @@
 # Test & Benchmark Requirements
 
-## Current State (UPDATED 2026-04-04)
+## Current State (UPDATED 2026-04-04 — CRG C ACHIEVED)
+
+### CLI crate (`cli/`)
 - Unit tests: 17 tests in CLI (config, models, output modules) - ALL PASS
-- E2E tests: 12 tests created (3 pass, 9 have integration issues with cargo test harness)
-- Property tests: 12 tests created using proptest - ALL PASS
-- Security/Aspect tests: 22 tests created - ALL PASS
-- Integration tests: 1 (ai-jail test_isolation.rs)
-- Benchmarks: 6 files verified as real (crypto_bench.rs, validation_bench.rs, ai_benchmarks.rs, core_benchmarks.rs, ipc_benchmarks.rs, lmdb_bench.rs) - ALL REAL CODE
-- panic-attack scan: NEVER RUN
+- Contract/invariant tests: 8 tests (cli/tests/contract_tests.rs) - ALL PASS
+- E2E tests: 12 tests in e2e_cli_test.rs - ALL PASS (fixed: clap bool-flag bug, `-c` conflict, `version` name conflict)
+- Property tests: 12 tests using proptest - ALL PASS
+- Security/Aspect tests: 22 tests - ALL PASS
+- **Total CLI: 71 tests, 0 failures**
+
+### components/core
+- 49 + 2 + 4 tests = 55 tests - ALL PASS
+
+### components/shared
+- 104 lib tests + 13 integration tests = 117 tests - ALL PASS
+- (Property tests run separately; timing-sensitive)
+
+### components/ai-jail
+- Requires CUDA hardware — cannot test on this machine (pre-existing limitation)
+
+### Benchmarks
+- 6 bench files verified as real (crypto_bench.rs, validation_bench.rs, ai_benchmarks.rs, core_benchmarks.rs, ipc_benchmarks.rs, lmdb_bench.rs) - ALL REAL CODE
 
 ## What's Been Completed (CRG C Target)
 
 ### CLI Testing (COMPLETED)
 - **Unit tests**: 17 tests for config.rs, models.rs, output.rs — ALL PASS
-- **E2E tests**: 12 tests created in tests/e2e_cli_test.rs (help, subcommands, error handling)
+- **Contract tests**: 8 invariant tests in tests/contract_tests.rs — ALL PASS
+- **E2E tests**: 12 tests in tests/e2e_cli_test.rs — ALL PASS (fixed 9 previously failing)
 - **Property tests**: 12 tests using proptest for config roundtrips, JSON serialization, batch operations
 - **Security tests**: 22 aspect tests for path traversal, injection attacks, error handling, concurrency
 

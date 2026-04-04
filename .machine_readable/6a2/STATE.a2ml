@@ -14,11 +14,18 @@ name = "academic-workflow-suite"
 completion-percentage = 35
 phase = "Core testing infrastructure in place"
 
+crg-grade = "C"
+
 [testing-status]
 cli-unit-tests = "17 PASS (config, models, output)"
-e2e-tests = "12 created (3 pass, 9 have harness integration issues)"
+cli-contract-tests = "8 PASS (invariants: help, flags, panics, subcommand contract)"
+e2e-tests = "12 PASS (fixed: clap bool-flag annotations, -c short flag conflict, version name conflict)"
 property-tests = "12 PASS (roundtrips, serialization, batch operations)"
 security-tests = "22 PASS (injection, path traversal, concurrency, error handling)"
+cli-total = "71 PASS, 0 FAIL"
+core-tests = "55 PASS"
+shared-tests = "117 PASS (lib + integration)"
+ai-jail = "BLOCKED — requires CUDA hardware"
 benchmarks-verified = "6/6 real (crypto, validation, AI, core, IPC, LMDB)"
 build-status = "PASSES"
 
@@ -26,5 +33,3 @@ build-status = "PASSES"
 - Elixir backend E2E tests (create 2-3 for critical untested modules)
 - ReScript office add-in E2E tests
 - Run panic-attack assail for security scan
-- Commit and push all test files
-- Update TEST-NEEDS.md summary
