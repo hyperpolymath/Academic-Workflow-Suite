@@ -51,6 +51,7 @@ regex = "1.10"
 [dev-dependencies]
 mockito = "1.2"
 tempfile = "3.8"
+proptest = "1.4"
 
 [profile.release]
 lto = true

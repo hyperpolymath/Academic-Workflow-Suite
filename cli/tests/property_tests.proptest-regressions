@@ -1,0 +1,8 @@
+# Seeds for failure cases proptest has generated in the past. It is
+# automatically read and these particular cases re-run before any
+# novel cases are generated.
+#
+# It is recommended to check this file in to source control so that
+# everyone who runs the test benefits from these saved cases.
+cc 36d7ef957288bc14064d198397564eebb1558dd68d99a37be66cd0bc6b62add9 # shrinks to project_name = "- ", backend_url = "https://0.com", concurrency = 1
+cc dc12ed1dc2acc9a27c84bc3c0a0cf6ffbcf7f3d93e4a790a1ae06be30eceaa9b # shrinks to pairs = [("key_24", "val_00"), ("key_24", "val_01")]

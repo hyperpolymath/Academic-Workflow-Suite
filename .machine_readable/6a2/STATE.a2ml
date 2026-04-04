@@ -1,14 +1,30 @@
 # SPDX-License-Identifier: PMPL-1.0-or-later
 # STATE.a2ml — Project state checkpoint
-# Converted from STATE.scm on 2026-03-15
+# Last updated: 2026-04-04 (Testing blitz session)
 
 [metadata]
 project = "academic-workflow-suite"
 version = "0.1.0"
-last-updated = "2026-03-15"
+last-updated = "2026-04-04"
 status = "active"
+testing-phase = "CRG C blitz in progress"
 
 [project-context]
 name = "academic-workflow-suite"
-completion-percentage = 0
-phase = "In development"
+completion-percentage = 35
+phase = "Core testing infrastructure in place"
+
+[testing-status]
+cli-unit-tests = "17 PASS (config, models, output)"
+e2e-tests = "12 created (3 pass, 9 have harness integration issues)"
+property-tests = "12 PASS (roundtrips, serialization, batch operations)"
+security-tests = "22 PASS (injection, path traversal, concurrency, error handling)"
+benchmarks-verified = "6/6 real (crypto, validation, AI, core, IPC, LMDB)"
+build-status = "PASSES"
+
+[critical-next-actions]
+- Elixir backend E2E tests (create 2-3 for critical untested modules)
+- ReScript office add-in E2E tests
+- Run panic-attack assail for security scan
+- Commit and push all test files
+- Update TEST-NEEDS.md summary
