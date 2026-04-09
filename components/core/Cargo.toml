@@ -8,7 +8,7 @@ license = "PMPL-1.0-or-later"
 
 [dependencies]
 # Async runtime
-tokio = { version = "1.50", features = ["full"] }
+tokio = { version = "1.51", features = ["full"] }
 
 # Web frameworks
 actix-web = "4.13"
