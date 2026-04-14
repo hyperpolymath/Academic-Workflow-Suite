@@ -3,6 +3,8 @@
 # Academic workflow tools for research and publication management
 set shell := ["bash", "-uc"]
 
+import? "contractile.just"
+
 project := "academic-workflow-suite"
 
 # Show all recipes
