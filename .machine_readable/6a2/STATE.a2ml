@@ -1,20 +1,20 @@
 # SPDX-License-Identifier: PMPL-1.0-or-later
 # STATE.a2ml — Project state checkpoint
-# Last updated: 2026-04-04 (Testing blitz session)
+# Last updated: 2026-04-16 (Standing check + blocker resolution)
 
 [metadata]
 project = "academic-workflow-suite"
 version = "0.1.0"
-last-updated = "2026-04-04"
+last-updated = "2026-04-16"
 status = "active"
-testing-phase = "CRG C blitz in progress"
+testing-phase = "CRG B blitz — blockers cleared"
 
 [project-context]
 name = "academic-workflow-suite"
-completion-percentage = 35
-phase = "Core testing infrastructure in place"
+completion-percentage = 42
+phase = "All Rust crates build green; backend + office-addin test suites expanded"
 
-crg-grade = "C"
+crg-grade = "B"
 
 [testing-status]
 cli-unit-tests = "17 PASS (config, models, output)"
@@ -24,12 +24,30 @@ property-tests = "12 PASS (roundtrips, serialization, batch operations)"
 security-tests = "22 PASS (injection, path traversal, concurrency, error handling)"
 cli-total = "71 PASS, 0 FAIL"
 core-tests = "55 PASS"
-shared-tests = "117 PASS (lib + integration)"
+shared-tests = "104 PASS lib (proven dependency blocker resolved)"
+backend-tests = "TMA + TMA-controller + CoreBridge + JobRegistry + EventStore (5 files, pending mix run)"
+office-addin-tests = "Types (15) + BackendClient (18) + OfficeAPI (22) implemented"
 ai-jail = "BLOCKED — requires CUDA hardware"
 benchmarks-verified = "6/6 real (crypto, validation, AI, core, IPC, LMDB)"
-build-status = "PASSES"
+build-status = "PASSES (core, shared, office-addin)"
+
+[security-audit]
+last-scan = "2026-04-16"
+tool = "cargo-audit"
+vulnerabilities = 0
+advisory-warnings = 3
+warnings = [
+  "RUSTSEC-2025-0141 bincode 1.3.3 unmaintained (transitive)",
+  "RUSTSEC-2026-0097 rand 0.8.5 unsound with custom logger (not triggered)",
+  "RUSTSEC-2026-0097 rand 0.9.2 unsound with custom logger (not triggered)"
+]
+manual-review = "No MD5/SHA1, no hardcoded secrets, HTTPS-only network paths"
+
+[resolved-blockers]
+- "shared crate build: removed unused `proven.crypto` feature gate (commit pending)"
 
 [critical-next-actions]
-- Elixir backend E2E tests (create 2-3 for critical untested modules)
-- ReScript office add-in E2E tests
-- Run panic-attack assail for security scan
+- Run mix test in a Beam-enabled environment to validate new Elixir tests
+- Run deno task test:office-addin to validate new ReScript tests
+- Upgrade transitive deps past bincode 1.3.3 and rand 0.8.5 when parents allow
+- Add AI-jail test harness stub that auto-skips when CUDA unavailable

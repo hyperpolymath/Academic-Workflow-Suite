@@ -26,13 +26,10 @@
 //! best practices for security. Deprecated algorithms (PBKDF2, MD5, SHA1)
 //! are NOT supported.
 //!
-//! ## Proven Integration
+//! ## Proven Integration (planned)
 //!
-//! Core hashing and cryptographic operations are backed by the `proven`
-//! library's [`SafeCrypto`](proven::SafeCrypto) module, which provides:
-//! - Memory-safe implementations (Rust guarantees)
-//! - Formally verified specifications (Idris2 proofs)
-//! - Constant-time operations to prevent side-channel attacks
+//! Future: core hashing and cryptographic operations will be backed by the
+//! `proven` library's `SafeCrypto` module once its `crypto` feature lands.
 
 use crate::errors::{Result, SharedError};
 use argon2::{Argon2, PasswordHash, PasswordHasher, PasswordVerifier};
@@ -43,8 +40,8 @@ use subtle::ConstantTimeEq;
 use uuid::Uuid;
 use zeroize::Zeroizing;
 
-// Re-export proven::SafeCrypto for direct access to formally verified operations
-pub use proven::SafeCrypto;
+// TODO: Re-export proven::SafeCrypto once the crate's "crypto" feature is available
+// pub use proven::SafeCrypto;
 
 // Argon2id parameters per Hyperpolymath Crypto Standard
 /// Memory cost: 64 MiB minimum
