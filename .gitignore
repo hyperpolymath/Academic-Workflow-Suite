@@ -11,7 +11,6 @@ Thumbs.db
 .vscode/
 
 # Build
-/target/
 /_build/
 /build/
 /dist/
@@ -24,6 +23,7 @@ Thumbs.db
 /.elixir_ls/
 
 # Rust
+**/target/
 # Cargo.lock  # Keep for binaries
 
 # Elixir
