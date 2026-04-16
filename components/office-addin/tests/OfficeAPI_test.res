@@ -1,199 +1,365 @@
-// Tests for OfficeAPI module
+// SPDX-License-Identifier: PMPL-1.0-or-later
+// Tests for OfficeAPI module — Office.js bindings and helpers
 
 open Jest
 open Expect
 
-describe("OfficeAPI", () => {
-  describe("coercionTypeToString", () => {
-    test("converts Text to correct string", () => {
-      // This test would verify the conversion
-      // Note: Actual testing would require mocking Office.CoercionType
-      expect(true)->toBe(true)
-    })
+// ── Mock infrastructure ─────────────────────────────────────────
 
-    test("converts Html to correct string", () => {
-      expect(true)->toBe(true)
-    })
+@val external globalThis: {..} = "globalThis"
 
-    test("converts Matrix to correct string", () => {
-      expect(true)->toBe(true)
-    })
+// Build a minimal Office.js mock that the OfficeAPI module can call
+let setupOfficeMock = (~onReadyResult=Ok(), ~selectedData=Some("Hello World"), ()) => {
+  let mockOffice = {
+    "onReady": (. callback) => callback(. ()),
+    "context": {
+      "document": {
+        "getSelectedDataAsync": (. _coercionType, _options, callback) => {
+          switch selectedData {
+          | Some(data) =>
+            callback(. {
+              "status": "Succeeded",
+              "value": Some(data),
+              "error": None,
+            })
+          | None =>
+            callback(. {
+              "status": "Failed",
+              "value": None,
+              "error": Some({"message": "No data selected", "code": 5001, "name": "InvalidSelection"}),
+            })
+          }
+        },
+        "setSelectedDataAsync": (. _data, _options, callback) => {
+          callback(. {
+            "status": "Succeeded",
+            "error": None,
+          })
+        },
+      },
+      "host": {
+        "type": "Word",
+      },
+      "ui": {
+        "displayDialogAsync": (. _url, _opts, _cb) => (),
+      },
+    },
+    "CoercionType": {
+      "Text": "text",
+      "Html": "html",
+      "Matrix": "matrix",
+      "Table": "table",
+    },
+    "AsyncResultStatus": {
+      "Succeeded": "Succeeded",
+      "Failed": "Failed",
+    },
+  }
 
-    test("converts Table to correct string", () => {
-      expect(true)->toBe(true)
-    })
+  globalThis["Office"] = mockOffice
+  mockOffice
+}
+
+let setupOfficeErrorMock = () => {
+  let mockOffice = {
+    "onReady": (. callback) => callback(. ()),
+    "context": {
+      "document": {
+        "getSelectedDataAsync": (. _ct, _opts, callback) => {
+          callback(. {
+            "status": "Failed",
+            "value": None,
+            "error": Some({"message": "Document not loaded", "code": 5001, "name": "InternalError"}),
+          })
+        },
+        "setSelectedDataAsync": (. _data, _opts, callback) => {
+          callback(. {
+            "status": "Failed",
+            "error": Some({"message": "Read-only document", "code": 5002, "name": "WriteError"}),
+          })
+        },
+      },
+      "host": {
+        "type": "Word",
+      },
+    },
+    "CoercionType": {
+      "Text": "text",
+      "Html": "html",
+      "Matrix": "matrix",
+      "Table": "table",
+    },
+    "AsyncResultStatus": {
+      "Succeeded": "Succeeded",
+      "Failed": "Failed",
+    },
+  }
+
+  globalThis["Office"] = mockOffice
+}
+
+// ── coercionTypeToString (pure) ─────────────────────────────────
+
+describe("OfficeAPI.coercionTypeToString", () => {
+  beforeEach(() => {
+    let _ = setupOfficeMock()
   })
 
-  describe("getSelectedData", () => {
-    testAsync("successfully retrieves selected text", done => {
-      // Mock Office.context.document.getSelectedDataAsync
-      // In real tests, you would use Office.js testing utilities
-      done()
-    })
-
-    testAsync("handles no selection", done => {
-      // Mock empty selection
-      done()
-    })
-
-    testAsync("handles Office.js errors", done => {
-      // Mock failed async result
-      done()
-    })
-
-    testAsync("handles exceptions", done => {
-      // Mock thrown exception
-      done()
-    })
+  test("converts Text to Office.CoercionType.Text value", () => {
+    let result = OfficeAPI.coercionTypeToString(Types.Office.Text)
+    expect(result)->toBe("text")
   })
 
-  describe("setSelectedData", () => {
-    testAsync("successfully sets selected data", done => {
-      // Mock successful set operation
-      done()
-    })
-
-    testAsync("handles set data errors", done => {
-      // Mock error response
-      done()
-    })
-
-    testAsync("handles different coercion types", done => {
-      // Test with Html, Text, etc.
-      done()
-    })
+  test("converts Html to Office.CoercionType.Html value", () => {
+    let result = OfficeAPI.coercionTypeToString(Types.Office.Html)
+    expect(result)->toBe("html")
   })
 
-  describe("getDocumentContent", () => {
-    testAsync("retrieves full document content", done => {
-      // This is tricky as it may require Word.run API
-      done()
-    })
-
-    testAsync("handles empty document", done => {
-      // Mock empty content
-      done()
-    })
-
-    testAsync("prompts for selection if needed", done => {
-      // Test fallback behavior
-      done()
-    })
+  test("converts Matrix to Office.CoercionType.Matrix value", () => {
+    let result = OfficeAPI.coercionTypeToString(Types.Office.Matrix)
+    expect(result)->toBe("matrix")
   })
 
-  describe("insertText", () => {
-    testAsync("inserts text at current position", done => {
-      // Mock insert operation
-      done()
-    })
-
-    testAsync("handles insertion errors", done => {
-      // Mock error
-      done()
-    })
-  })
-
-  describe("insertHtml", () => {
-    testAsync("inserts HTML at current position", done => {
-      // Mock HTML insertion
-      done()
-    })
-
-    testAsync("handles HTML insertion errors", done => {
-      // Mock error
-      done()
-    })
-  })
-
-  describe("initialize", () => {
-    testAsync("initializes Office.js successfully", done => {
-      // Mock Office.onReady
-      done()
-    })
-
-    testAsync("handles initialization errors", done => {
-      // Mock initialization failure
-      done()
-    })
-  })
-
-  describe("isOfficeContext", () => {
-    test("returns true in Office context", () => {
-      // Would need to mock Office.context
-      expect(true)->toBe(true)
-    })
-
-    test("returns false outside Office context", () => {
-      // Test when Office is not available
-      expect(true)->toBe(true)
-    })
-  })
-
-  describe("getHostType", () => {
-    test("detects Word host", () => {
-      // Mock Office.context.host.type = "Word"
-      expect(true)->toBe(true)
-    })
-
-    test("detects Excel host", () => {
-      // Mock Excel
-      expect(true)->toBe(true)
-    })
-
-    test("detects PowerPoint host", () => {
-      // Mock PowerPoint
-      expect(true)->toBe(true)
-    })
-
-    test("detects Outlook host", () => {
-      // Mock Outlook
-      expect(true)->toBe(true)
-    })
-
-    test("returns Unknown for unrecognized host", () => {
-      // Mock unknown host type
-      expect(true)->toBe(true)
-    })
-
-    test("handles missing host context", () => {
-      // Test error handling
-      expect(true)->toBe(true)
-    })
-  })
-
-  describe("showNotification", () => {
-    test("displays notification to user", () => {
-      // Would test the notification mechanism
-      // Currently uses console.log, so test that
-      expect(true)->toBe(true)
-    })
-  })
-
-  describe("onSelectionChanged", () => {
-    test("registers selection change handler", () => {
-      // Test event handler registration
-      expect(true)->toBe(true)
-    })
-
-    test("calls handler when selection changes", () => {
-      // Mock selection change event
-      expect(true)->toBe(true)
-    })
+  test("converts Table to Office.CoercionType.Table value", () => {
+    let result = OfficeAPI.coercionTypeToString(Types.Office.Table)
+    expect(result)->toBe("table")
   })
 })
 
-// Integration tests
-describe("OfficeAPI Integration", () => {
-  testAsync("complete read-modify-write cycle", done => {
-    // Test: read selection -> modify -> write back
-    // 1. getSelectedData
-    // 2. Process data
-    // 3. setSelectedData
-    done()
+// ── getSelectedData ────────────────────────────────────────────
+
+describe("OfficeAPI.getSelectedData", () => {
+  testAsync("retrieves selected text successfully", done => {
+    let _ = setupOfficeMock(~selectedData=Some("Selected paragraph"), ())
+
+    OfficeAPI.getSelectedData(Types.Office.Text)
+    ->Promise.then(result => {
+      switch result {
+      | Ok(text) => expect(text)->toBe("Selected paragraph")
+      | Error(msg) => fail(msg)
+      }
+      done()
+      Promise.resolve()
+    })
+    ->ignore
   })
 
-  testAsync("error recovery", done => {
-    // Test graceful error handling across operations
-    done()
+  testAsync("returns error when no data is selected", done => {
+    let _ = setupOfficeMock(~selectedData=None, ())
+
+    OfficeAPI.getSelectedData(Types.Office.Text)
+    ->Promise.then(result => {
+      switch result {
+      | Ok(_) => fail("Expected error for no selection")
+      | Error(msg) => expect(msg)->toContain("No data selected")
+      }
+      done()
+      Promise.resolve()
+    })
+    ->ignore
+  })
+
+  testAsync("handles Office.js errors", done => {
+    setupOfficeErrorMock()
+
+    OfficeAPI.getSelectedData(Types.Office.Text)
+    ->Promise.then(result => {
+      switch result {
+      | Ok(_) => fail("Expected error")
+      | Error(msg) => expect(msg)->toContain("Document not loaded")
+      }
+      done()
+      Promise.resolve()
+    })
+    ->ignore
+  })
+})
+
+// ── setSelectedData ────────────────────────────────────────────
+
+describe("OfficeAPI.setSelectedData", () => {
+  testAsync("sets selected data successfully", done => {
+    let _ = setupOfficeMock()
+
+    OfficeAPI.setSelectedData("New content", Types.Office.Text)
+    ->Promise.then(result => {
+      switch result {
+      | Ok() => expect(true)->toBe(true)
+      | Error(msg) => fail(msg)
+      }
+      done()
+      Promise.resolve()
+    })
+    ->ignore
+  })
+
+  testAsync("handles set data errors", done => {
+    setupOfficeErrorMock()
+
+    OfficeAPI.setSelectedData("Content", Types.Office.Text)
+    ->Promise.then(result => {
+      switch result {
+      | Ok() => fail("Expected error for read-only doc")
+      | Error(msg) => expect(msg)->toContain("Read-only document")
+      }
+      done()
+      Promise.resolve()
+    })
+    ->ignore
+  })
+})
+
+// ── insertText / insertHtml (convenience wrappers) ──────────────
+
+describe("OfficeAPI.insertText", () => {
+  testAsync("delegates to setSelectedData with Text coercion", done => {
+    let _ = setupOfficeMock()
+
+    OfficeAPI.insertText("Inserted text")
+    ->Promise.then(result => {
+      switch result {
+      | Ok() => expect(true)->toBe(true)
+      | Error(msg) => fail(msg)
+      }
+      done()
+      Promise.resolve()
+    })
+    ->ignore
+  })
+})
+
+describe("OfficeAPI.insertHtml", () => {
+  testAsync("delegates to setSelectedData with Html coercion", done => {
+    let _ = setupOfficeMock()
+
+    OfficeAPI.insertHtml("<b>Bold feedback</b>")
+    ->Promise.then(result => {
+      switch result {
+      | Ok() => expect(true)->toBe(true)
+      | Error(msg) => fail(msg)
+      }
+      done()
+      Promise.resolve()
+    })
+    ->ignore
+  })
+})
+
+// ── initialize ──────────────────────────────────────────────────
+
+describe("OfficeAPI.initialize", () => {
+  testAsync("resolves Ok when Office.onReady fires", done => {
+    let _ = setupOfficeMock()
+
+    OfficeAPI.initialize()
+    ->Promise.then(result => {
+      switch result {
+      | Ok() => expect(true)->toBe(true)
+      | Error(msg) => fail(msg)
+      }
+      done()
+      Promise.resolve()
+    })
+    ->ignore
+  })
+})
+
+// ── isOfficeContext ──────────────────────────────────────────────
+
+describe("OfficeAPI.isOfficeContext", () => {
+  test("returns true when Office.context exists", () => {
+    let _ = setupOfficeMock()
+    expect(OfficeAPI.isOfficeContext())->toBe(true)
+  })
+
+  test("returns false when Office is not defined", () => {
+    // Remove Office global
+    globalThis["Office"] = Js.undefined
+    expect(OfficeAPI.isOfficeContext())->toBe(false)
+  })
+})
+
+// ── getHostType ─────────────────────────────────────────────────
+
+describe("OfficeAPI.getHostType", () => {
+  test("detects Word host", () => {
+    let _ = setupOfficeMock()
+    expect(OfficeAPI.getHostType())->toEqual(OfficeAPI.Word)
+  })
+
+  test("returns Unknown when Office is not available", () => {
+    globalThis["Office"] = Js.undefined
+    expect(OfficeAPI.getHostType())->toEqual(OfficeAPI.Unknown)
+  })
+})
+
+// ── showNotification ────────────────────────────────────────────
+
+describe("OfficeAPI.showNotification", () => {
+  test("does not throw", () => {
+    let _ = setupOfficeMock()
+    // showNotification uses console.log — just verify no exception
+    OfficeAPI.showNotification("Title", "Message body")
+    expect(true)->toBe(true)
+  })
+})
+
+// ── Word.extractStudentIdFromText (pure) ────────────────────────
+
+describe("OfficeAPI.Word.extractStudentIdFromText", () => {
+  test("extracts ID from 'Student ID: A1234567'", () => {
+    let result = OfficeAPI.Word.extractStudentIdFromText("Student ID: A1234567")
+    expect(result)->toEqual(Some("A1234567"))
+  })
+
+  test("extracts ID from 'ID: B9876543'", () => {
+    let result = OfficeAPI.Word.extractStudentIdFromText("ID: B9876543")
+    expect(result)->toEqual(Some("B9876543"))
+  })
+
+  test("extracts standalone ID like C5555555", () => {
+    let result = OfficeAPI.Word.extractStudentIdFromText("Submitted by C5555555 on 2026-04-16")
+    expect(result)->toEqual(Some("C5555555"))
+  })
+
+  test("returns None when no ID pattern found", () => {
+    let result = OfficeAPI.Word.extractStudentIdFromText("No student identifier here")
+    expect(result)->toEqual(None)
+  })
+
+  test("returns None for empty string", () => {
+    let result = OfficeAPI.Word.extractStudentIdFromText("")
+    expect(result)->toEqual(None)
+  })
+})
+
+// ── Integration: read-modify-write cycle ────────────────────────
+
+describe("OfficeAPI Integration", () => {
+  testAsync("read selection → transform → write back", done => {
+    let _ = setupOfficeMock(~selectedData=Some("original text"), ())
+
+    OfficeAPI.getSelectedData(Types.Office.Text)
+    ->Promise.then(readResult => {
+      switch readResult {
+      | Ok(text) => {
+          let transformed = String.toUpperCase(text)
+          OfficeAPI.setSelectedData(transformed, Types.Office.Text)
+        }
+      | Error(msg) => {
+          fail(msg)
+          Promise.resolve(Error(msg))
+        }
+      }
+    })
+    ->Promise.then(writeResult => {
+      switch writeResult {
+      | Ok() => expect(true)->toBe(true)
+      | Error(msg) => fail(msg)
+      }
+      done()
+      Promise.resolve()
+    })
+    ->ignore
   })
 })

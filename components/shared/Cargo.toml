@@ -15,7 +15,8 @@ path = "src/lib.rs"
 
 [dependencies]
 # Proven - Formally verified safe modules (Hyperpolymath)
-proven = { git = "https://github.com/hyperpolymath/proven", features = ["crypto"] }
+# TODO: Re-enable once proven crate publishes the "crypto" feature
+# proven = { git = "https://github.com/hyperpolymath/proven", features = ["crypto"] }
 
 # Cryptography - Hyperpolymath Crypto Standard (see CRYPTO-STANDARD.scm)
 # Password hashing: Argon2id (replaces PBKDF2)
