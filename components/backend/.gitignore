@@ -59,3 +59,13 @@ npm-debug.log
 # Dialyzer
 /priv/plts/*.plt
 /priv/plts/*.plt.hash
+target/
+node_modules/
+_build/
+deps/
+.cache/
+*.log
+*.tmp
+Thumbs.db
+build/
+dist/

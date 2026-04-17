@@ -58,3 +58,8 @@ Thumbs.db
 
 # Production
 build/
+target/
+_build/
+deps/
+.elixir_ls/
+*.log

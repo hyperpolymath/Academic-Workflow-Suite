@@ -24,3 +24,12 @@ Thumbs.db
 # Test artifacts
 test-output/
 *.log
+target/
+node_modules/
+_build/
+deps/
+.elixir_ls/
+.cache/
+*.tmp
+build/
+dist/

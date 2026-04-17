@@ -26,3 +26,11 @@ credentials.json
 
 # Logs
 *.log
+node_modules/
+_build/
+deps/
+.elixir_ls/
+.cache/
+*.tmp
+build/
+dist/
