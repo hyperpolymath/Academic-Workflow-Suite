@@ -1,20 +1,23 @@
 # SPDX-License-Identifier: PMPL-1.0-or-later
 # STATE.a2ml — Project state checkpoint
-# Last updated: 2026-04-16 (Standing check + blocker resolution)
+# Last updated: 2026-04-18 (CRG demotion B->D per v2.0 audit)
 
 [metadata]
 project = "academic-workflow-suite"
 version = "0.1.0"
-last-updated = "2026-04-16"
+last-updated = "2026-04-18"
 status = "active"
-testing-phase = "CRG B blitz — blockers cleared"
+testing-phase = "Alpha — D lift in progress (structural-policy debt + annotation + dogfooding)"
 
 [project-context]
 name = "academic-workflow-suite"
 completion-percentage = 42
 phase = "All Rust crates build green; backend + office-addin test suites expanded"
 
-crg-grade = "B"
+crg-grade = "D"
+crg-grade-previous = "B"
+crg-grade-demoted = "2026-04-18"
+crg-grade-notes = "Demoted B->D per CRG v2.0 STRICT audit at docs/governance/CRG-AUDIT-2026-04-18.adoc. B claim rested on zero external-targets, zero issues-fed-back, zero field-signal and completion-percentage=42. D earned on 21 RSR workflows + ~230 tests passing + contractile trident + A2ML canonical state."
 
 [testing-status]
 cli-unit-tests = "17 PASS (config, models, output)"
