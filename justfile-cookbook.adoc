@@ -3346,7 +3346,7 @@ just security-cve-check
 
 === Environment Variables
 
-The justfile uses the following environment variables (loaded from `.env` if present):
+The Justfile uses the following environment variables (loaded from `.env` if present):
 
 * `DOCKER_COMPOSE` - Docker Compose command (default: "docker-compose")
 * `CLI_BINARY_NAME` - CLI binary name (default: "aws")
@@ -3507,14 +3507,14 @@ npm: command not found
 
 === Debug Mode
 
-For debugging justfile issues:
+For debugging Justfile issues:
 
 [source,bash]
 ----
 # Show detailed execution
 just --verbose --dry-run <recipe>
 
-# Show justfile evaluation
+# Show Justfile evaluation
 just --evaluate
 ----
 
@@ -3657,7 +3657,7 @@ See `CONTRIBUTING.md` for detailed guidelines.
 
 |1.0.0
 |2025-12-01
-|Initial release of comprehensive justfile cookbook with 300+ recipes
+|Initial release of comprehensive Justfile cookbook with 300+ recipes
 |===
 
 == Index
