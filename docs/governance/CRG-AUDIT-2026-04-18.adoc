@@ -1,0 +1,304 @@
+// SPDX-License-Identifier: PMPL-1.0-or-later
+// Copyright (c) 2026 Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
+
+= Academic Workflow Suite — CRG Audit (2026-04-18)
+Jonathan D.A. Jewell
+2026-04-18
+:toc:
+:sectnums:
+
+== Scope and Standard
+
+Evaluates the `academic-workflow-suite` repository against *Component
+Readiness Grades v2.0 (STRICT)*, 2026-03-30 revision.
+
+- Standard: `standards/component-readiness-grades/COMPONENT-READINESS-GRADES.md`
+- Criteria boilerplate: `rsr-template-repo/docs/governance/CRG-CRITERIA.adoc`
+- Audit template: `rsr-template-repo/docs/governance/CRG-AUDIT-TEMPLATE.adoc`
+- Self-declared grade (prior art):
+  * `.machine_readable/6a2/STATE.a2ml` → `crg-grade = "B"`, `testing-phase = "CRG B blitz — blockers cleared"`
+  * `completion-percentage = 42` (in same file)
+- Audit date: 2026-04-18
+- Auditor: Jonathan D.A. Jewell
+
+This was the *only* self-declared B claim in the estate as of the 2026-04-18
+Phase 1 inventory (`~/Desktop/CRG-STATE-INVENTORY.md`). Priority 1 audit.
+
+The audit grades the repo *as-is today*, not aspirationally.
+
+== v2.0 Strictness Recap
+
+[cols="1,3,4"]
+|===
+| Grade | Release Stage | Hard Requirement (v2.0)
+
+| X | None             | Untested.
+| F | Reject           | Harmful, wasteful, or superseded.
+| E | Pre-alpha        | >=1 test, failures documented.
+| D | Alpha            | Test matrix + scope documented + *RSR compliance mandatory*.
+| C | Alpha-stable     | Dogfooded, CI green, *deep per-file + per-directory annotation*.
+| B | Beta             | 6+ *diverse* external targets, issues fed back.
+| A | Stable           | Real-world external feedback confirms value; no harm.
+|===
+
+Publication requires B+. Long alpha is discipline, not shame.
+
+== Evidence Inventory (verified 2026-04-18)
+
+=== Structural compliance
+
+[cols="2,1,3"]
+|===
+| Item | State | Source
+
+| RSR mandatory workflows (17+)
+| PRESENT (21 workflows)
+| `.github/workflows/`
+
+| `.machine_readable/6a2/` canonical A2ML
+| PRESENT
+| STATE, META, ECOSYSTEM, AGENTIC, NEUROSYM, PLAYBOOK
+
+| `0-AI-MANIFEST.a2ml`
+| PRESENT
+| Root
+
+| `docs/EXPLAINME.adoc`, `docs/ROADMAP.adoc`
+| PRESENT
+| Root EXPLAINME.adoc, `docs/ROADMAP.adoc`
+
+| `docs/READINESS.md`
+| *ABSENT*
+| Not found — required for any grade claim above E
+
+| `guix.scm` + `flake.nix`
+| PRESENT (`flake.nix`); *guix.scm absent*
+| Root
+
+| `.well-known/` (security.txt, ai.txt, humans.txt)
+| PARTIAL — not verified in this audit
+| Per RSR_OUTLINE.adoc
+
+| SPDX headers on source
+| PRESENT on sampled files
+| `PMPL-1.0-or-later` declared
+
+| `Containerfile` (not `Dockerfile`)
+| *VIOLATION*
+| `Containerfiles/Dockerfile.ai-jail`, `Dockerfile.backend`, `Dockerfile.core`, `Dockerfile.nginx` — files named `Dockerfile.*` under a `Containerfiles/` directory. File names must be `Containerfile.*` per policy.
+
+| `docker-compose*.yml` files
+| *NAMING VIOLATION*
+| 4 `docker-compose*.yml` at root. Policy is podman/Containerfile-first; compose files should be `compose.yml` or `podman-compose.yml`.
+
+| `Justfile` + `Mustfile` (no `Makefile`)
+| PRESENT / not verified
+| `contractile.just` present; full `Justfile` not verified
+
+| Contractile trident
+| PRESENT
+| `contractile.just`, `contractiles/` subtree, `contractiles/k9/`
+
+| Remote
+| `git@github.com:hyperpolymath/academic-workflow-suite.git` (+ mirrors configured)
+| `git remote -v`
+|===
+
+RSR compliance verdict: *partial* — guix.scm missing, Containerfile naming violates
+policy, READINESS.md absent. Grade D floor is *not cleanly* met. D is still the
+right call because tests exist and scope is documented, but the structural
+violations above must be fixed before any C lift is credible.
+
+=== Code and proofs
+
+[cols="2,1,3"]
+|===
+| Item | Count | Notes
+
+| Rust source files (project-wide, excl. `target/`)
+| 63
+| Primary crates: `cli/`, `components/core/`, `components/shared/`.
+
+| Elixir backend (`components/backend/`)
+| `mix.exs` + 6 `.exs` test files
+| BEAM-hosted API layer. Not built/run in this audit.
+
+| Office add-in (`components/office-addin/`)
+| ReScript sources + 3 `*_test.res` files
+| *POLICY VIOLATION*: `package.json` + `webpack.config.js` present. `npm`/`webpack` are banned — policy requires Deno.
+
+| AI-jail (`components/ai-jail/`)
+| Rust + 1 test file
+| STATE.a2ml marks this *BLOCKED — requires CUDA hardware*. Not exercisable in current environment.
+
+| Dangerous-pattern scan (`believe_me`, `assert_total`, `Admitted`, `sorry`, `unsafeCoerce`, `Obj.magic`)
+| Not measured in this audit
+| No Idris2/Lean proof modules found; scan is n/a to this repo's stack.
+|===
+
+=== Test matrix (from STATE.a2ml, not re-run here)
+
+From `.machine_readable/6a2/STATE.a2ml`:
+
+- *CLI total*: 71 PASS, 0 FAIL (17 unit + 8 contract + 12 e2e + 12 property + 22 security).
+- *core-tests*: 55 PASS.
+- *shared-tests*: 104 PASS (proven-dependency blocker resolved).
+- *backend-tests*: 5 test files written (`TMA + TMA-controller + CoreBridge + JobRegistry + EventStore`) — **"pending mix run"**. Not yet executed.
+- *office-addin-tests*: "Types (15) + BackendClient (18) + OfficeAPI (22) implemented" — **no PASS count cited**. "Implemented" ≠ passing.
+- *ai-jail*: **BLOCKED — requires CUDA hardware**. Not exercisable.
+- *benchmarks*: 6/6 real (crypto, validation, AI, core, IPC, LMDB).
+- *CI*: `ci.yml` + `dogfood-gate.yml` present. Last green run not verified.
+
+*Honest tally*: ~230 tests confirmed running (71 CLI + 55 core + 104 shared).
+Another ~60+ claimed tests have been written but not run.
+
+=== Annotation depth
+
+- Per-directory README coverage: *2 of ~20 non-trivial subtrees*. Only
+  `.machine_readable/agent_instructions/README.adoc`,
+  `contractiles/README.adoc`, `contractiles/k9/README.adoc`, and the
+  root `README.adoc` exist. No README in `cli/`, `components/` or any
+  of `components/{ai-jail,backend,core,office-addin,shared}/`.
+- Per-file: not sampled in this audit. SPDX headers present on Rust sources.
+- `docs/` dir is thin: 4 files (CITATIONS, MOODLE_OAUTH_DESIGN,
+  PROVEN_INTEGRATION, ROADMAP). No `docs/architecture/`, no
+  `docs/decisions/` (ADRs), no `docs/integration/`, no `docs/wiki/`.
+- `docs/practice/DOGFOOD-LOG.adoc`: *ABSENT*.
+
+Annotation depth is clearly *below* the v2.0 C bar ("deep per-file +
+per-directory annotation"). The repo is a Rust + Elixir + ReScript + AI
+stack — that's four axes of orientation complexity — and only the root
+README exists to greet a new contributor.
+
+=== Dogfooding / home-stable evidence
+
+STATE.a2ml has *no* `[dogfooding-status]` section. No
+`docs/practice/DOGFOOD-LOG.adoc`. No dated evidence of the repo being
+used in anger on a live workflow.
+
+The project describes academic document workflow features (Office add-in,
+Moodle OAuth, TMA — Tutor-Marked Assignment — machinery). These are
+workflow-adjacent to the user's Open University work, but the audit finds
+no concrete log entry tying a named assignment, paper, or module to a run
+of this suite. "Could be dogfooded" ≠ "is dogfooded".
+
+=== External validation
+
+*No* `[external-targets]` section in STATE.a2ml. *No* `[issues-fed-back]`.
+*No* `[field-signal]`. *No* third-party badges. No external contributors
+referenced in the repo's docs.
+
+The self-declared B grade therefore rests on *zero recorded external
+evidence*.
+
+== Grade x Evidence Matrix
+
+[cols="1,1,3,3"]
+|===
+| Grade | Met? | Evidence supporting | Evidence against / gaps
+
+| X
+| n/a
+| Tests exist → not X
+| —
+
+| F
+| n/a
+| Project is useful in principle (academic workflow tooling); no harm signal
+| —
+
+| E
+| ✓
+| 71+55+104 tests passing (CLI, core, shared); failures documented where relevant
+| —
+
+| D
+| *✓ with caveats*
+| 21 RSR workflows; RSR structural presence; scope documented in STATE.a2ml + ROADMAP.adoc; ~230 tests passing
+| `guix.scm` missing; `Dockerfile.*` naming violations in `Containerfiles/`; `package.json` + `webpack.config.js` in `office-addin/` (Deno policy); `docs/READINESS.md` missing. These must be fixed before D can be claimed cleanly; until then the correct read is *D with structural-policy debt*.
+
+| C
+| *✗*
+| —
+| `[dogfooding-status]` section absent. `DOGFOOD-LOG.adoc` absent. Per-directory README coverage ~10% (2/20). `docs/architecture/` and `docs/decisions/` (ADRs) absent. Backend + office-addin test suites written but not confirmed passing. AI-jail BLOCKED.
+
+| B
+| *✗ (overclaim)*
+| —
+| Zero external targets recorded. Zero issues-fed-back trail. Zero field-signal. `completion-percentage = 42` in same file that claims B — these two facts cannot co-exist under v2.0. The `crg-grade = "B"` line is not evidence of B; it is a claim that this audit refutes.
+
+| A
+| ✗
+| —
+| No external field signal.
+|===
+
+== Verdict
+
+*Current CRG grade: **D (Alpha, with structural-policy debt)**.*
+
+Self-declared grade: *B*. Audited grade: *D*. **This is an overclaim of two
+grades**, demonstrating exactly the v2.0 "embarrassing overclaimed
+releases" failure mode the standard was written to prevent.
+
+Recommended action (per v2.0 "demote immediately"): update
+`.machine_readable/6a2/STATE.a2ml` to `crg-grade = "D"` with a
+`crg-grade-notes` entry citing this audit, and remove the "CRG B blitz"
+label from `testing-phase`.
+
+The D grade is earned on three positive signals:
+
+1. 21 RSR workflows present — the CI scaffolding is real.
+2. ~230 tests passing across cli + core + shared crates.
+3. Contractile trident present + `.machine_readable/6a2/` canonical A2ML.
+
+What blocks *immediate* promotion to C:
+
+1. `[dogfooding-status]` section missing. Populate with concrete "done —
+   <evidence>" entries tying the suite to real academic workflow use.
+2. `docs/practice/DOGFOOD-LOG.adoc` absent. Start it, date-stamped.
+3. Per-directory orientation READMEs missing for `cli/`, `components/`,
+   and each of `components/{ai-jail,backend,core,office-addin,shared}/`.
+4. `docs/architecture/` + `docs/decisions/` subtrees absent. ADRs exist
+   only as scattered design docs (`MOODLE_OAUTH_DESIGN.adoc`,
+   `PROVEN_INTEGRATION.adoc`) — consolidate into numbered ADRs.
+5. Run the pending backend test suite (`mix test` in a BEAM-enabled env).
+6. Run the office-addin ReScript test suite and record PASS count.
+7. Provide a CUDA-optional fallback / stub for the AI-jail tests so
+   `ai-jail = BLOCKED` doesn't permanently bottleneck the test matrix.
+8. Fix the structural-policy debts: rename `Containerfiles/Dockerfile.*`
+   to `Containerfiles/Containerfile.*`; migrate office-addin away from
+   `package.json`/`webpack`; add `guix.scm`; add root `docs/READINESS.md`
+   populated from `rsr-template-repo/READINESS.md`.
+
+What blocks promotion to B (even after C is met):
+
+1. *No* external targets recorded — needs 6+ diverse ones.
+2. *No* external contributor flow, *no* closed-issue trail with
+   external-reporter labels, *no* feedback-fed-back log.
+3. `completion-percentage = 42` is incompatible with B under any honest
+   reading. The suite needs broad completion before it can credibly be
+   tested broadly.
+
+== Notes on Non-Negotiables Respected by this Audit
+
+- This audit does *not* attempt to force a v2.0 C claim by mass-generating
+  READMEs. Per v2.0 Principle 3, a grade is earned by evidence the suite
+  actually has today.
+- AI-jail's CUDA dependency is respected as a real environmental blocker,
+  not filed as proof debt.
+- No changes were made to the repo during the audit itself; the audit is a
+  read-only inspection. Remediation (STATE.a2ml demotion, structural fixes)
+  is a separate action the author chooses to take.
+
+== Related Files
+
+- `.machine_readable/6a2/STATE.a2ml` — authoritative self-declared state
+  (currently overclaims B; recommend demote to D).
+- `docs/governance/CRG-CRITERIA.adoc` — boilerplate criteria doc.
+- `docs/governance/CRG-LIFT-PLAN-2026-04-18.adoc` — *to be written* as
+  companion plan for D→C (and medium-term C→B) lifts.
+- `~/Desktop/CRG-STATE-INVENTORY.md` — Phase 1 estate inventory that
+  flagged this repo as Priority 1.
+
+_End of audit._
