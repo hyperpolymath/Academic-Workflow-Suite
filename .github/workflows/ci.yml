@@ -521,12 +521,12 @@ jobs:
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
 
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@6624720a57d4c312633c7b953db2f2da5bcb4c3a # v3.31.10
+        uses: github/codeql-action/init@b2f9ef845756500b97acbdaf5c1dd4e9c1d15734 # v3.31.10
         with:
           languages: ${{ matrix.language }}
 
       - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@6624720a57d4c312633c7b953db2f2da5bcb4c3a # v3.31.10
+        uses: github/codeql-action/analyze@b2f9ef845756500b97acbdaf5c1dd4e9c1d15734 # v3.31.10
 
   security-semgrep:
     name: Semgrep SAST
