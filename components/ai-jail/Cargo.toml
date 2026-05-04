@@ -17,7 +17,7 @@ candle-nn = "0.10"
 candle-transformers = "0.10"
 
 # Tokenization
-tokenizers = { version = "0.22", default-features = false, features = ["onig"] }
+tokenizers = { version = "0.23", default-features = false, features = ["onig"] }
 
 # Serialization
 serde = { version = "1.0", features = ["derive"] }
