@@ -82,7 +82,7 @@ INTEGRATIONS
 REPO INFRASTRUCTURE
   Containerfiles (Docker/Podman)    ██████████ 100%    Reproducible builds
   Justfile                          ██████████ 100%    Standard build automation
-  Test Suite (Rust/ReScript)        ██████████ 100%    High coverage (Unit/E2E)
+  Test Suite (Rust/AffineScript)        ██████████ 100%    High coverage (Unit/E2E)
 
 ─────────────────────────────────────────────────────────────────────────────
 OVERALL:                            ████████░░  ~80%   v0.1.0 Beta Release
