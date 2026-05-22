@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: PMPL-1.0-or-later
+# SPDX-License-Identifier: MPL-2.0
 # GitHub Actions CI/CD Pipeline for Academic Workflow Suite
 # Mirror pipeline for GitHub - Matrix builds across Windows, Linux, macOS
 

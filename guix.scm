@@ -1,4 +1,4 @@
-; SPDX-License-Identifier: PMPL-1.0-or-later
+; SPDX-License-Identifier: MPL-2.0
 ;; guix.scm — GNU Guix package definition for academic-workflow-suite
 ;; Usage: guix shell -f guix.scm
 
@@ -14,5 +14,5 @@
   (synopsis "academic-workflow-suite")
   (description "academic-workflow-suite — part of the hyperpolymath ecosystem.")
   (home-page "https://github.com/hyperpolymath/academic-workflow-suite")
-  (license ((@@ (guix licenses) license) "PMPL-1.0-or-later"
+  (license ((@@ (guix licenses) license) "MPL-2.0"
              "https://github.com/hyperpolymath/palimpsest-license")))

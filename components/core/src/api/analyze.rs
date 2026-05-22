@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: PMPL-1.0-or-later
+// SPDX-License-Identifier: MPL-2.0
 // Analysis API - Trigger AI analysis of TMA submissions
 
 use actix_web::{web, HttpResponse, Responder, Scope};
