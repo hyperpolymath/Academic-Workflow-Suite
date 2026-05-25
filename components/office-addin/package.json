@@ -22,7 +22,7 @@
   "license": "MIT",
   "dependencies": {
     "@rescript/core": "^1.6.1",
-    "rescript": "^12.2.0"
+    "rescript": "^12.3.0"
   },
   "devDependencies": {
     "@babel/core": "^7.29.0",
@@ -40,7 +40,7 @@
     "office-addin-manifest": "^2.1.5",
     "rescript-jest": "^0.10.0",
     "style-loader": "^4.0.0",
-    "webpack": "^5.106.2",
+    "webpack": "^5.107.1",
     "webpack-cli": "^7.0.2",
     "webpack-dev-server": "^5.2.4"
   },
