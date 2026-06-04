@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MPL-2.0
+// Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 //! # Academic Shared Utilities
 //!
 //! A comprehensive shared utilities library for the Academic Workflow Suite.

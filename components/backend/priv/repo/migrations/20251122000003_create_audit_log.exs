@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: MPL-2.0
+# Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 defmodule AwapBackend.Repo.Migrations.CreateAuditLog do
   @moduledoc """
   Creates the audit_log table for tracking system actions and events.

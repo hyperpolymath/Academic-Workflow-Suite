@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MPL-2.0
+// Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 //! Academic Workflow Suite - Core Engine
 //!
 //! This library provides the core functionality for the TMA marking automation system,

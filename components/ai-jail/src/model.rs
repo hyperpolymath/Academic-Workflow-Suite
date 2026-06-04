@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MPL-2.0
+// Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 //! Model loading and configuration for Mistral 7B using Candle
 //!
 //! This module handles loading Mistral 7B models from local storage,

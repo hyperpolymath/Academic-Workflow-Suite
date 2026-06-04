@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MPL-2.0
+// Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 //! Shared error types and utilities for the Academic Workflow Suite.
 //!
 //! This module provides a comprehensive set of error types that can be used

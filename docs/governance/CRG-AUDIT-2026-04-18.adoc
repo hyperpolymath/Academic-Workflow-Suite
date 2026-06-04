@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
-// Copyright (c) 2026 Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
-
+// Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 = Academic Workflow Suite — CRG Audit (2026-04-18)
 Jonathan D.A. Jewell
 2026-04-18
@@ -97,7 +96,7 @@ Publication requires B+. Long alpha is discipline, not shame.
 
 | Contractile trident
 | PRESENT
-| `contractile.just`, `contractiles/` subtree, `contractiles/k9/`
+| `contractile.just`, `contractiles/` subtree, `contractiles/self-validating/`
 
 | Remote
 | `git@github.com:hyperpolymath/academic-workflow-suite.git` (+ mirrors configured)
@@ -156,7 +155,7 @@ Another ~60+ claimed tests have been written but not run.
 
 - Per-directory README coverage: *2 of ~20 non-trivial subtrees*. Only
   `.machine_readable/agent_instructions/README.adoc`,
-  `contractiles/README.adoc`, `contractiles/k9/README.adoc`, and the
+  `contractiles/README.adoc`, `contractiles/self-validating/README.adoc`, and the
   root `README.adoc` exist. No README in `cli/`, `components/` or any
   of `components/{ai-jail,backend,core,office-addin,shared}/`.
 - Per-file: not sampled in this audit. SPDX headers present on Rust sources.

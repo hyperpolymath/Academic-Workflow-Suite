@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MPL-2.0
+// Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 //! Time and date utilities for the Academic Workflow Suite.
 //!
 //! This module provides utilities for:

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: MPL-2.0
+# Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 defmodule AwapBackend.CoreEngine.WorkerSupervisor do
   @moduledoc """
   Supervises the pool of core engine workers.

@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MPL-2.0
+// Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 //! TMA (Tutor-Marked Assignment) Processing
 //!
 //! Core data structures and logic for handling TMA submissions,
