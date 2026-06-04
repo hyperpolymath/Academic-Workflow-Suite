@@ -154,7 +154,7 @@ Another ~60+ claimed tests have been written but not run.
 === Annotation depth
 
 - Per-directory README coverage: *2 of ~20 non-trivial subtrees*. Only
-  `.machine_readable/agent_instructions/README.adoc`,
+  `.machine_readable/bot_directives/README.adoc`,
   `contractiles/README.adoc`, `contractiles/self-validating/README.adoc`, and the
   root `README.adoc` exist. No README in `cli/`, `components/` or any
   of `components/{ai-jail,backend,core,office-addin,shared}/`.
