@@ -74,7 +74,7 @@ jobs:
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
 
       - name: Setup Elixir
-        uses: erlef/setup-beam@5304e04ea2b1555a004402327ce0988b1f48fa1d
+        uses: erlef/setup-beam@5304e04ea2b355f03681464e683d92e3b2f18451
         with:
           elixir-version: '1.15'
           otp-version: '26'
@@ -205,7 +205,7 @@ jobs:
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
 
       - name: Setup Elixir
-        uses: erlef/setup-beam@5304e04ea2b1555a004402327ce0988b1f48fa1d
+        uses: erlef/setup-beam@5304e04ea2b355f03681464e683d92e3b2f18451
         with:
           elixir-version: '1.15'
           otp-version: '26'
@@ -335,7 +335,7 @@ jobs:
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
 
       - name: Setup Elixir
-        uses: erlef/setup-beam@5304e04ea2b1555a004402327ce0988b1f48fa1d
+        uses: erlef/setup-beam@5304e04ea2b355f03681464e683d92e3b2f18451
         with:
           elixir-version: '1.15'
           otp-version: '26'
@@ -536,12 +536,12 @@ jobs:
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
 
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@b2f9ef845756500b97acbdaf5c1dd4e9c1d15734 # v3.31.10
+        uses: github/codeql-action/init@4bdb89f48054571735e3792627da6195c57459e2 # v3.31.10
         with:
           languages: ${{ matrix.language }}
 
       - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@b2f9ef845756500b97acbdaf5c1dd4e9c1d15734 # v3.31.10
+        uses: github/codeql-action/analyze@4bdb89f48054571735e3792627da6195c57459e2 # v3.31.10
 
   security-semgrep:
     name: Semgrep SAST
