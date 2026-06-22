@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MPL-2.0
+// Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 //! Privacy-First Security and Anonymization
 //!
 //! Provides cryptographic hashing for student IDs and PII detection

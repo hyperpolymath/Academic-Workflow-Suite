@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: MPL-2.0
+# Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 # Script for populating the database. You can run it as:
 #
 #     mix run priv/repo/seeds.exs

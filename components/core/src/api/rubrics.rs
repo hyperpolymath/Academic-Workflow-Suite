@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
+// Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 // Rubrics API - Manage marking rubrics
 
 use actix_web::{web, HttpResponse, Responder, Scope};

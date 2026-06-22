@@ -20,6 +20,7 @@ npermissions:
 jobs:
   check:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
 npermissions:
   contents: read
 

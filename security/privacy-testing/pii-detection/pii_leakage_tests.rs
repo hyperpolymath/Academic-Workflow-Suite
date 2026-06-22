@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MPL-2.0
+// Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 // PII Leakage Detection Tests
 // Automated tests to detect personally identifiable information leakage
 

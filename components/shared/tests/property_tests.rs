@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MPL-2.0
+// Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 //! Property-based tests using proptest.
 //!
 //! These tests verify that functions behave correctly across a wide range of inputs.

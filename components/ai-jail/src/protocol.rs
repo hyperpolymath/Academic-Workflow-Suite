@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MPL-2.0
+// Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 //! IPC protocol definitions for stdin/stdout communication
 //!
 //! This module defines the request/response protocol used for communication

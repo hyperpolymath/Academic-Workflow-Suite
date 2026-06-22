@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MPL-2.0
+// Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 //! Testing utilities for the Academic Workflow Suite.
 //!
 //! This module provides helper functions and structures for testing:
