@@ -4,20 +4,47 @@
 
 == Current Status
 
-Initial development phase.
+**Alpha, ~42% (CRG grade D).** The individual components are real and, in
+Rust, well tested — a SHA3-256 anonymization + PII-detection engine, an
+Actix REST/GraphQL server, an LMDB event store, Office.js/Word bindings, and
+a clap CLI with 71 passing tests (~230 Rust assertions in total). They are
+**not yet wired into a working end-to-end pipeline**, and two overlapping
+backends (Rust core and an Elixir Phoenix backend) still need to be
+reconciled — see `docs/adr/0001-backend-consolidation.md`.
+
+The single biggest blocker is the AI feature: `components/ai-jail` uses
+Candle with `features = ["cuda"]` and has no CPU fallback, so it cannot build
+or be tested without an NVIDIA GPU, and its scoring is still placeholder.
 
 == Milestones
 
-=== v0.1.0 - Foundation
-* [ ] Core functionality
-* [ ] Basic documentation
-* [ ] CI/CD pipeline
+=== v0.1.x — Integration & honesty (current)
+* [x] Anonymization plaintext-leak hardening (`security.rs`): `original`
+      no longer serialised; convenience fallback never embeds the raw ID
+* [ ] Choose the canonical backend (Rust core vs Elixir) per ADR 0001 and
+      remove or clearly quarantine the other
+* [ ] Real DOCX ingestion (currently `tma.rs` returns placeholder text) —
+      e.g. `docx-rs`, or reuse tma-mark2's OTP-`:zip` OOXML approach
+* [ ] AI-jail CPU fallback (Candle CPU feature, or an LM Studio-style
+      localhost API matching the estate convention) so tests stop being
+      CUDA-blocked
+* [ ] Run the written-but-unrun Elixir (46) and Office add-in (39) suites;
+      record real pass counts in STATE.a2ml
 
-=== v1.0.0 - Stable Release
-* [ ] Full feature set
-* [ ] Comprehensive tests
-* [ ] Production ready
+=== v0.2.0 — First usable marking loop
+* [ ] End-to-end: Word add-in → backend → anonymize → local AI → feedback
+* [ ] Moodle LMS integration
+* [ ] Leak-canary suite: fixtures with known PII, assert zero PII bytes in
+      every outbound payload
 
-== Future Directions
+=== v1.0.0 — Trustworthy release
+* [ ] Substantiate or drop the "GDPR compliant / mathematical guarantees"
+      claims (see `PROOF-NEEDS.md`)
+* [ ] DPIA + threat model for real student data
+* [ ] Reproducible packaging demonstrated end-to-end
 
-_To be determined based on community feedback._
+== Non-goals / deferred
+
+* Post-quantum crypto in the marking path (present but not required for v1)
+* The Idris2/"Proven" formal-verification integration (aspirational; no
+  Idris files exist today)
