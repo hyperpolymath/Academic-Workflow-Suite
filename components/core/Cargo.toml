@@ -28,7 +28,7 @@ heed = "0.22"  # Modern LMDB wrapper
 # Cryptography
 sha3 = "0.12"
 blake3 = "1.8"
-aes-gcm = "0.10"
+aes-gcm = "0.11"
 argon2 = "0.5"
 
 # Document parsing
