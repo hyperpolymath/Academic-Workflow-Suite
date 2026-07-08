@@ -12,9 +12,13 @@ The README makes claims. This file backs them up.
 
 Academic Workflow Suite is designed for Open University Associate Lecturers to mark Tutor-Marked Assignments (TMAs) in ~10 minutes per submission instead of 20-30 minutes. The architecture achieves privacy through event sourcing and local-only processing.
 
-The key privacy guarantee: student identifiers are hashed via SHA-256 and never sent to the AI model. The FFI layer in `ffi/zig/src/main.zig` implements cryptographic anonymization. When a TMA is loaded, the student ID is hashed to a 64-byte digest before being passed to the AI analysis pipeline. Only the hash is visible to any downstream systems. The AI model receives feedback context (rubric, submission text) and hash, never the original ID.
+The key privacy intent: student identifiers are hashed and never sent to the AI model in identifiable form. The anonymization is implemented in Rust in `components/core/src/security.rs` (`SecurityService::anonymize_student_id`), which computes a **SHA3-256** digest (64 hex chars) and, alongside it, a regex-based PII detector/redactor for emails, phone numbers, postcodes, URLs and student-ID patterns. The plaintext original is held in-process for audit correlation only and is marked `skip_serializing`, so it cannot leak across any serialization boundary (event store, IPC, logs, or AI payloads).
 
-*How it works:* The Zig FFI layer provides a `hash_student_id(id: string) -> [64]u8` function that uses SHA-256. The ABI contract in `src/abi/` (planned Idris2) formalizes the property "student ID → hash is injective (one-way)". All processing stays on-machine: no network calls except optional telemetry (which is disabled by default). Event sourcing logs every TMA marking decision to local storage with timestamps. Caveat: The claim of "mathematical guarantees" refers to the SHA-256 one-way property; it does NOT guarantee that the AI model cannot infer the student ID from context (e.g., writing style). Full privacy assurance requires additional differential privacy techniques (Phase 2 feature).
+*How it works:* When a TMA is loaded, the student ID is passed through `anonymize_student_id`; only the hash flows downstream. All processing stays on-machine: no network calls except optional telemetry (disabled by default). Event sourcing (LMDB) logs marking decisions locally with timestamps.
+
+NOTE: `ffi/zig/src/main.zig` does NOT perform any cryptography — it is currently RSR template scaffolding (`academic_workflow_suite_init/process/...`). Earlier revisions of this document claimed a Zig `hash_student_id` function and an Idris2 ABI in `src/abi/`; neither exists. The real, tested anonymization is the Rust `SecurityService` above.
+
+*Caveat on "guarantees":* the one-way property is that of SHA3-256; it does NOT guarantee the AI cannot infer identity from context (e.g. writing style). Stronger assurance would need differential-privacy techniques (not yet implemented). See `PROOF-NEEDS.md` — the "mathematical guarantees" language is flagged there as unproven.
 
 **Claim 2: "Reduce TMA marking time from 20-30 minutes to under 10 minutes while maintaining quality"** (README tagline)
 
@@ -38,10 +42,11 @@ The cryptographic anonymization pattern (hash-before-process) is reused across a
 |===
 | Technology | Learn More | Why
 
-| **Zig** | https://ziglang.org | Cryptographic primitives (SHA-256), memory-safe hashing, C ABI bridge
-| **Idris2 ABI** | https://www.idris-lang.org | Formal proofs of hash one-wayness (Phase 2+)
-| **ReScript** (planned) | https://rescript-lang.org | Web UI for marking workflow, type-safe event sourcing
-| **Elixir** (planned) | https://elixir-lang.org | Event sourcing backend, local API server
+| **Rust** | https://www.rust-lang.org | The real anonymization + PII detection (SHA3-256), Actix API, LMDB event store, CLI
+| **Zig** (scaffolding) | https://ziglang.org | RSR C-ABI template only; no crypto implemented yet
+| **Idris2 ABI** (aspirational) | https://www.idris-lang.org | Formal proofs of hash one-wayness — not present; `src/abi/` does not exist
+| **ReScript** | https://rescript-lang.org | Office add-in (Office.js/Word) — real bindings, unrun against Word
+| **Elixir** | https://elixir-lang.org | Phoenix backend (tests written, not yet run)
 |===
 
 == File Map
@@ -50,11 +55,11 @@ The cryptographic anonymization pattern (hash-before-process) is reused across a
 |===
 | Path | What's There | Key Details
 
-| `ffi/zig/src/main.zig` | Cryptographic FFI | `hash_student_id`, SHA-256 primitives, memory safety checks
-| `ffi/zig/build.zig` | Zig build script | Cross-platform compilation, test runner
-| `ffi/zig/test/integration_test.zig` | FFI tests | Hash correctness, round-trip, performance benchmarks
-| `src/abi/` | Idris2 ABI (planned) | Formal proofs of hash properties, student ID anonymity invariants
-| `docs/SECURITY.md` | Security architecture | Threat model, privacy guarantees, GDPR compliance
+| `components/core/src/security.rs` | Anonymization + PII detection (the real thing) | SHA3-256 `anonymize_student_id`, regex PII detector/redactor, leak-canary tests
+| `components/core/` | Rust core | Actix API, LMDB event store, TMA model
+| `ffi/zig/src/main.zig` | RSR C-ABI template (scaffolding) | Generic init/process/get_string; NO crypto
+| `src/abi/` | (does not exist) | Referenced by older docs; never created
+| `docs/SECURITY.md` | Security architecture | Threat model and privacy notes (see PROOF-NEEDS.md for unproven claims)
 | `docs/QUICK_START.md` | Quick start guide | Installation, first TMA marking walkthrough
 |===
 
