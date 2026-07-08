@@ -1,0 +1,69 @@
+<!--
+SPDX-License-Identifier: CC-BY-SA-4.0
+Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
+-->
+
+# ADR 0001: Consolidate on a single backend
+
+- Status: Proposed
+- Date: 2026-07-02
+
+## Context
+
+Academic Workflow Suite currently contains **two overlapping backends** with
+duplicated responsibilities:
+
+1. **Rust core** (`components/core/`) — an Actix-web + async-graphql server with
+   an LMDB event store and the SHA3-256 anonymization / PII-detection engine.
+   `components/core/src/main.rs` binds an HTTP/GraphQL server to a TCP address.
+
+2. **Elixir Phoenix backend** (`components/backend/`) — `awap_backend`, with its
+   own event store, a worker pool, Moodle sync, and a `CoreBridge` GenServer.
+
+These two do not, and cannot, connect as written:
+
+- `components/backend/lib/awap_backend/core_bridge.ex` starts the core via
+  `Port.open({:spawn, executable}, …)` and speaks **line-delimited JSON over
+  stdin/stdout** (`Port.command(port, json <> "\n")`), i.e. it expects the Rust
+  core to run in a `--mode port` stdin/stdout loop.
+- `components/core/src/main.rs` implements **only** an Actix HTTP/TCP server.
+  There is no stdin/stdout port mode.
+
+So there are three incompatible IPC assumptions in the tree (core HTTP/GraphQL,
+CoreBridge stdin/stdout JSON, ai-jail its own stdin/stdout JSON), and the
+Rust↔Elixir bridge is a no-op. Maintaining both backends also doubles the
+event-store and anonymization surface for a solo maintainer.
+
+## Decision
+
+**Choose one canonical backend and make the other non-canonical.**
+
+Recommended: **keep the Rust core as canonical** for the AWS estate, because
+its anonymization/PII engine and event store are the privacy-critical,
+already-tested heart of the product, and the CLI + Office add-in already speak
+HTTP to it. The Elixir backend's genuinely valuable, non-duplicated pieces
+(Moodle sync, worker orchestration) can be reintroduced later as separate
+services that call the core over its existing HTTP/GraphQL API — not via the
+unimplemented stdin/stdout port protocol.
+
+Concretely:
+
+- Mark `components/backend/` (Elixir) as **non-canonical / parked** until a
+  clear need re-justifies it; stop implying in docs that the CoreBridge path
+  works.
+- If the Elixir backend is retained, either (a) implement a real `--mode port`
+  stdin/stdout JSON loop in `components/core/src/main.rs` to satisfy
+  `CoreBridge`, **or** (b) change `CoreBridge` to call the core's HTTP/GraphQL
+  API. Do not leave both halves of a protocol that never meet.
+
+> Note: this AWS-internal duplication is separate from the estate-level overlap
+> with **tma-mark2**, which independently targets OU eTMA marking. That is
+> tracked in the estate assessment, not this ADR.
+
+## Consequences
+
+- One event store and one anonymization implementation to maintain and audit.
+- Docs stop advertising a working Rust↔Elixir bridge that does not exist.
+- Some Elixir work is shelved; its unique features return as HTTP clients of
+  the core when needed.
+- Follow-up: pick option (a) or (b) above and record it as ADR 0002.

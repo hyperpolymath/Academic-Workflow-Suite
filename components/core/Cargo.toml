@@ -28,12 +28,12 @@ heed = "0.22"  # Modern LMDB wrapper
 # Cryptography
 sha3 = "0.12"
 blake3 = "1.8"
-aes-gcm = "0.10"
+aes-gcm = "0.11"
 argon2 = "0.5"
 
 # Document parsing
 zip = "8.6"  # For DOCX (Office Open XML)
-quick-xml = "0.40"
+quick-xml = "0.41"
 
 # Identifiers
 uuid = { version = "1.23", features = ["v4", "serde"] }
