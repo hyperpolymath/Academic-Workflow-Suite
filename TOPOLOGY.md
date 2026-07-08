@@ -59,36 +59,47 @@ Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 
 ## Completion Dashboard
 
+This dashboard tracks demonstrable reality, and is kept consistent with the
+canonical `.machine_readable/6a2/STATE.a2ml` (42%, CRG grade D). An earlier
+version claimed ~80% with nearly everything "100% verified"; that was false and
+contradicted STATE and the CRG audit. Corrected 2026-07-02.
+
 ```
 COMPONENT                          STATUS              NOTES
 ─────────────────────────────────  ──────────────────  ─────────────────────────────────
 PRESENTATION LAYER
-  Office Add-in (ReScript)          ██████████ 100%    v0.1.0 stable release
-  Office.js Integration             ██████████ 100%    Word manipulation verified
-
+  Office Add-in (ReScript)          ██████░░░░  ~60%   Real Office.js/Word bindings; 39
+                                                       assertions written, unrun vs Word
 APPLICATION LAYER (RUST)
-  Actix REST API                    ██████████ 100%    Core endpoints active
-  Anonymization Engine (SHA3)       ██████████ 100%    Privacy guarantees validated
-  Event Sourcing (LMDB)             ██████████ 100%    Immutable audit log stable
-  Business Logic                    ████████░░  80%    Scaling for large cohorts
+  Actix REST API                    ████████░░  ~80%   Real GraphQL/REST server
+  Anonymization (SHA3-256) + PII    █████████░  ~90%   Real + tested; plaintext no longer
+                                                       serialised; leak-canary tests added
+  Event Sourcing (LMDB)             ████████░░  ~85%   Real store + tests
+  DOCX ingestion                    ██░░░░░░░░  ~15%   tma.rs parse returns placeholder text
+  Business Logic                    ██████░░░░  ~60%   Real, tested in isolation
 
 AI ISOLATION LAYER
-  AI Jail (gVisor/Firecracker)      ██████████ 100%    Network isolation verified
-  ONNX Runtime Integration          ██████████ 100%    Local inference stable
-  Local AI Models                   ██████░░░░  60%    Fine-tuning for feedback style
+  AI Jail (Candle/Mistral-7B)       ███░░░░░░░  ~30%   Inference skeleton real; scoring is
+                                                       placeholder; hard-requires CUDA (no
+                                                       CPU fallback) — BLOCKED
+  Local AI Models                   ██░░░░░░░░  ~20%   Blocked on the CUDA/model issue above
 
 INTEGRATIONS
-  Proven Library (Idris2)           ██████████ 100%    45 verified modules active
+  Proven Library (Idris2)           ░░░░░░░░░░   0%    Aspirational: zero Idris files, dep
+                                                       commented out (not "45 modules active")
   Moodle LMS Integration            ░░░░░░░░░░   0%    Planned for v0.2.0
-  Batch Processing                  ████████░░  80%    Refining overnight triggers
+  Elixir backend (Phoenix)          ████░░░░░░  ~40%   Real code; 46 tests written, unrun;
+                                                       see ADR 0001 (backend consolidation)
 
 REPO INFRASTRUCTURE
-  Containerfiles (Docker/Podman)    ██████████ 100%    Reproducible builds
-  Justfile                          ██████████ 100%    Standard build automation
-  Test Suite (Rust/AffineScript)        ██████████ 100%    High coverage (Unit/E2E)
+  Containerfiles (Docker/Podman)    ███████░░░  ~70%   Exist; not demonstrated end-to-end
+  Justfile                          █████████░  ~90%   Standard build automation
+  Rust test suite                   ████████░░  ~80%   ~230 assertions passing (core/shared/cli)
+  Office/backend test suites        ███░░░░░░░  ~30%   Written, not yet executed
 
 ─────────────────────────────────────────────────────────────────────────────
-OVERALL:                            ████████░░  ~80%   v0.1.0 Beta Release
+OVERALL:                            ████░░░░░░  ~42%   Alpha (CRG grade D) — components real
+                                                       but not yet an integrated pipeline
 ```
 
 ## Key Dependencies

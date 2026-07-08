@@ -23,9 +23,11 @@ The following files in `.machine_readable/` contain structured project metadata:
 
 | Language/Tool | Use Case | Notes |
 |---------------|----------|-------|
-| **AffineScript** | Primary application code | Compiles to JS, type-safe |
-| **Deno** | Runtime & package management | Replaces Node/npm/bun |
-| **Rust** | Performance-critical, systems, WASM | Preferred for CLI tools |
+| **Rust** | This project's primary application language | The core (Actix/LMDB/anonymization), shared library, ai-jail, and CLI are all Rust. This is the sanctioned primary stack for AWS. |
+| **ReScript** | Office add-in (Word) | The `components/office-addin` uses ReScript + Office.js. Sanctioned for the add-in. |
+| **Elixir/Phoenix** | Alternate backend (non-canonical) | `components/backend`; see `docs/adr/0001-backend-consolidation.md`. |
+| **AffineScript** | Aspirational only | Not used in this repo today; not a mandate. Keep as a future direction, not a requirement. |
+| **Deno** | Runtime & package management for JS/ReScript tooling | Replaces Node/npm/bun |
 | **Tauri 2.0+** | Mobile apps (iOS/Android) | Rust backend + web UI |
 | **Dioxus** | Mobile apps (native UI) | Pure Rust, React-like |
 | **Gleam** | Backend services | Runs on BEAM or compiles to JS |

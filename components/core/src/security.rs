@@ -14,7 +14,14 @@ use std::collections::HashMap;
 /// Result of anonymization operation
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct AnonymizationResult {
-    /// Original value (for audit trail only - should not be sent to AI)
+    /// Original value, kept in-process for audit correlation only.
+    ///
+    /// `skip_serializing` ensures the plaintext PII is NEVER written out
+    /// when this struct is serialized (event store, IPC, logs, or any
+    /// payload that could reach the AI). It is available on the in-memory
+    /// value but cannot leak across a serialization boundary. On
+    /// deserialization it defaults to empty.
+    #[serde(skip_serializing, default)]
     pub original: String,
     /// Anonymized hash
     pub anonymized: String,
@@ -347,6 +354,40 @@ mod tests {
     }
 
     #[test]
+    fn test_serialized_result_never_contains_plaintext() {
+        // The plaintext `original` must never cross a serialization
+        // boundary (event store, IPC, logs, AI payloads).
+        let security = SecurityService::new();
+        let result = security.anonymize_student_id("A1234567").unwrap();
+
+        // In-process the original is still available for audit correlation.
+        assert_eq!(result.original, "A1234567");
+
+        // But serialized output must not leak it.
+        let json = serde_json::to_string(&result).unwrap();
+        assert!(
+            !json.contains("A1234567"),
+            "serialized AnonymizationResult leaked plaintext PII: {json}"
+        );
+        assert!(json.contains(&result.anonymized));
+    }
+
+    #[test]
+    fn test_convenience_fallback_never_embeds_raw_id() {
+        // The convenience function's error path must not embed the raw ID.
+        // Empty input hits the fallback; the result must be a 64-char SHA3
+        // hex string, never anything resembling "hash_<id>".
+        let out = anonymize_student_id("");
+        assert_eq!(out.len(), 64);
+        assert!(!out.starts_with("hash_"));
+
+        // A non-empty ID is hashed and never appears verbatim.
+        let out2 = anonymize_student_id("A1234567");
+        assert_eq!(out2.len(), 64);
+        assert!(!out2.contains("A1234567"));
+    }
+
+    #[test]
     fn test_detect_email() {
         let security = SecurityService::new();
         let result = security.detect_pii("Contact me at john.doe@example.com for details");
@@ -444,12 +485,20 @@ mod tests {
     }
 }
 
-/// Convenience function for student ID anonymization
-/// Uses SHA3-512 for cryptographic hashing
+/// Convenience function for student ID anonymization.
+///
+/// Uses SHA3-256 for cryptographic hashing. On the error path (empty
+/// input) it falls back to a SHA3-256 hash of whatever was received — it
+/// NEVER embeds the raw ID in the output, so the returned value is always
+/// anonymised.
 pub fn anonymize_student_id(student_id: &str) -> String {
     let service = SecurityService::new();
     service
         .anonymize_student_id(student_id)
         .map(|result| result.anonymized)
-        .unwrap_or_else(|_| format!("hash_{}", student_id))
+        .unwrap_or_else(|_| {
+            let mut hasher = Sha3_256::new();
+            hasher.update(student_id.as_bytes());
+            hex::encode(hasher.finalize())
+        })
 }
