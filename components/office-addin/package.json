@@ -28,7 +28,7 @@
     "@babel/core": "^8.0.1",
     "@babel/preset-env": "^8.0.2",
     "@babel/preset-react": "^8.0.1",
-    "@types/office-js": "^1.0.598",
+    "@types/office-js": "^1.0.599",
     "@types/office-runtime": "^1.0.38",
     "babel-loader": "^10.1.0",
     "copy-webpack-plugin": "^14.0.0",
