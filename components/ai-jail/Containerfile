@@ -5,7 +5,7 @@
 # ============================================================================
 # Stage 1: Builder
 # ============================================================================
-FROM docker.io/library/rust:1.75-slim AS builder
+FROM docker.io/library/rust:1.97-slim AS builder
 
 # Install build dependencies
 RUN apt-get update && apt-get install -y \
