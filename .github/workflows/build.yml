@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: MPL-2.0
 name: Build
 on:
   push:
@@ -5,6 +6,9 @@ on:
       - main
   pull_request:
     types: [opened, synchronize, reopened]
+permissions:
+  contents: read
+
 jobs:
   sonarqube:
     name: SonarQube
