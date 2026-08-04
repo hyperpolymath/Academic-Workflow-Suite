@@ -1,4 +1,5 @@
 # SPDX-License-Identifier: MPL-2.0
+# This workflow is managed by gh actions-lock.
 # GitHub Actions CI/CD Pipeline for Academic Workflow Suite
 # Mirror pipeline for GitHub - Matrix builds across Windows, Linux, macOS
 
@@ -37,15 +38,15 @@ jobs:
         component: [core, ai-jail]
     steps:
       - name: Checkout code
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+        uses: actions/checkout@v6.0.1
 
       - name: Setup Rust toolchain
-        uses: dtolnay/rust-toolchain@4be9e76fd7c4901c61fb841f559994984270fce7 # stable
+        uses: dtolnay/rust-toolchain@stable
         with:
           components: rustfmt, clippy
 
       - name: Cache Rust dependencies
-        uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4
+        uses: actions/cache@v4.2.3
         with:
           path: |
             ~/.cargo/bin/
@@ -71,16 +72,16 @@ jobs:
       contents: read
     steps:
       - name: Checkout code
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+        uses: actions/checkout@v6.0.1
 
       - name: Setup Elixir
-        uses: erlef/setup-beam@5304e04ea2b355f03681464e683d92e3b2f18451
+        uses: erlef/setup-beam@v1.18.2
         with:
           elixir-version: '1.15'
           otp-version: '26'
 
       - name: Cache Mix dependencies
-        uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4
+        uses: actions/cache@v4.2.3
         with:
           path: |
             components/backend/deps
@@ -111,10 +112,10 @@ jobs:
       contents: read
     steps:
       - name: Checkout code
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+        uses: actions/checkout@v6.0.1
 
       - name: Setup Node.js
-        uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8
+        uses: actions/setup-node@v4.0.2
         with:
           node-version: '20'
           cache: 'npm'
@@ -137,10 +138,10 @@ jobs:
       contents: read
     steps:
       - name: Checkout code
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+        uses: actions/checkout@v6.0.1
 
       - name: Run ShellCheck
-        uses: ludeeus/action-shellcheck@00b27aa7cb85167568cb48a3838b75f4265f2bca # master
+        uses: ludeeus/action-shellcheck@2.0.0
         with:
           scandir: './scripts'
           severity: warning
@@ -161,13 +162,13 @@ jobs:
         component: [core, ai-jail]
     steps:
       - name: Checkout code
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+        uses: actions/checkout@v6.0.1
 
       - name: Setup Rust toolchain
-        uses: dtolnay/rust-toolchain@4be9e76fd7c4901c61fb841f559994984270fce7 # stable
+        uses: dtolnay/rust-toolchain@stable
 
       - name: Cache Rust dependencies
-        uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4
+        uses: actions/cache@v4.2.3
         with:
           path: |
             ~/.cargo/bin/
@@ -182,7 +183,7 @@ jobs:
         run: cargo build --release --verbose
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882
+        uses: actions/upload-artifact@v4.4.3
         with:
           name: ${{ matrix.component }}-${{ runner.os }}
           path: |
@@ -202,16 +203,16 @@ jobs:
       MIX_ENV: prod
     steps:
       - name: Checkout code
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+        uses: actions/checkout@v6.0.1
 
       - name: Setup Elixir
-        uses: erlef/setup-beam@5304e04ea2b355f03681464e683d92e3b2f18451
+        uses: erlef/setup-beam@v1.18.2
         with:
           elixir-version: '1.15'
           otp-version: '26'
 
       - name: Cache Mix dependencies
-        uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4
+        uses: actions/cache@v4.2.3
         with:
           path: |
             components/backend/deps
@@ -235,7 +236,7 @@ jobs:
         continue-on-error: true
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882
+        uses: actions/upload-artifact@v4.4.3
         with:
           name: elixir-backend
           path: components/backend/_build/prod/
@@ -250,10 +251,10 @@ jobs:
     needs: [lint-node]
     steps:
       - name: Checkout code
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+        uses: actions/checkout@v6.0.1
 
       - name: Setup Node.js
-        uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8
+        uses: actions/setup-node@v4.0.2
         with:
           node-version: '20'
           cache: 'npm'
@@ -269,7 +270,7 @@ jobs:
         continue-on-error: true
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882
+        uses: actions/upload-artifact@v4.4.3
         with:
           name: office-addin
           path: |
@@ -293,13 +294,13 @@ jobs:
         component: [core, ai-jail]
     steps:
       - name: Checkout code
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+        uses: actions/checkout@v6.0.1
 
       - name: Setup Rust toolchain
-        uses: dtolnay/rust-toolchain@4be9e76fd7c4901c61fb841f559994984270fce7 # stable
+        uses: dtolnay/rust-toolchain@stable
 
       - name: Cache Rust dependencies
-        uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4
+        uses: actions/cache@v4.2.3
         with:
           path: |
             ~/.cargo/bin/
@@ -315,7 +316,7 @@ jobs:
 
       - name: Upload test results
         if: always()
-        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882
+        uses: actions/upload-artifact@v4.4.3
         with:
           name: test-results-${{ matrix.component }}-${{ runner.os }}
           path: components/${{ matrix.component }}/target/nextest/
@@ -332,16 +333,16 @@ jobs:
       MIX_ENV: test
     steps:
       - name: Checkout code
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+        uses: actions/checkout@v6.0.1
 
       - name: Setup Elixir
-        uses: erlef/setup-beam@5304e04ea2b355f03681464e683d92e3b2f18451
+        uses: erlef/setup-beam@v1.18.2
         with:
           elixir-version: '1.15'
           otp-version: '26'
 
       - name: Cache Mix dependencies
-        uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4
+        uses: actions/cache@v4.2.3
         with:
           path: |
             components/backend/deps
@@ -360,7 +361,7 @@ jobs:
         run: mix test --cover --trace
 
       - name: Upload coverage
-        uses: codecov/codecov-action@eaaf4bedf32dbdc6b720b63067d99c4d77d6047d
+        uses: codecov/codecov-action@v3.1.4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: components/backend/cover/cobertura.xml
@@ -376,10 +377,10 @@ jobs:
     needs: [build-office-addin]
     steps:
       - name: Checkout code
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+        uses: actions/checkout@v6.0.1
 
       - name: Setup Node.js
-        uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8
+        uses: actions/setup-node@v4.0.2
         with:
           node-version: '20'
           cache: 'npm'
@@ -395,7 +396,7 @@ jobs:
         continue-on-error: true
 
       - name: Upload coverage
-        uses: codecov/codecov-action@eaaf4bedf32dbdc6b720b63067d99c4d77d6047d
+        uses: codecov/codecov-action@v3.1.4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: components/office-addin/coverage/cobertura-coverage.xml
@@ -412,22 +413,22 @@ jobs:
     needs: [build-rust, build-elixir]
     steps:
       - name: Checkout code
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+        uses: actions/checkout@v6.0.1
 
       - name: Download core artifacts
-        uses: actions/download-artifact@c850b930e6ba138125429b7e5c93fc707cb86dac
+        uses: actions/download-artifact@v8.0.1
         with:
           name: core-Linux
           path: components/core/target/release/
 
       - name: Download AI jail artifacts
-        uses: actions/download-artifact@c850b930e6ba138125429b7e5c93fc707cb86dac
+        uses: actions/download-artifact@v8.0.1
         with:
           name: ai-jail-Linux
           path: components/ai-jail/target/release/
 
       - name: Download backend artifacts
-        uses: actions/download-artifact@c850b930e6ba138125429b7e5c93fc707cb86dac
+        uses: actions/download-artifact@v8.0.1
         with:
           name: elixir-backend
           path: components/backend/_build/prod/
@@ -443,7 +444,7 @@ jobs:
 
       - name: Upload test results
         if: always()
-        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882
+        uses: actions/upload-artifact@v4.4.3
         with:
           name: integration-test-results
           path: tests/integration/results/
@@ -458,10 +459,10 @@ jobs:
     needs: [build-rust]
     steps:
       - name: Checkout code
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+        uses: actions/checkout@v6.0.1
 
       - name: Download AI jail artifacts
-        uses: actions/download-artifact@c850b930e6ba138125429b7e5c93fc707cb86dac
+        uses: actions/download-artifact@v8.0.1
         with:
           name: ai-jail-Linux
           path: components/ai-jail/target/release/
@@ -491,10 +492,10 @@ jobs:
       contents: read
     steps:
       - name: Checkout code
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+        uses: actions/checkout@v6.0.1
 
       - name: Run cargo-audit
-        uses: rustsec/audit-check@69366f33c96575abad1ee0dba8212993eecbe998 # v2
+        uses: rustsec/audit-check@v2.0.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -506,10 +507,10 @@ jobs:
       contents: read
     steps:
       - name: Checkout code
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+        uses: actions/checkout@v6.0.1
 
       - name: Setup Node.js
-        uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8
+        uses: actions/setup-node@v4.0.2
         with:
           node-version: '20'
 
@@ -533,15 +534,15 @@ jobs:
         language: ['javascript', 'python']
     steps:
       - name: Checkout code
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+        uses: actions/checkout@v6.0.1
 
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@4bdb89f48054571735e3792627da6195c57459e2 # v3.31.10
+        uses: github/codeql-action/init@v3.31.10
         with:
           languages: ${{ matrix.language }}
 
       - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@4bdb89f48054571735e3792627da6195c57459e2 # v3.31.10
+        uses: github/codeql-action/analyze@v3.31.10
 
   security-semgrep:
     name: Semgrep SAST
@@ -551,10 +552,10 @@ jobs:
       contents: read
     steps:
       - name: Checkout code
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+        uses: actions/checkout@v6.0.1
 
       - name: Run Semgrep
-        uses: returntocorp/semgrep-action@713efdd345f3035192eaa63f56867b88e63e4e5d # v1
+        uses: returntocorp/semgrep-action@v1
         with:
           config: >-
             p/security-audit
@@ -575,10 +576,10 @@ jobs:
     if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
     steps:
       - name: Checkout code
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+        uses: actions/checkout@v6.0.1
 
       - name: Download all artifacts
-        uses: actions/download-artifact@c850b930e6ba138125429b7e5c93fc707cb86dac
+        uses: actions/download-artifact@v8.0.1
 
       - name: Install packaging tools
         run: |
@@ -591,7 +592,7 @@ jobs:
           ./scripts/ci/package.sh deb
 
       - name: Upload package
-        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882
+        uses: actions/upload-artifact@v4.4.3
         with:
           name: debian-package
           path: packages/*.deb
@@ -605,10 +606,10 @@ jobs:
     if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
     steps:
       - name: Checkout code
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+        uses: actions/checkout@v6.0.1
 
       - name: Download Windows artifacts
-        uses: actions/download-artifact@c850b930e6ba138125429b7e5c93fc707cb86dac
+        uses: actions/download-artifact@v8.0.1
         with:
           pattern: '*-Windows'
 
@@ -619,7 +620,7 @@ jobs:
           # Add MSI creation logic here
 
       - name: Upload package
-        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882
+        uses: actions/upload-artifact@v4.4.3
         with:
           name: windows-installer
           path: packages/*.msi
@@ -633,10 +634,10 @@ jobs:
     if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
     steps:
       - name: Checkout code
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+        uses: actions/checkout@v6.0.1
 
       - name: Download macOS artifacts
-        uses: actions/download-artifact@c850b930e6ba138125429b7e5c93fc707cb86dac
+        uses: actions/download-artifact@v8.0.1
         with:
           pattern: '*-macOS'
 
@@ -646,7 +647,7 @@ jobs:
           # Add DMG creation logic here
 
       - name: Upload package
-        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882
+        uses: actions/upload-artifact@v4.4.3
         with:
           name: macos-dmg
           path: packages/*.dmg
@@ -665,13 +666,13 @@ jobs:
       attestations: write
     steps:
       - name: Checkout code
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+        uses: actions/checkout@v6.0.1
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@d70bba72b1f3fd22344832f00baa16ece964efeb
+        uses: docker/setup-buildx-action@v3.3.0
 
       - name: Login to GitHub Container Registry
-        uses: docker/login-action@e92390c5fb421da1463c202d546fed0ec5c39f20
+        uses: docker/login-action@v3.1.0
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
@@ -679,7 +680,7 @@ jobs:
 
       - name: Extract metadata
         id: meta
-        uses: docker/metadata-action@8e5442c4ef9f78752691e2d8f8d19755c6f78e81
+        uses: docker/metadata-action@v5.5.1
         with:
           images: ghcr.io/${{ github.repository }}/ai-jail
           tags: |
@@ -691,7 +692,7 @@ jobs:
 
       - name: Build and push
         id: push
-        uses: docker/build-push-action@2cdde99a3119a254ab45fdc0080f486226e63283
+        uses: docker/build-push-action@v6.19.2
         with:
           context: components/ai-jail
           push: true
@@ -701,7 +702,7 @@ jobs:
           cache-to: type=gha,mode=max
 
       - name: Attest container provenance
-        uses: actions/attest-build-provenance@e8998f949152b193b063cb0ec769d69d929409be # v2
+        uses: actions/attest-build-provenance@v2.4.0
         with:
           subject-name: ghcr.io/${{ github.repository }}/ai-jail
           subject-digest: ${{ steps.push.outputs.digest }}
@@ -723,10 +724,10 @@ jobs:
       attestations: write
     steps:
       - name: Checkout code
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+        uses: actions/checkout@v6.0.1
 
       - name: Download all packages
-        uses: actions/download-artifact@c850b930e6ba138125429b7e5c93fc707cb86dac
+        uses: actions/download-artifact@v8.0.1
         with:
           path: release-artifacts
 
@@ -736,7 +737,7 @@ jobs:
           find . -type f \( -name "*.deb" -o -name "*.msi" -o -name "*.dmg" -o -name "*.tgz" \) -exec sha256sum {} \; > SHA256SUMS
 
       - name: Create Release
-        uses: softprops/action-gh-release@1e07f439872118af462529de807ee157f4951b14
+        uses: softprops/action-gh-release@v2.6.2
         with:
           files: |
             release-artifacts/**/*.deb
@@ -751,7 +752,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Attest build provenance
-        uses: actions/attest-build-provenance@e8998f949152b193b063cb0ec769d69d929409be # v2
+        uses: actions/attest-build-provenance@v2.4.0
         with:
           subject-path: |
             release-artifacts/**/*.deb
