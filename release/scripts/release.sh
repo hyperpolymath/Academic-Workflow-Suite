@@ -274,7 +274,7 @@ generate_release_notes() {
     local output="$RELEASE_DIR/release-notes-$version.md"
 
     if [ -f "$template" ]; then
-        sed "s/{{VERSION}}/$version/g; s/{{DATE}}/$(date +%Y-%m-%d)/g" "$template" > "$output"
+        sed "s/{{VERSION}}/$version/g; s/2026-08-05/$(date +%Y-%m-%d)/g" "$template" > "$output"
 
         # Append changelog section
         echo "" >> "$output"
