@@ -15,7 +15,7 @@ This document outlines potential development directions for Academic Workflow Su
 
 * Core engine skeleton with event sourcing (Rust/LMDB)
 * AI Jail skeleton with Candle ML (Rust)
-* Office Add-in skeleton (ReScript/Office.js)
+* Office Add-in skeleton (AffineScript/Office.js)
 * SHA3-512 anonymization framework
 * Basic project structure and infrastructure
 * Container configuration templates
@@ -25,7 +25,7 @@ This document outlines potential development directions for Academic Workflow Su
 
 * Core Engine REST API implementation (Actix-Web)
 * AI Jail inference implementation (llama.cpp/Ollama)
-* Office Add-in UI development (React/ReScript)
+* Office Add-in UI development (React/AffineScript)
 * End-to-end workflow integration
 * Testing and documentation
 
@@ -320,7 +320,7 @@ _Focus: Institution-wide deployment_
 === Build & Package
 
 * **Build**: just (contractiles pattern)
-* **Package**: Guix primary, Nix fallback
+* **Package**: Guix primary, Guix fallback
 * **JS Runtime**: Deno (no npm in production)
 * **Containers**: OCI-compliant images
 

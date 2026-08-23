@@ -51,6 +51,6 @@ manual-review = "No MD5/SHA1, no hardcoded secrets, HTTPS-only network paths"
 
 [critical-next-actions]
 - Run mix test in a Beam-enabled environment to validate new Elixir tests
-- Run deno task test:office-addin to validate new ReScript tests
+- Run deno task test:office-addin to validate new AffineScript tests
 - Upgrade transitive deps past bincode 1.3.3 and rand 0.8.5 when parents allow
 - Add AI-jail test harness stub that auto-skips when CUDA unavailable

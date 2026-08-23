@@ -9,7 +9,7 @@ Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 5a549a1 chore(ci): Bump ossf/scorecard-action from 2.4.0 to 2.4.3 (#80)
 51a0bff chore(deps): Bump thiserror from 2.0.17 to 2.0.18 in /components/core (#79)
 a6c856b chore(deps): Bump chrono from 0.4.42 to 0.4.43 in /components/core (#81)
-a3c7fd5 chore(deps): Update rescript requirement from ^12.0.2 to ^12.1.0 in /components/office-addin (#82)
+a3c7fd5 chore(deps): Update affinescript requirement from ^12.0.2 to ^12.1.0 in /components/office-addin (#82)
 301de86 chore(deps-dev): Update webpack-dev-server requirement from ^5.2.2 to ^5.2.3 in /components/office-addin (#84)
 afbd25b chore(deps-dev): Update html-webpack-plugin requirement from ^5.6.5 to ^5.6.6 in /components/office-addin (#85)
 e992aff chore(ci): Bump github/codeql-action from 4.31.9 to 4.31.10 (#86)

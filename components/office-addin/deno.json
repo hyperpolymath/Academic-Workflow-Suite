@@ -1,7 +1,7 @@
 {
   "tasks": {
-    "build": "rescript build && deno run --allow-read --allow-write --allow-run tools/build.js",
-    "dev": "rescript build -w & deno run --watch --allow-read --allow-write --allow-run tools/build.js",
+    "build": "affinescript build && deno run --allow-read --allow-write --allow-run tools/build.js",
+    "dev": "affinescript build -w & deno run --watch --allow-read --allow-write --allow-run tools/build.js",
     "serve": "deno run --allow-net --allow-read tools/serve.js"
   },
   "imports": {
