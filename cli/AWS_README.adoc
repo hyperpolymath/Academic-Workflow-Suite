@@ -1,0 +1,37 @@
+== test-project
+
+This directory has been initialized with Academic Workflow Suite.
+
+=== Directory Structure
+
+* `+.aws/+` - AWS configuration and data
+** `+config.yaml+` - Project configuration
+** `+submissions/+` - Downloaded TMA submissions
+** `+feedback/+` - Generated feedback files
+** `+logs/+` - Application logs
+
+=== Quick Start
+
+[arabic]
+. Start services:
++
+....
+aws start
+....
+. Check status:
++
+....
+aws status
+....
+. Mark a TMA:
++
+....
+aws mark --interactive
+....
+. View feedback:
++
+....
+aws feedback <student-id>
+....
+
+For more information, run `+aws --help+`.
