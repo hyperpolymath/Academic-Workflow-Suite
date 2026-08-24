@@ -35,7 +35,7 @@ build-backend:
 
 # Build Office add-in
 build-office-addin:
-    @echo "Building Office Add-in (ReScript)..."
+    @echo "Building Office Add-in (AffineScript)..."
     cd components/office-addin && npm install
     cd components/office-addin && npm run build
 
@@ -55,7 +55,7 @@ build-shared:
 test: test-unit test-integration test-security
 
 # Run unit tests
-test-unit: test-rust test-elixir test-rescript
+test-unit: test-rust test-elixir test-affinescript
 
 # Run Rust tests
 test-rust:
@@ -70,9 +70,9 @@ test-elixir:
     @echo "Running Elixir tests..."
     cd components/backend && mix test
 
-# Run ReScript tests
-test-rescript:
-    @echo "Running ReScript tests..."
+# Run AffineScript tests
+test-affinescript:
+    @echo "Running AffineScript tests..."
     cd components/office-addin && npm test
 
 # Run integration tests
@@ -112,15 +112,15 @@ dev-watch-rust:
     @echo "Watching Rust files for changes..."
     cargo watch -x "build" -x "test"
 
-# Watch and rebuild on changes (ReScript)
-dev-watch-rescript:
-    @echo "Watching ReScript files for changes..."
+# Watch and rebuild on changes (AffineScript)
+dev-watch-affinescript:
+    @echo "Watching AffineScript files for changes..."
     cd components/office-addin && npm run watch
 
 # === Linting & Formatting ===
 
 # Run all linters
-lint: lint-rust lint-elixir lint-rescript lint-shell lint-yaml
+lint: lint-rust lint-elixir lint-affinescript lint-shell lint-yaml
 
 # Lint Rust code
 lint-rust:
@@ -136,9 +136,9 @@ lint-elixir:
     cd components/backend && mix format --check-formatted
     cd components/backend && mix credo --strict
 
-# Lint ReScript code
-lint-rescript:
-    @echo "Linting ReScript..."
+# Lint AffineScript code
+lint-affinescript:
+    @echo "Linting AffineScript..."
     cd components/office-addin && npm run lint
 
 # Lint shell scripts
@@ -152,7 +152,7 @@ lint-yaml:
     yamllint .
 
 # Format all code
-format: format-rust format-elixir format-rescript
+format: format-rust format-elixir format-affinescript
 
 # Format Rust code
 format-rust:
@@ -167,9 +167,9 @@ format-elixir:
     @echo "Formatting Elixir..."
     cd components/backend && mix format
 
-# Format ReScript code
-format-rescript:
-    @echo "Formatting ReScript..."
+# Format AffineScript code
+format-affinescript:
+    @echo "Formatting AffineScript..."
     cd components/office-addin && npm run format
 
 # === Security Recipes ===
@@ -293,7 +293,7 @@ health:
 # === Cleanup Recipes ===
 
 # Clean all build artifacts
-clean: clean-rust clean-elixir clean-rescript clean-docker
+clean: clean-rust clean-elixir clean-affinescript clean-docker
 
 # Clean Rust artifacts
 clean-rust:
@@ -308,9 +308,9 @@ clean-elixir:
     @echo "Cleaning Elixir artifacts..."
     cd components/backend && mix clean
 
-# Clean ReScript artifacts
-clean-rescript:
-    @echo "Cleaning ReScript artifacts..."
+# Clean AffineScript artifacts
+clean-affinescript:
+    @echo "Cleaning AffineScript artifacts..."
     cd components/office-addin && npm run clean
     cd components/office-addin && rm -rf node_modules
 
@@ -348,7 +348,7 @@ ci:
 # Validate RSR compliance
 rsr-validate: sync-metadata
     @echo "Validating RSR compliance..."
-    @echo "✅ Type safety: Rust + Elixir + ReScript"
+    @echo "✅ Type safety: Rust + Elixir + AffineScript"
     @echo "✅ Memory safety: Rust ownership model, zero unsafe"
     @echo "✅ Documentation: README, CONTRIBUTING, CODE_OF_CONDUCT, MAINTAINERS"
     @echo "✅ .well-known: security.txt, ai.txt, humans.txt"

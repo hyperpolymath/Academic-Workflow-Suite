@@ -1,12 +1,12 @@
 {
   "name": "awap-office-addin",
   "version": "1.0.0",
-  "description": "Academic Workflow Suite Office Add-in built with ReScript",
+  "description": "Academic Workflow Suite Office Add-in built with AffineScript",
   "main": "dist/addin.js",
   "scripts": {
-    "clean": "rescript clean",
-    "build": "rescript build && webpack --mode production",
-    "dev": "rescript build -w & webpack --mode development --watch",
+    "clean": "affinescript clean",
+    "build": "affinescript build && webpack --mode production",
+    "dev": "affinescript build -w & webpack --mode development --watch",
     "test": "jest",
     "start": "office-addin-dev-server start manifest.xml",
     "stop": "office-addin-dev-server stop manifest.xml",
@@ -15,14 +15,14 @@
   "keywords": [
     "office-addin",
     "word",
-    "rescript",
+    "affinescript",
     "academic"
   ],
   "author": "Academic Workflow Suite",
   "license": "MIT",
   "dependencies": {
-    "@rescript/core": "^1.6.1",
-    "rescript": "^12.3.0"
+    "@affinescript/core": "^1.6.1",
+    "affinescript": "^12.3.0"
   },
   "devDependencies": {
     "@babel/core": "^8.0.1",
@@ -38,7 +38,7 @@
     "office-addin-dev-certs": "^2.0.10",
     "office-addin-dev-server": "^1.13.2",
     "office-addin-manifest": "^2.1.6",
-    "rescript-jest": "^0.10.0",
+    "affinescript-jest": "^0.10.0",
     "style-loader": "^4.0.0",
     "webpack": "^5.109.0",
     "webpack-cli": "^7.2.2",

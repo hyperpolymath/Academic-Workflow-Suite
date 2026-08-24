@@ -13,7 +13,7 @@ independent component with its own build.
 | `core/` | Rust | Actix REST/GraphQL server, LMDB event store, SHA3-256 anonymization + PII detection | real, tested |
 | `shared/` | Rust | Cross-cutting library: crypto, validation, sanitization, logging, time | real, tested |
 | `ai-jail/` | Rust | Local LLM inference skeleton (Candle/Mistral-7B) | CUDA-blocked; scoring placeholder |
-| `office-addin/` | ReScript | Microsoft Word Office.js add-in (task pane, ribbon) | real bindings, unrun vs Word |
+| `office-addin/` | AffineScript | Microsoft Word Office.js add-in (task pane, ribbon) | real bindings, unrun vs Word |
 | `backend/` | Elixir/Phoenix | Alternate backend (`awap_backend`) | non-canonical — see `docs/adr/0001-backend-consolidation.md` |
 
 See the repository `TOPOLOGY.md` for the completion dashboard and the honest

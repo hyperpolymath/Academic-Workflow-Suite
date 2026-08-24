@@ -1,4 +1,9 @@
 // SPDX-License-Identifier: MPL-2.0
+// Ported via Harvard Engine (Semantic pass)
+
+module OfficeAPI_test;
+
+// SPDX-License-Identifier: MPL-2.0
 // Tests for OfficeAPI module — Office.js bindings and helpers
 
 open Jest
@@ -9,8 +14,8 @@ open Expect
 @val external globalThis: {..} = "globalThis"
 
 // Build a minimal Office.js mock that the OfficeAPI module can call
-let setupOfficeMock = (~onReadyResult=Ok(), ~selectedData=Some("Hello World"), ()) => {
-  let mockOffice = {
+fn setupOfficeMock = (~onReadyResult=Ok(), ~selectedData=Some("Hello World"), ()) => {
+  fn mockOffice = {
     "onReady": (. callback) => callback(. ()),
     "context": {
       "document": {
@@ -38,7 +43,7 @@ let setupOfficeMock = (~onReadyResult=Ok(), ~selectedData=Some("Hello World"), (
         },
       },
       "host": {
-        "type": "Word",
+        "struct": "Word",
       },
       "ui": {
         "displayDialogAsync": (. _url, _opts, _cb) => (),
@@ -60,8 +65,8 @@ let setupOfficeMock = (~onReadyResult=Ok(), ~selectedData=Some("Hello World"), (
   mockOffice
 }
 
-let setupOfficeErrorMock = () => {
-  let mockOffice = {
+fn setupOfficeErrorMock = () => {
+  fn mockOffice = {
     "onReady": (. callback) => callback(. ()),
     "context": {
       "document": {
@@ -80,7 +85,7 @@ let setupOfficeErrorMock = () => {
         },
       },
       "host": {
-        "type": "Word",
+        "struct": "Word",
       },
     },
     "CoercionType": {
@@ -102,26 +107,26 @@ let setupOfficeErrorMock = () => {
 
 describe("OfficeAPI.coercionTypeToString", () => {
   beforeEach(() => {
-    let _ = setupOfficeMock()
+    fn _ = setupOfficeMock()
   })
 
   test("converts Text to Office.CoercionType.Text value", () => {
-    let result = OfficeAPI.coercionTypeToString(Types.Office.Text)
+    fn result = OfficeAPI.coercionTypeToString(Types.Office.Text)
     expect(result)->toBe("text")
   })
 
   test("converts Html to Office.CoercionType.Html value", () => {
-    let result = OfficeAPI.coercionTypeToString(Types.Office.Html)
+    fn result = OfficeAPI.coercionTypeToString(Types.Office.Html)
     expect(result)->toBe("html")
   })
 
   test("converts Matrix to Office.CoercionType.Matrix value", () => {
-    let result = OfficeAPI.coercionTypeToString(Types.Office.Matrix)
+    fn result = OfficeAPI.coercionTypeToString(Types.Office.Matrix)
     expect(result)->toBe("matrix")
   })
 
   test("converts Table to Office.CoercionType.Table value", () => {
-    let result = OfficeAPI.coercionTypeToString(Types.Office.Table)
+    fn result = OfficeAPI.coercionTypeToString(Types.Office.Table)
     expect(result)->toBe("table")
   })
 })
@@ -130,7 +135,7 @@ describe("OfficeAPI.coercionTypeToString", () => {
 
 describe("OfficeAPI.getSelectedData", () => {
   testAsync("retrieves selected text successfully", done => {
-    let _ = setupOfficeMock(~selectedData=Some("Selected paragraph"), ())
+    fn _ = setupOfficeMock(~selectedData=Some("Selected paragraph"), ())
 
     OfficeAPI.getSelectedData(Types.Office.Text)
     ->Promise.then(result => {
@@ -145,7 +150,7 @@ describe("OfficeAPI.getSelectedData", () => {
   })
 
   testAsync("returns error when no data is selected", done => {
-    let _ = setupOfficeMock(~selectedData=None, ())
+    fn _ = setupOfficeMock(~selectedData=None, ())
 
     OfficeAPI.getSelectedData(Types.Office.Text)
     ->Promise.then(result => {
@@ -179,7 +184,7 @@ describe("OfficeAPI.getSelectedData", () => {
 
 describe("OfficeAPI.setSelectedData", () => {
   testAsync("sets selected data successfully", done => {
-    let _ = setupOfficeMock()
+    fn _ = setupOfficeMock()
 
     OfficeAPI.setSelectedData("New content", Types.Office.Text)
     ->Promise.then(result => {
@@ -213,7 +218,7 @@ describe("OfficeAPI.setSelectedData", () => {
 
 describe("OfficeAPI.insertText", () => {
   testAsync("delegates to setSelectedData with Text coercion", done => {
-    let _ = setupOfficeMock()
+    fn _ = setupOfficeMock()
 
     OfficeAPI.insertText("Inserted text")
     ->Promise.then(result => {
@@ -230,7 +235,7 @@ describe("OfficeAPI.insertText", () => {
 
 describe("OfficeAPI.insertHtml", () => {
   testAsync("delegates to setSelectedData with Html coercion", done => {
-    let _ = setupOfficeMock()
+    fn _ = setupOfficeMock()
 
     OfficeAPI.insertHtml("<b>Bold feedback</b>")
     ->Promise.then(result => {
@@ -249,7 +254,7 @@ describe("OfficeAPI.insertHtml", () => {
 
 describe("OfficeAPI.initialize", () => {
   testAsync("resolves Ok when Office.onReady fires", done => {
-    let _ = setupOfficeMock()
+    fn _ = setupOfficeMock()
 
     OfficeAPI.initialize()
     ->Promise.then(result => {
@@ -268,7 +273,7 @@ describe("OfficeAPI.initialize", () => {
 
 describe("OfficeAPI.isOfficeContext", () => {
   test("returns true when Office.context exists", () => {
-    let _ = setupOfficeMock()
+    fn _ = setupOfficeMock()
     expect(OfficeAPI.isOfficeContext())->toBe(true)
   })
 
@@ -283,7 +288,7 @@ describe("OfficeAPI.isOfficeContext", () => {
 
 describe("OfficeAPI.getHostType", () => {
   test("detects Word host", () => {
-    let _ = setupOfficeMock()
+    fn _ = setupOfficeMock()
     expect(OfficeAPI.getHostType())->toEqual(OfficeAPI.Word)
   })
 
@@ -297,7 +302,7 @@ describe("OfficeAPI.getHostType", () => {
 
 describe("OfficeAPI.showNotification", () => {
   test("does not throw", () => {
-    let _ = setupOfficeMock()
+    fn _ = setupOfficeMock()
     // showNotification uses console.log — just verify no exception
     OfficeAPI.showNotification("Title", "Message body")
     expect(true)->toBe(true)
@@ -308,27 +313,27 @@ describe("OfficeAPI.showNotification", () => {
 
 describe("OfficeAPI.Word.extractStudentIdFromText", () => {
   test("extracts ID from 'Student ID: A1234567'", () => {
-    let result = OfficeAPI.Word.extractStudentIdFromText("Student ID: A1234567")
+    fn result = OfficeAPI.Word.extractStudentIdFromText("Student ID: A1234567")
     expect(result)->toEqual(Some("A1234567"))
   })
 
   test("extracts ID from 'ID: B9876543'", () => {
-    let result = OfficeAPI.Word.extractStudentIdFromText("ID: B9876543")
+    fn result = OfficeAPI.Word.extractStudentIdFromText("ID: B9876543")
     expect(result)->toEqual(Some("B9876543"))
   })
 
   test("extracts standalone ID like C5555555", () => {
-    let result = OfficeAPI.Word.extractStudentIdFromText("Submitted by C5555555 on 2026-04-16")
+    fn result = OfficeAPI.Word.extractStudentIdFromText("Submitted by C5555555 on 2026-04-16")
     expect(result)->toEqual(Some("C5555555"))
   })
 
   test("returns None when no ID pattern found", () => {
-    let result = OfficeAPI.Word.extractStudentIdFromText("No student identifier here")
+    fn result = OfficeAPI.Word.extractStudentIdFromText("No student identifier here")
     expect(result)->toEqual(None)
   })
 
   test("returns None for empty string", () => {
-    let result = OfficeAPI.Word.extractStudentIdFromText("")
+    fn result = OfficeAPI.Word.extractStudentIdFromText("")
     expect(result)->toEqual(None)
   })
 })
@@ -337,13 +342,13 @@ describe("OfficeAPI.Word.extractStudentIdFromText", () => {
 
 describe("OfficeAPI Integration", () => {
   testAsync("read selection → transform → write back", done => {
-    let _ = setupOfficeMock(~selectedData=Some("original text"), ())
+    fn _ = setupOfficeMock(~selectedData=Some("original text"), ())
 
     OfficeAPI.getSelectedData(Types.Office.Text)
     ->Promise.then(readResult => {
       switch readResult {
       | Ok(text) => {
-          let transformed = String.toUpperCase(text)
+          fn transformed = String.toUpperCase(text)
           OfficeAPI.setSelectedData(transformed, Types.Office.Text)
         }
       | Error(msg) => {
@@ -363,3 +368,4 @@ describe("OfficeAPI Integration", () => {
     ->ignore
   })
 })
+

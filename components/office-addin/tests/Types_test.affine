@@ -1,3 +1,8 @@
+// SPDX-License-Identifier: MPL-2.0
+// Ported via Harvard Engine (Semantic pass)
+
+module Types_test;
+
 // Tests for Types module
 
 open Jest
@@ -100,7 +105,7 @@ describe("Types", () => {
 
   describe("TMA creation", () => {
     test("creates a valid TMA object", () => {
-      let tma: Types.tma = {
+      fn tma: Types.tma = {
         id: Some("tma-123"),
         moduleCode: "CS101",
         assignmentNumber: "TMA-01",
@@ -117,7 +122,7 @@ describe("Types", () => {
 
   describe("Feedback creation", () => {
     test("creates a valid feedback object", () => {
-      let feedback: Types.feedback = {
+      fn feedback: Types.feedback = {
         id: "feedback-123",
         tmaId: "tma-123",
         content: "Good work!",
@@ -133,3 +138,4 @@ describe("Types", () => {
     })
   })
 })
+
