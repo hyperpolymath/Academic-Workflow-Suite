@@ -1,0 +1,30 @@
+== ai-jail
+
+The network-isolated local AI inference component. It is intended to run
+a local LLM (Candle / Mistral-7B) with no network access, receiving
+anonymized context and returning feedback suggestions.
+
+=== Status: BLOCKED
+
+* The inference skeleton (`+components/ai-jail/src/inference.rs+`:
+sampling / top-p) is real, but the *scoring is placeholder* (confidence
+hardcoded, rubric alignment is naive keyword overlap).
+* The crate depends on `+candle-core+` with `+features = ["cuda"]+` and
+has *no CPU fallback*, so it cannot build or be tested without an NVIDIA
+GPU. This is the single biggest blocker for the product’s AI feature.
+
+=== What’s here
+
+* `+components/ai-jail/src/inference.rs+` — token sampling / generation
+loop.
+* `+components/ai-jail/src/model.rs+` — model loading.
+* `+components/ai-jail/src/protocol.rs+` — the stdin/stdout JSON
+protocol this component speaks.
+* `+components/ai-jail/src/main.rs+` — entry point.
+
+=== Next steps (see `+ROADMAP.adoc+`)
+
+Add a CPU fallback (Candle CPU feature) or route to an LM Studio-style
+OpenAI-compatible localhost API (the convention used elsewhere in the
+estate), so tests are no longer CUDA-blocked; then replace the
+placeholder scoring.
