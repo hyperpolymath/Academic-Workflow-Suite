@@ -70,8 +70,8 @@ Publication requires B+. Long alpha is discipline, not shame.
 | *ABSENT*
 | Not found — required for any grade claim above E
 
-| `guix.scm` + `flake.nix`
-| PRESENT (`flake.nix`); *guix.scm absent*
+| `guix.scm` + `flake.guix`
+| PRESENT (`flake.guix`); *guix.scm absent*
 | Root
 
 | `.well-known/` (security.txt, ai.txt, humans.txt)
@@ -123,7 +123,7 @@ violations above must be fixed before any C lift is credible.
 | BEAM-hosted API layer. Not built/run in this audit.
 
 | Office add-in (`components/office-addin/`)
-| ReScript sources + 3 `*_test.res` files
+| AffineScript sources + 3 `*_test.res` files
 | *POLICY VIOLATION*: `package.json` + `webpack.config.js` present. `npm`/`webpack` are banned — policy requires Deno.
 
 | AI-jail (`components/ai-jail/`)
@@ -165,7 +165,7 @@ Another ~60+ claimed tests have been written but not run.
 - `docs/practice/DOGFOOD-LOG.adoc`: *ABSENT*.
 
 Annotation depth is clearly *below* the v2.0 C bar ("deep per-file +
-per-directory annotation"). The repo is a Rust + Elixir + ReScript + AI
+per-directory annotation"). The repo is a Rust + Elixir + AffineScript + AI
 stack — that's four axes of orientation complexity — and only the root
 README exists to greet a new contributor.
 
@@ -262,7 +262,7 @@ What blocks *immediate* promotion to C:
    only as scattered design docs (`MOODLE_OAUTH_DESIGN.adoc`,
    `PROVEN_INTEGRATION.adoc`) — consolidate into numbered ADRs.
 5. Run the pending backend test suite (`mix test` in a BEAM-enabled env).
-6. Run the office-addin ReScript test suite and record PASS count.
+6. Run the office-addin AffineScript test suite and record PASS count.
 7. Provide a CUDA-optional fallback / stub for the AI-jail tests so
    `ai-jail = BLOCKED` doesn't permanently bottleneck the test matrix.
 8. Fix the structural-policy debts: rename `Containerfiles/Dockerfile.*`

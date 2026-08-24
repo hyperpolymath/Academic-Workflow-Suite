@@ -162,11 +162,11 @@ lint:elixir:credo:
         - components/backend/**/*.ex
         - components/backend/**/*.exs
 
-lint:rescript:
+lint:affinescript:
   <<: *node_template
   stage: lint
   script:
-    - echo "Linting ReScript code..."
+    - echo "Linting AffineScript code..."
     - cd components/office-addin
     - npm run lint || echo "No lint script found, skipping..."
   allow_failure: true
@@ -283,7 +283,7 @@ build:elixir:backend:
 build:office-addin:
   <<: *node_template
   stage: build
-  needs: ["lint:rescript"]
+  needs: ["lint:affinescript"]
   script:
     - echo "Building Office add-in with webpack (production)..."
     - cd components/office-addin
@@ -352,12 +352,12 @@ test:elixir:backend:
       - components/backend/cover/
     expire_in: 30 days
 
-test:rescript:office-addin:
+test:affinescript:office-addin:
   <<: *node_template
   stage: test
   needs: ["build:office-addin"]
   script:
-    - echo "Running ReScript/JavaScript tests..."
+    - echo "Running AffineScript/JavaScript tests..."
     - cd components/office-addin
     - npm test || echo "No test script configured"
   coverage: '/Statements\s+:\s+(\d+\.\d+)%/'
@@ -640,7 +640,7 @@ package:office-addin:
   stage: package
   needs:
     - build:office-addin
-    - test:rescript:office-addin
+    - test:affinescript:office-addin
   script:
     - echo "Packaging Office add-in..."
     - cd components/office-addin

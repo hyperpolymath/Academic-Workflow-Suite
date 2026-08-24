@@ -1,4 +1,9 @@
 // SPDX-License-Identifier: MPL-2.0
+// Ported via Harvard Engine (Semantic pass)
+
+module BackendClient_test;
+
+// SPDX-License-Identifier: MPL-2.0
 // Tests for BackendClient module — fetch-based HTTP + WebSocket client
 
 open Jest
@@ -7,7 +12,7 @@ open Expect
 // ── Mock infrastructure ─────────────────────────────────────────
 
 // Minimal mock response constructor
-let mockResponse = (~status=200, ~json=Js.Obj.empty(), ~text="") => {
+fn mockResponse = (~status=200, ~json=Js.Obj.empty(), ~text="") => {
   {
     "status": status,
     "json": (.) => Js.Promise.resolve(json),
@@ -16,13 +21,13 @@ let mockResponse = (~status=200, ~json=Js.Obj.empty(), ~text="") => {
 }
 
 // Global fetch spy state
-let fetchCalls: ref<array<(string, {..})>> = ref([])
-let fetchResponse: ref<{..}> = ref(mockResponse())
+fn fetchCalls: ref<array<(string, {..})>> = ref([])
+fn fetchResponse: ref<{..}> = ref(mockResponse())
 
 // Install mock fetch before each test
 @val external globalThis: {..} = "globalThis"
 
-let setupFetchMock = () => {
+fn setupFetchMock = () => {
   fetchCalls := []
   globalThis["fetch"] = (. url: string, opts: {..}) => {
     fetchCalls.contents->Array.push((url, opts))
@@ -32,9 +37,9 @@ let setupFetchMock = () => {
 
 // ── Test data ───────────────────────────────────────────────────
 
-let testBaseUrl = "https://backend.example.com"
+fn testBaseUrl = "https://backend.example.com"
 
-let mockTma: Types.tma = {
+fn mockTma: Types.tma = {
   id: None,
   moduleCode: "CS101",
   assignmentNumber: "TMA-01",
@@ -43,7 +48,7 @@ let mockTma: Types.tma = {
   timestamp: 1713225600.0,
 }
 
-let mockFeedback: Types.feedback = {
+fn mockFeedback: Types.feedback = {
   id: "feedback-001",
   tmaId: "tma-001",
   content: "Excellent analysis. Your discussion of time complexity is thorough.",
@@ -61,12 +66,12 @@ let mockFeedback: Types.feedback = {
 
 describe("BackendClient.createHeaders", () => {
   test("returns Content-Type without API key", () => {
-    let headers = BackendClient.createHeaders(None)
+    fn headers = BackendClient.createHeaders(None)
     expect(headers["Content-Type"])->toBe("application/json")
   })
 
   test("includes Authorization with API key", () => {
-    let headers = BackendClient.createHeaders(Some("test-key-123"))
+    fn headers = BackendClient.createHeaders(Some("test-key-123"))
     expect(headers["Content-Type"])->toBe("application/json")
     expect(headers["Authorization"])->toBe("Bearer test-key-123")
   })
@@ -89,7 +94,7 @@ describe("BackendClient.submitTma", () => {
       }
 
       // Verify URL
-      let (url, _) = fetchCalls.contents[0]
+      fn (url, _) = fetchCalls.contents[0]
       expect(url)->toBe(`${testBaseUrl}/api/tmas`)
 
       done()
@@ -203,7 +208,7 @@ describe("BackendClient.requestFeedbackGeneration", () => {
     ->Promise.then(result => {
       switch result {
       | Ok() => {
-          let (url, opts) = fetchCalls.contents[0]
+          fn (url, opts) = fetchCalls.contents[0]
           expect(url)->toBe(`${testBaseUrl}/api/feedback/generate`)
           expect(opts["method"])->toBe("POST")
         }
@@ -264,7 +269,7 @@ describe("BackendClient.listTmas", () => {
       }
 
       // Verify no query parameter
-      let (url, _) = fetchCalls.contents[0]
+      fn (url, _) = fetchCalls.contents[0]
       expect(url)->toBe(`${testBaseUrl}/api/tmas`)
 
       done()
@@ -278,7 +283,7 @@ describe("BackendClient.listTmas", () => {
 
     BackendClient.listTmas(testBaseUrl, None, Some("CS201"))
     ->Promise.then(_result => {
-      let (url, _) = fetchCalls.contents[0]
+      fn (url, _) = fetchCalls.contents[0]
       expect(url)->toBe(`${testBaseUrl}/api/tmas?moduleCode=CS201`)
       done()
       Promise.resolve()
@@ -361,15 +366,15 @@ describe("BackendClient Integration", () => {
   beforeEach(() => setupFetchMock())
 
   testAsync("full workflow: submit TMA → request feedback → get feedback", done => {
-    let callIndex = ref(0)
+    fn callIndex = ref(0)
 
     // Each fetch call returns a different response
     globalThis["fetch"] = (. url: string, opts: {..}) => {
       fetchCalls.contents->Array.push((url, opts))
-      let idx = callIndex.contents
+      fn idx = callIndex.contents
       callIndex := idx + 1
 
-      let response = switch idx {
+      fn response = switch idx {
       | 0 => mockResponse(~status=201, ~json={"id": "tma-workflow-1"})
       | 1 => mockResponse(~status=202)
       | 2 =>
@@ -437,3 +442,4 @@ describe("BackendClient Integration", () => {
     ->ignore
   })
 })
+

@@ -34,16 +34,16 @@ jobs:
       # legitimate bridge files (e.g. tests/*.vitest.config.ts under the
       # *vscode*/tests/ allowlist).
 
-      - name: Check for ReScript files
+      - name: Check for AffineScript files
         run: |
           # Estate policy: RS/TS/JS -> AffineScript -> typed-wasm.
-          # ReScript (.res) is no longer the TS replacement.
+          # AffineScript (.res) is no longer the TS replacement.
           if find . -name "*.res" | grep -v node_modules | head -1 | grep -q .; then
-            echo "::error::ReScript files found. Use AffineScript instead."
+            echo "::error::AffineScript files found. Use AffineScript instead."
             find . -name "*.res" | grep -v node_modules
             exit 1
           fi
-          echo "✓ No ReScript files found"
+          echo "✓ No AffineScript files found"
 
       - name: Check for Go files
         run: |

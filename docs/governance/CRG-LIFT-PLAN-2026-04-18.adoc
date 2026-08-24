@@ -197,7 +197,7 @@ is the scale.
 - Every Rust crate has a `src/lib.rs` or `src/main.rs` with a `//!`
   crate-level docstring covering: purpose, public API summary, invariants
 - Every Elixir module in `components/backend/lib/` has a `@moduledoc`
-- Every ReScript module in `components/office-addin/src/` has a header
+- Every AffineScript module in `components/office-addin/src/` has a header
   comment summarising exports
 - `docs/` has at least `architecture/`, `decisions/` (ADRs),
   `integration/` subdirectories, each with a README and at least one
@@ -229,7 +229,7 @@ is the scale.
 *Tasks — docs/ subtree build-out*:
 
 * [ ] Create `docs/architecture/` with at least one diagram + prose overview
-  covering the Rust-core + Elixir-backend + ReScript-addin + AI-jail split
+  covering the Rust-core + Elixir-backend + AffineScript-addin + AI-jail split
 * [ ] Create `docs/decisions/` and convert `MOODLE_OAUTH_DESIGN.adoc` +
   `PROVEN_INTEGRATION.adoc` into numbered ADRs (`0001-moodle-oauth.adoc`,
   `0002-proven-integration.adoc`)
@@ -313,7 +313,7 @@ tests (the code compiles).
 
 - `components/backend/` `mix test` reports all tests PASS, with a total
   count recorded in STATE.a2ml's `[test-matrix]` section
-- `components/office-addin/` ReScript tests report all PASS, with total
+- `components/office-addin/` AffineScript tests report all PASS, with total
   count recorded
 - AI-jail suite either runs (if CUDA available) or cleanly skips (if not),
   with BLOCKED status removed from STATE.a2ml
@@ -330,7 +330,7 @@ tests (the code compiles).
   `docs/practice/BACKEND-TEST-MATRIX-2026-04-18.adoc`
 * [ ] For each backend test that fails, either fix the production code
   or document the test as aspirational and remove it from the count
-* [ ] Run ReScript tests in `components/office-addin/` — these are
+* [ ] Run AffineScript tests in `components/office-addin/` — these are
   claimed as "Types (15) + BackendClient (18) + OfficeAPI (22)
   implemented" with no PASS count. Convert to a PASS count.
 * [ ] Add a behavioural e2e test that covers: document-open →

@@ -18,7 +18,7 @@ Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
                                             ▼
                         ┌─────────────────────────────────────────┐
                         │          PRESENTATION LAYER             │
-                        │    (Office Add-in - ReScript/React)     │
+                        │    (Office Add-in - AffineScript/React)     │
                         │  ┌───────────┐  ┌───────────────────┐  │
                         │  │  Task Pane│  │  Office.js        │  │
                         │  │  UI       │  │  Integration      │  │
@@ -68,7 +68,7 @@ contradicted STATE and the CRG audit. Corrected 2026-07-02.
 COMPONENT                          STATUS              NOTES
 ─────────────────────────────────  ──────────────────  ─────────────────────────────────
 PRESENTATION LAYER
-  Office Add-in (ReScript)          ██████░░░░  ~60%   Real Office.js/Word bindings; 39
+  Office Add-in (AffineScript)          ██████░░░░  ~60%   Real Office.js/Word bindings; 39
                                                        assertions written, unrun vs Word
 APPLICATION LAYER (RUST)
   Actix REST API                    ████████░░  ~80%   Real GraphQL/REST server

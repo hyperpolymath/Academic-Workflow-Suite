@@ -114,7 +114,7 @@ components/office-addin/src/BackendClient.res:45-120
 ==== Migration Path
 
 1. Rust: Replace `serde_json` panic paths with `SafeJson`
-2. ReScript: Create bindings to `proven-js` package
+2. AffineScript: Create bindings to `proven-js` package
 3. Add schema validation using `SafeJson.Schema`
 
 === SafeRegex (HIGH)
@@ -279,7 +279,7 @@ The `proven` library provides `proven-rust` crate with:
 proven-rust = { version = "0.1", features = ["crypto", "json", "regex", "path"] }
 ----
 
-=== ReScript Bindings
+=== AffineScript Bindings
 
 The `proven` library provides `proven-js` package:
 
@@ -292,9 +292,9 @@ The `proven` library provides `proven-js` package:
 }
 ----
 
-ReScript binding file:
+AffineScript binding file:
 
-[source,rescript]
+[source,affinescript]
 ----
 // src/bindings/Proven.res
 module SafeJson = {
@@ -367,7 +367,7 @@ fn prop_json_roundtrip(s: String) -> bool {
 
 * [ ] Add `proven-rust` to Cargo.toml
 * [ ] Add `proven-js` to deno.json
-* [ ] Create ReScript bindings for proven modules
+* [ ] Create AffineScript bindings for proven modules
 * [ ] Replace SHA3 implementation with SafeCrypto
 * [ ] Replace JSON parsing with SafeJson
 * [ ] Replace regex patterns with SafeRegex

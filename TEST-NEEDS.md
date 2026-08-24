@@ -77,7 +77,7 @@ Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 - Only 2 test files: tma_test.exs and tma_controller_test.exs
 - Missing tests for all other modules, controllers, channels
 
-#### Office Add-in (ReScript — 10 files)
+#### Office Add-in (AffineScript — 10 files)
 - 3 test files exist (BackendClient_test.res, OfficeAPI_test.res, Types_test.res)
 - Coverage vs total module count unknown
 
@@ -102,7 +102,7 @@ Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 - [ ] cargo build (cli/) — not verified
 - [ ] cargo build (ai-jail/) — not verified
 - [ ] mix compile (backend/) — not verified
-- [ ] ReScript build (office-addin/) — not verified
+- [ ] AffineScript build (office-addin/) — not verified
 - [ ] Docker compose build — not verified
 - [ ] CLI --help works — not verified
 - [ ] Self-diagnostic (doctor command exists but untested)
@@ -120,7 +120,7 @@ Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 - [ ] Docker compose health checks
 
 ## Priority
-- **HIGH** — Multi-component system (CLI + AI Jail + Backend + Office Add-in + Shared) with 59 Rust files, 30 Elixir files, 10 ReScript files. The CLI has 14+ command modules with ZERO tests. The backend has 30+ modules with only 2 test files. This is a user-facing academic tool where correctness directly affects students.
+- **HIGH** — Multi-component system (CLI + AI Jail + Backend + Office Add-in + Shared) with 59 Rust files, 30 Elixir files, 10 AffineScript files. The CLI has 14+ command modules with ZERO tests. The backend has 30+ modules with only 2 test files. This is a user-facing academic tool where correctness directly affects students.
 
 ## FAKE-FUZZ ALERT
 

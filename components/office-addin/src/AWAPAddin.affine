@@ -1,7 +1,12 @@
+// SPDX-License-Identifier: MPL-2.0
+// Ported via Harvard Engine (Semantic pass)
+
+module AWAPAddin;
+
 // Main entry point for AWAP Office Add-in
 
 // Add-in lifecycle state
-type addinState = {
+struct addinState { {
   mutable isInitialized: bool,
   mutable officeReady: bool,
   mutable currentPage: page,
@@ -12,7 +17,7 @@ and page =
   | TaskPanePage
   | Unknown
 
-let state: addinState = {
+fn state: addinState = {
   isInitialized: false,
   officeReady: false,
   currentPage: Unknown,
@@ -22,7 +27,7 @@ let state: addinState = {
 @val @scope(("window", "location"))
 external pathname: string = "pathname"
 
-let detectPage = (): page => {
+fn detectPage = (): page => {
   if pathname->String.includes("commands.html") {
     CommandsPage
   } else if pathname->String.includes("taskpane.html") {
@@ -33,19 +38,19 @@ let detectPage = (): page => {
 }
 
 // Initialize Office.js
-let initializeOffice = async (): result<unit, string> => {
+fn initializeOffice = async (): result<unit, string> => {
   try {
     Js.Console.log("Initializing Office.js...")
 
-    let result = await OfficeAPI.initialize()
+    fn result = await OfficeAPI.initialize()
 
     switch result {
     | Ok() => {
         state.officeReady = true
         Js.Console.log("Office.js initialized successfully")
 
-        // Check host type
-        let hostType = OfficeAPI.getHostType()
+        // Check host struct
+        fn hostType = OfficeAPI.getHostType()
         switch hostType {
         | Word => Js.Console.log("Running in Microsoft Word")
         | Excel => Js.Console.log("Running in Microsoft Excel")
@@ -60,7 +65,7 @@ let initializeOffice = async (): result<unit, string> => {
     }
   } catch {
   | Js.Exn.Error(err) => {
-      let message = Js.Exn.message(err)->Option.getOr("Failed to initialize Office.js")
+      fn message = Js.Exn.message(err)->Option.getOr("Failed to initialize Office.js")
       Error(message)
     }
   | _ => Error("Unexpected error initializing Office.js")
@@ -68,7 +73,7 @@ let initializeOffice = async (): result<unit, string> => {
 }
 
 // Initialize commands page
-let initializeCommandsPage = (): unit => {
+fn initializeCommandsPage = (): unit => {
   Js.Console.log("Initializing Commands Page...")
 
   // Register ribbon commands
@@ -78,7 +83,7 @@ let initializeCommandsPage = (): unit => {
 }
 
 // Initialize task pane page
-let initializeTaskPanePage = (): unit => {
+fn initializeTaskPanePage = (): unit => {
   Js.Console.log("Initializing Task Pane...")
 
   // Run task pane initialization
@@ -88,7 +93,7 @@ let initializeTaskPanePage = (): unit => {
 }
 
 // Main initialization function
-let initialize = async (): unit => {
+fn initialize = async (): unit => {
   if state.isInitialized {
     Js.Console.warn("Add-in already initialized")
   } else {
@@ -102,7 +107,7 @@ let initialize = async (): unit => {
       | CommandsPage => {
           Js.Console.log("Detected Commands Page")
           // Initialize Office.js first
-          let officeResult = await initializeOffice()
+          fn officeResult = await initializeOffice()
 
           switch officeResult {
           | Ok() => {
@@ -117,7 +122,7 @@ let initialize = async (): unit => {
       | TaskPanePage => {
           Js.Console.log("Detected Task Pane Page")
           // Initialize Office.js first
-          let officeResult = await initializeOffice()
+          fn officeResult = await initializeOffice()
 
           switch officeResult {
           | Ok() => {
@@ -130,7 +135,7 @@ let initialize = async (): unit => {
           }
         }
       | Unknown => {
-          Js.Console.warn("Unknown page type, skipping initialization")
+          Js.Console.warn("Unknown page struct, skipping initialization")
         }
       }
 
@@ -139,7 +144,7 @@ let initialize = async (): unit => {
       }
     } catch {
     | Js.Exn.Error(err) => {
-        let message = Js.Exn.message(err)->Option.getOr("Unknown error")
+        fn message = Js.Exn.message(err)->Option.getOr("Unknown error")
         Js.Console.error2("Initialization error:", message)
       }
     | _ => Js.Console.error("Unexpected initialization error")
@@ -148,7 +153,7 @@ let initialize = async (): unit => {
 }
 
 // Check add-in health
-let healthCheck = async (): result<bool, string> => {
+fn healthCheck = async (): result<bool, string> => {
   // Check if Office.js is ready
   if !state.officeReady {
     Error("Office.js not ready")
@@ -156,8 +161,8 @@ let healthCheck = async (): result<bool, string> => {
     Error("Not running in Office context")
   } else {
     // Check backend connectivity (using settings from localStorage)
-    let settings = RibbonCommands.loadSettings()
-    let backendHealth = await BackendClient.healthCheck(settings.backendUrl)
+    fn settings = RibbonCommands.loadSettings()
+    fn backendHealth = await BackendClient.healthCheck(settings.backendUrl)
 
     switch backendHealth {
     | Ok(healthy) =>
@@ -172,7 +177,7 @@ let healthCheck = async (): result<bool, string> => {
 }
 
 // Shutdown/cleanup
-let shutdown = (): unit => {
+fn shutdown = (): unit => {
   Js.Console.log("Shutting down AWAP Office Add-in...")
 
   // Disconnect WebSocket if on task pane
@@ -190,7 +195,7 @@ let shutdown = (): unit => {
 @val @scope("window")
 external addEventListener: (string, {..} => unit) => unit = "addEventListener"
 
-let setupErrorHandlers = (): unit => {
+fn setupErrorHandlers = (): unit => {
   addEventListener("error", event => {
     Js.Console.error2("Global error:", event["error"])
   })
@@ -201,7 +206,7 @@ let setupErrorHandlers = (): unit => {
 }
 
 // Auto-initialize when script loads
-let run = (): unit => {
+fn run = (): unit => {
   setupErrorHandlers()
 
   // Wait for Office to be ready
@@ -209,12 +214,12 @@ let run = (): unit => {
   external onReady: (. unit => unit) => unit = "onReady"
 
   onReady(. () => {
-    let _ = initialize()
+    fn _ = initialize()
   })
 }
 
 // Export for manual initialization if needed
-let exportedApi = {
+fn exportedApi = {
   "initialize": initialize,
   "healthCheck": healthCheck,
   "shutdown": shutdown,
@@ -227,3 +232,4 @@ setGlobalAwap(exportedApi)
 
 // Auto-run on script load
 run()
+

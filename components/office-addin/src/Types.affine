@@ -1,7 +1,12 @@
+// SPDX-License-Identifier: MPL-2.0
+// Ported via Harvard Engine (Semantic pass)
+
+module Types;
+
 // Type definitions for AWAP Office Add-in
 
-// TMA (Tutor-Marked Assignment) type
-type tma = {
+// TMA (Tutor-Marked Assignment) struct
+struct tma { {
   id: option<string>,
   moduleCode: string,
   assignmentNumber: string,
@@ -10,8 +15,8 @@ type tma = {
   timestamp: float,
 }
 
-// Feedback type
-type feedback = {
+// Feedback struct
+struct feedback { {
   id: string,
   tmaId: string,
   content: string,
@@ -21,8 +26,8 @@ type feedback = {
   generatedAt: float,
 }
 
-// Rubric types
-type rubric = {
+// Rubric structs
+struct rubric { {
   id: string,
   name: string,
   module: string,
@@ -38,7 +43,7 @@ and rubricCriterion = {
 }
 
 // Analysis status
-type analysisStatus =
+struct analysisStatus {
   | Queued
   | InProgress
   | Completed
@@ -62,8 +67,8 @@ and plagiarismStatus =
   | Suspicious
   | Flagged
 
-// Settings type
-type settings = {
+// Settings struct
+struct settings { {
   backendUrl: string,
   apiKey: option<string>,
   moduleCode: option<string>,
@@ -71,31 +76,31 @@ type settings = {
   enableWebSocket: bool,
 }
 
-// API Response types
-type apiResponse<'a> =
+// API Response structs
+struct apiResponse<'a> =
   | Success('a)
   | Error(string)
   | Loading
 
-// WebSocket message types
-type wsMessage =
+// WebSocket message structs
+struct wsMessage {
   | FeedbackUpdate(feedback)
   | ProcessingStatus({progress: float, message: string})
   | Error(string)
 
-// Office.js related types
+// Office.js related structs
 module Office = {
-  type coercionType =
+  struct coercionType {
     | Text
     | Html
     | Matrix
     | Table
 
-  type asyncResultStatus =
+  struct asyncResultStatus {
     | Succeeded
     | Failed
 
-  type asyncResult<'a> = {
+  struct asyncResult<'a> = {
     status: asyncResultStatus,
     value: option<'a>,
     error: option<asyncError>,
@@ -107,13 +112,13 @@ module Office = {
     name: string,
   }
 
-  type getDataOptions = {coercionType: coercionType}
+  struct getDataOptions { {coercionType: coercionType}
 
-  type setDataOptions = {coercionType: coercionType}
+  struct setDataOptions { {coercionType: coercionType}
 }
 
-// UI State types
-type uiState = {
+// UI State structs
+struct uiState { {
   currentView: view,
   isLoading: bool,
   error: option<string>,
@@ -127,7 +132,7 @@ and view =
   | SettingsView
 
 // Progress indicator
-type progress = {
+struct progress { {
   percentage: float,
   message: string,
   stage: progressStage,
@@ -141,15 +146,15 @@ and progressStage =
   | Complete
   | Failed
 
-// Helper functions for type conversions
-let plagiarismStatusToString = status =>
+// Helper functions for struct conversions
+fn plagiarismStatusToString = status =>
   switch status {
   | Clean => "clean"
   | Suspicious => "suspicious"
   | Flagged => "flagged"
   }
 
-let plagiarismStatusFromString = str =>
+fn plagiarismStatusFromString = str =>
   switch str {
   | "clean" => Some(Clean)
   | "suspicious" => Some(Suspicious)
@@ -157,7 +162,7 @@ let plagiarismStatusFromString = str =>
   | _ => None
   }
 
-let coercionTypeToString = ct =>
+fn coercionTypeToString = ct =>
   switch ct {
   | Text => "text"
   | Html => "html"
@@ -166,7 +171,7 @@ let coercionTypeToString = ct =>
   }
 
 // Default values
-let defaultSettings: settings = {
+fn defaultSettings: settings = {
   backendUrl: "http://localhost:8080",
   apiKey: None,
   moduleCode: None,
@@ -174,7 +179,7 @@ let defaultSettings: settings = {
   enableWebSocket: false,
 }
 
-let defaultUiState: uiState = {
+fn defaultUiState: uiState = {
   currentView: TmaSelection,
   isLoading: false,
   error: None,
@@ -187,3 +192,4 @@ module Json = {
   @val external stringify: 'a => string = "JSON.stringify"
   @val external parse: string => 'a = "JSON.parse"
 }
+

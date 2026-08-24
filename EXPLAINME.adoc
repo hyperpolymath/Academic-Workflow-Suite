@@ -45,7 +45,7 @@ The cryptographic anonymization pattern (hash-before-process) is reused across a
 | **Rust** | https://www.rust-lang.org | The real anonymization + PII detection (SHA3-256), Actix API, LMDB event store, CLI
 | **Zig** (scaffolding) | https://ziglang.org | RSR C-ABI template only; no crypto implemented yet
 | **Idris2 ABI** (aspirational) | https://www.idris-lang.org | Formal proofs of hash one-wayness — not present; `src/abi/` does not exist
-| **ReScript** | https://rescript-lang.org | Office add-in (Office.js/Word) — real bindings, unrun against Word
+| **AffineScript** | https://affinescript-lang.org | Office add-in (Office.js/Word) — real bindings, unrun against Word
 | **Elixir** | https://elixir-lang.org | Phoenix backend (tests written, not yet run)
 |===
 
