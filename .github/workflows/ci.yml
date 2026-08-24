@@ -105,7 +105,7 @@ jobs:
         continue-on-error: true
 
   lint-node:
-    name: Lint Node.js/ReScript
+    name: Lint Node.js/AffineScript
     runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:

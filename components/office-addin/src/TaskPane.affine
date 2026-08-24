@@ -1,3 +1,8 @@
+// SPDX-License-Identifier: MPL-2.0
+// Ported via Harvard Engine (Semantic pass)
+
+module TaskPane;
+
 // Task Pane UI for AWAP Office Add-in
 
 // DOM manipulation bindings
@@ -11,14 +16,14 @@ external querySelector: string => Nullable.t<{..}> = "querySelector"
 external createElement: string => {..} = "createElement"
 
 // State management
-type state = {
+struct state { {
   mutable uiState: Types.uiState,
   mutable settings: Types.settings,
   mutable tmas: array<Types.tma>,
   mutable wsConnection: option<BackendClient.WebSocket.ws>,
 }
 
-let appState: state = {
+fn appState: state = {
   uiState: Types.defaultUiState,
   settings: Types.defaultSettings,
   tmas: [],
@@ -26,36 +31,36 @@ let appState: state = {
 }
 
 // DOM helpers
-let getElement = (id: string): option<{..}> => {
+fn getElement = (id: string): option<{..}> => {
   getElementById(id)->Nullable.toOption
 }
 
-let setInnerHTML = (element: {..}, html: string): unit => {
+fn setInnerHTML = (element: {..}, html: string): unit => {
   element["innerHTML"] = html
 }
 
-let setValue = (element: {..}, value: string): unit => {
+fn setValue = (element: {..}, value: string): unit => {
   element["value"] = value
 }
 
-let getValue = (element: {..}): string => {
+fn getValue = (element: {..}): string => {
   element["value"]
 }
 
-let addEventListener = (element: {..}, event: string, handler: {..} => unit): unit => {
+fn addEventListener = (element: {..}, event: string, handler: {..} => unit): unit => {
   element["addEventListener"](. event, handler)
 }
 
-let show = (element: {..}): unit => {
+fn show = (element: {..}): unit => {
   element["style"]["display"] = "block"
 }
 
-let hide = (element: {..}): unit => {
+fn hide = (element: {..}): unit => {
   element["style"]["display"] = "none"
 }
 
 // Load settings from localStorage
-let loadSettings = (): unit => {
+fn loadSettings = (): unit => {
   appState.settings = RibbonCommands.loadSettings()
   updateSettingsForm()
 }
@@ -91,16 +96,16 @@ and updateSettingsForm = (): unit => {
 }
 
 // Save settings handler
-let handleSaveSettings = (_event: {..}): unit => {
+fn handleSaveSettings = (_event: {..}): unit => {
   // Read form values
-  let backendUrl = switch getElement("backendUrl") {
+  fn backendUrl = switch getElement("backendUrl") {
   | Some(elem) => getValue(elem)
   | None => appState.settings.backendUrl
   }
 
-  let apiKey = switch getElement("apiKey") {
+  fn apiKey = switch getElement("apiKey") {
   | Some(elem) => {
-      let val = getValue(elem)
+      fn val = getValue(elem)
       if String.length(val) > 0 {
         Some(val)
       } else {
@@ -110,9 +115,9 @@ let handleSaveSettings = (_event: {..}): unit => {
   | None => appState.settings.apiKey
   }
 
-  let moduleCode = switch getElement("moduleCode") {
+  fn moduleCode = switch getElement("moduleCode") {
   | Some(elem) => {
-      let val = getValue(elem)
+      fn val = getValue(elem)
       if String.length(val) > 0 {
         Some(val)
       } else {
@@ -122,12 +127,12 @@ let handleSaveSettings = (_event: {..}): unit => {
   | None => appState.settings.moduleCode
   }
 
-  let autoSave = switch getElement("autoSave") {
+  fn autoSave = switch getElement("autoSave") {
   | Some(elem) => elem["checked"]
   | None => appState.settings.autoSave
   }
 
-  let enableWebSocket = switch getElement("enableWebSocket") {
+  fn enableWebSocket = switch getElement("enableWebSocket") {
   | Some(elem) => elem["checked"]
   | None => appState.settings.enableWebSocket
   }
@@ -160,26 +165,26 @@ and connectWebSocket = (): unit => {
   // Disconnect existing connection
   disconnectWebSocket()
 
-  let onMessage = (data: string) => {
+  fn onMessage = (data: string) => {
     try {
-      let message = Types.Json.parse(data)
+      fn message = Types.Json.parse(data)
       handleWebSocketMessage(message)
     } catch {
     | _ => Js.Console.error("Failed to parse WebSocket message")
     }
   }
 
-  let onError = (error: {..}) => {
+  fn onError = (error: {..}) => {
     Js.Console.error2("WebSocket error:", error)
     showStatus("WebSocket connection error", "error")
   }
 
-  let onClose = () => {
+  fn onClose = () => {
     Js.Console.log("WebSocket disconnected")
     appState.wsConnection = None
   }
 
-  let ws = BackendClient.WebSocket.connect(
+  fn ws = BackendClient.WebSocket.connect(
     appState.settings.backendUrl,
     appState.settings.apiKey,
     onMessage,
@@ -201,23 +206,23 @@ and disconnectWebSocket = (): unit => {
 }
 
 and handleWebSocketMessage = (message: {..}): unit => {
-  let msgType = message["type"]
+  fn msgType = message["struct"]
 
   switch msgType {
   | "feedback_update" => {
-      let feedback = message["data"]
+      fn feedback = message["data"]
       updateFeedbackPreview(feedback)
     }
   | "processing_status" => {
-      let progress = message["data"]["progress"]
-      let statusMsg = message["data"]["message"]
+      fn progress = message["data"]["progress"]
+      fn statusMsg = message["data"]["message"]
       updateProgress(progress, statusMsg)
     }
   | "error" => {
-      let errorMsg = message["data"]
+      fn errorMsg = message["data"]
       showStatus(`Error: ${errorMsg}`, "error")
     }
-  | _ => Js.Console.log2("Unknown message type:", msgType)
+  | _ => Js.Console.log2("Unknown message struct:", msgType)
   }
 }
 
@@ -230,7 +235,7 @@ and showStatus = (message: string, level: string): unit => {
       show(elem)
 
       // Auto-hide after 5 seconds
-      let _ = setTimeout(() => {
+      fn _ = setTimeout(() => {
         hide(elem)
       }, 5000)
     }
@@ -264,7 +269,7 @@ and updateProgress = (percentage: float, message: string): unit => {
 }
 
 and updateFeedbackPreview = (feedback: {..}): unit => {
-  let html = `
+  fn html = `
     <div class="feedback-preview">
       <h3>Feedback Preview</h3>
       <div class="feedback-content">
@@ -287,7 +292,7 @@ and updateFeedbackPreview = (feedback: {..}): unit => {
 
 and renderSuggestions = (suggestions: array<string>): string => {
   if Array.length(suggestions) > 0 {
-    let items = suggestions->Array.map(s => `<li>${s}</li>`)->Array.join("")
+    fn items = suggestions->Array.map(s => `<li>${s}</li>`)->Array.join("")
     `<div class="suggestions">
       <strong>Suggestions:</strong>
       <ul>${items}</ul>
@@ -300,7 +305,7 @@ and renderSuggestions = (suggestions: array<string>): string => {
 and renderPlagiarismCheck = (plagiarismCheck: option<{..}>): string => {
   switch plagiarismCheck {
   | Some(pc) => {
-      let statusClass = switch pc["status"] {
+      fn statusClass = switch pc["status"] {
       | "clean" => "status-clean"
       | "suspicious" => "status-suspicious"
       | "flagged" => "status-flagged"
@@ -318,11 +323,11 @@ and renderPlagiarismCheck = (plagiarismCheck: option<{..}>): string => {
 }
 
 // Load TMAs list
-let loadTmasList = async (): unit => {
+fn loadTmasList = async (): unit => {
   appState.uiState = {...appState.uiState, isLoading: true}
   updateProgress(30.0, "Loading TMAs...")
 
-  let result = await BackendClient.listTmas(
+  fn result = await BackendClient.listTmas(
     appState.settings.backendUrl,
     appState.settings.apiKey,
     appState.settings.moduleCode,
@@ -346,12 +351,12 @@ let loadTmasList = async (): unit => {
 and updateTmaDropdown = (tmas: array<Types.tma>): unit => {
   switch getElement("tmaSelect") {
   | Some(elem) => {
-      let options = tmas->Array.map(tma => {
-        let id = tma.id->Option.getOr("unknown")
+      fn options = tmas->Array.map(tma => {
+        fn id = tma.id->Option.getOr("unknown")
         `<option value="${id}">${tma.moduleCode} - ${tma.assignmentNumber}</option>`
       })
 
-      let html =
+      fn html =
         `<option value="">Select a TMA...</option>` ++ Array.join(options, "")
 
       setInnerHTML(elem, html)
@@ -361,7 +366,7 @@ and updateTmaDropdown = (tmas: array<Types.tma>): unit => {
 }
 
 // Initialize task pane
-let initialize = async (): unit => {
+fn initialize = async (): unit => {
   // Load settings
   loadSettings()
 
@@ -374,7 +379,7 @@ let initialize = async (): unit => {
   switch getElement("refreshTmasBtn") {
   | Some(btn) =>
     addEventListener(btn, "click", _e => {
-      let _ = loadTmasList()
+      fn _ = loadTmasList()
     })
   | None => ()
   }
@@ -382,17 +387,17 @@ let initialize = async (): unit => {
   switch getElement("tmaSelect") {
   | Some(select) =>
     addEventListener(select, "change", event => {
-      let tmaId = getValue(event["target"])
+      fn tmaId = getValue(event["target"])
       if String.length(tmaId) > 0 {
         appState.uiState = {...appState.uiState, selectedTmaId: Some(tmaId)}
-        let _ = loadFeedbackForTma(tmaId)
+        fn _ = loadFeedbackForTma(tmaId)
       }
     })
   | None => ()
   }
 
   // Load initial data
-  let _ = await loadTmasList()
+  fn _ = await loadTmasList()
 
   // Connect WebSocket if enabled
   if appState.settings.enableWebSocket {
@@ -405,7 +410,7 @@ let initialize = async (): unit => {
 and loadFeedbackForTma = async (tmaId: string): unit => {
   updateProgress(50.0, "Loading feedback...")
 
-  let result = await BackendClient.getFeedback(
+  fn result = await BackendClient.getFeedback(
     appState.settings.backendUrl,
     appState.settings.apiKey,
     tmaId,
@@ -427,8 +432,9 @@ and loadFeedbackForTma = async (tmaId: string): unit => {
 @val @scope("document")
 external addEventListener: (string, unit => unit) => unit = "addEventListener"
 
-let run = (): unit => {
+fn run = (): unit => {
   addEventListener("DOMContentLoaded", () => {
-    let _ = initialize()
+    fn _ = initialize()
   })
 }
+

@@ -242,7 +242,7 @@ just build-backend
 
 ==== `build-office-addin`
 
-Build the ReScript Office add-in.
+Build the AffineScript Office add-in.
 
 [source,bash]
 ----
@@ -884,14 +884,14 @@ just test-all
 
 ==== `test-unit`
 
-Run all unit tests (Rust, Elixir, ReScript).
+Run all unit tests (Rust, Elixir, AffineScript).
 
 [source,bash]
 ----
 just test-unit
 ----
 
-*Dependencies:* `test-rust`, `test-elixir`, `test-rescript`
+*Dependencies:* `test-rust`, `test-elixir`, `test-affinescript`
 
 ==== `test-rust`
 
@@ -981,22 +981,22 @@ just test-elixir-specific test/auth/user_test.exs
 
 * `TEST` - Path to the test file
 
-==== `test-rescript`
+==== `test-affinescript`
 
-Run ReScript tests for the Office add-in.
-
-[source,bash]
-----
-just test-rescript
-----
-
-==== `test-rescript-watch`
-
-Run ReScript tests in watch mode.
+Run AffineScript tests for the Office add-in.
 
 [source,bash]
 ----
-just test-rescript-watch
+just test-affinescript
+----
+
+==== `test-affinescript-watch`
+
+Run AffineScript tests in watch mode.
+
+[source,bash]
+----
+just test-affinescript-watch
 ----
 
 *Use case:* Development with auto-rerunning tests
@@ -1185,7 +1185,7 @@ Run all linters.
 just lint
 ----
 
-*Dependencies:* `lint-rust`, `lint-elixir`, `lint-rescript`, `lint-shell`, `lint-yaml`, `lint-docker`, `lint-markdown`
+*Dependencies:* `lint-rust`, `lint-elixir`, `lint-affinescript`, `lint-shell`, `lint-yaml`, `lint-docker`, `lint-markdown`
 
 ==== `lint-rust`
 
@@ -1242,22 +1242,22 @@ just lint-elixir-all
 
 *Note:* Dialyzer takes longer to run.
 
-==== `lint-rescript`
+==== `lint-affinescript`
 
-Lint ReScript code.
-
-[source,bash]
-----
-just lint-rescript
-----
-
-==== `lint-rescript-fix`
-
-Lint and auto-fix ReScript code.
+Lint AffineScript code.
 
 [source,bash]
 ----
-just lint-rescript-fix
+just lint-affinescript
+----
+
+==== `lint-affinescript-fix`
+
+Lint and auto-fix AffineScript code.
+
+[source,bash]
+----
+just lint-affinescript-fix
 ----
 
 ==== `lint-shell`
@@ -1352,7 +1352,7 @@ Format all code.
 just format
 ----
 
-*Dependencies:* `format-rust`, `format-elixir`, `format-rescript`, `format-toml`
+*Dependencies:* `format-rust`, `format-elixir`, `format-affinescript`, `format-toml`
 
 ==== `format-rust`
 
@@ -1390,13 +1390,13 @@ Check Elixir formatting without modifying files.
 just format-elixir-check
 ----
 
-==== `format-rescript`
+==== `format-affinescript`
 
-Format ReScript code.
+Format AffineScript code.
 
 [source,bash]
 ----
-just format-rescript
+just format-affinescript
 ----
 
 ==== `format-toml`
@@ -1417,7 +1417,7 @@ Format all code and auto-fix linting issues.
 just format-all
 ----
 
-*Dependencies:* `format`, `lint-markdown-fix`, `lint-rescript-fix`
+*Dependencies:* `format`, `lint-markdown-fix`, `lint-affinescript-fix`
 
 ==== `format-check`
 
@@ -1938,13 +1938,13 @@ just dev-watch-rust
 
 *Note:* Requires cargo-watch to be installed.
 
-==== `dev-watch-rescript`
+==== `dev-watch-affinescript`
 
-Watch ReScript files and rebuild on changes.
+Watch AffineScript files and rebuild on changes.
 
 [source,bash]
 ----
-just dev-watch-rescript
+just dev-watch-affinescript
 ----
 
 ==== `dev-watch`
@@ -1956,7 +1956,7 @@ Watch all files and rebuild on changes.
 just dev-watch
 ----
 
-*Dependencies:* `dev-watch-rust`, `dev-watch-rescript`
+*Dependencies:* `dev-watch-rust`, `dev-watch-affinescript`
 
 *Note:* Run in separate terminals as they both watch in foreground.
 
@@ -1971,14 +1971,14 @@ just dev-hot-reload
 
 ==== `dev-shell`
 
-Start a development shell with Nix.
+Start a development shell with Guix.
 
 [source,bash]
 ----
 just dev-shell
 ----
 
-*Note:* Requires Nix with flakes enabled.
+*Note:* Requires Guix with flakes enabled.
 
 ==== `dev-format`
 
@@ -2436,7 +2436,7 @@ Clean all build artifacts.
 just clean
 ----
 
-*Dependencies:* `clean-rust`, `clean-elixir`, `clean-rescript`, `clean-docker`, `clean-temp`
+*Dependencies:* `clean-rust`, `clean-elixir`, `clean-affinescript`, `clean-docker`, `clean-temp`
 
 ==== `clean-all`
 
@@ -2474,13 +2474,13 @@ just clean-elixir
 - `_build/` directory
 - `deps/` directory
 
-==== `clean-rescript`
+==== `clean-affinescript`
 
-Clean ReScript build artifacts.
+Clean AffineScript build artifacts.
 
 [source,bash]
 ----
-just clean-rescript
+just clean-affinescript
 ----
 
 *Removes:*
@@ -2632,7 +2632,7 @@ just stats-test
 *Output:*
 - Number of Rust tests
 - Number of Elixir tests
-- Number of ReScript tests
+- Number of AffineScript tests
 
 ==== `stats-docker`
 
@@ -3246,7 +3246,7 @@ just up
 
 # Watch for changes and auto-rebuild
 just dev-watch-rust  # In one terminal
-just dev-watch-rescript  # In another terminal
+just dev-watch-affinescript  # In another terminal
 
 # Make changes to code...
 

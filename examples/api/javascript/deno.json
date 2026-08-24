@@ -1,8 +1,0 @@
-{
-  "tasks": {
-    "example": "deno run --allow-read --allow-net --allow-env examples/mark-tma.js"
-  },
-  "imports": {
-    "@std/": "https://deno.land/std@0.224.0/"
-  }
-}
