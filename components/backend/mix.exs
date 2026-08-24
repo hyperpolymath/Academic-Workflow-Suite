@@ -37,7 +37,7 @@ defmodule AwapBackend.MixProject do
       # Phoenix and Web
       {:phoenix, "~> 1.8.2"},
       {:phoenix_ecto, "~> 4.4"},
-      {:phoenix_live_dashboard, "~> 0.8.0"},
+      {:phoenix_live_dashboard, "~> 0.9.0"},
       {:telemetry_metrics, "~> 1.1"},
       {:telemetry_poller, "~> 1.0"},
       {:jason, "~> 1.2"},
