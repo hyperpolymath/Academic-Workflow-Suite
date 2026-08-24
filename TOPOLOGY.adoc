@@ -1,15 +1,8 @@
-<!--
-SPDX-License-Identifier: CC-BY-SA-4.0
-Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
--->
-<!-- TOPOLOGY.md — Project architecture map and completion dashboard -->
-<!-- Last updated: 2026-02-19 -->
+== Academic Workflow Suite — Project Topology
 
-# Academic Workflow Suite — Project Topology
+=== System Architecture
 
-## System Architecture
-
-```
+....
                         ┌─────────────────────────────────────────┐
                         │              TUTORS / CLIENTS           │
                         │        (Microsoft Word Interface)        │
@@ -55,16 +48,17 @@ Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
                         │          BACKEND SERVICES               │
                         │  (Rubric Repo, Update Server - Optional) │
                         └─────────────────────────────────────────┘
-```
+....
 
-## Completion Dashboard
+=== Completion Dashboard
 
-This dashboard tracks demonstrable reality, and is kept consistent with the
-canonical `.machine_readable/6a2/STATE.a2ml` (42%, CRG grade D). An earlier
-version claimed ~80% with nearly everything "100% verified"; that was false and
-contradicted STATE and the CRG audit. Corrected 2026-07-02.
+This dashboard tracks demonstrable reality, and is kept consistent with
+the canonical `+.machine_readable/6a2/STATE.a2ml+` (42%, CRG grade D).
+An earlier version claimed ~80% with nearly everything "`100%
+verified`"; that was false and contradicted STATE and the CRG audit.
+Corrected 2026-07-02.
 
-```
+....
 COMPONENT                          STATUS              NOTES
 ─────────────────────────────────  ──────────────────  ─────────────────────────────────
 PRESENTATION LAYER
@@ -100,11 +94,11 @@ REPO INFRASTRUCTURE
 ─────────────────────────────────────────────────────────────────────────────
 OVERALL:                            ████░░░░░░  ~42%   Alpha (CRG grade D) — components real
                                                        but not yet an integrated pipeline
-```
+....
 
-## Key Dependencies
+=== Key Dependencies
 
-```
+....
 Office Add-in ───► Core Engine (Rust) ───► AI Jail (Isolated)
                         │                     │
                         ▼                     ▼
@@ -113,16 +107,17 @@ Office Add-in ───► Core Engine (Rust) ───► AI Jail (Isolated)
                         └──────────┬──────────┘
                                    ▼
                                 COMPLETE
-```
+....
 
-## Update Protocol
+=== Update Protocol
 
 This file is maintained by both humans and AI agents. When updating:
 
-1. **After completing a component**: Change its bar and percentage
-2. **After adding a component**: Add a new row in the appropriate section
-3. **After architectural changes**: Update the ASCII diagram
-4. **Date**: Update the `Last updated` comment at the top of this file
+[arabic]
+. *After completing a component*: Change its bar and percentage
+. *After adding a component*: Add a new row in the appropriate section
+. *After architectural changes*: Update the ASCII diagram
+. *Date*: Update the `+Last updated+` comment at the top of this file
 
-Progress bars use: `█` (filled) and `░` (empty), 10 characters wide.
-Percentages: 0%, 10%, 20%, ... 100% (in 10% increments).
+Progress bars use: `+█+` (filled) and `+░+` (empty), 10 characters wide.
+Percentages: 0%, 10%, 20%, … 100% (in 10% increments).
