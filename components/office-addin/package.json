@@ -28,7 +28,7 @@
     "@babel/core": "^8.0.1",
     "@babel/preset-env": "^8.0.2",
     "@babel/preset-react": "^8.0.1",
-    "@types/office-js": "^1.0.602",
+    "@types/office-js": "^1.0.606",
     "@types/office-runtime": "^1.0.40",
     "babel-loader": "^10.1.0",
     "copy-webpack-plugin": "^14.0.0",
@@ -40,7 +40,7 @@
     "office-addin-manifest": "^2.1.6",
     "affinescript-jest": "^0.10.0",
     "style-loader": "^4.0.0",
-    "webpack": "^5.109.0",
+    "webpack": "^5.109.2",
     "webpack-cli": "^7.2.2",
     "webpack-dev-server": "^6.0.0"
   },
