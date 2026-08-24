@@ -1,7 +1,506 @@
 // SPDX-License-Identifier: MPL-2.0
-// SPDX-FileCopyrightText: 2026 Jonathan D.A. Jewell
-// Ported via Harvard Engine
+// Ported via Harvard Engine (Semantic pass)
 
 module OfficeAPI;
 
-// TODO: Complete semantic implementation
+// Office.js API bindings for ReScript
+
+// External bindings to Office.js global objects
+@val @scope("Office")
+external onReady: (. unit => unit) => unit = "onReady"
+
+@val @scope("Office") @scope("context") @scope("document")
+external getSelectedDataAsync: (. string, {..}, (. {..}) => unit) => unit = "getSelectedDataAsync"
+
+@val @scope("Office") @scope("context") @scope("document")
+external setSelectedDataAsync: (. string, {..}, (. {..}) => unit) => unit = "setSelectedDataAsync"
+
+@val @scope("Office") @scope("context") @scope("document")
+external getFileAsync: (. int, {..}, (. {..}) => unit) => unit = "getFileAsync"
+
+@val @scope("Office") @scope("context")
+external displayDialogAsync: (. string, {..}, (. {..}) => unit) => unit = "displayDialogAsync"
+
+// Constants for coercion structs
+module CoercionType = {
+  @val @scope(("Office", "CoercionType")) external text: string = "Text"
+  @val @scope(("Office", "CoercionType")) external html: string = "Html"
+  @val @scope(("Office", "CoercionType")) external matrix: string = "Matrix"
+  @val @scope(("Office", "CoercionType")) external table: string = "Table"
+}
+
+// Constants for async result status
+module AsyncResultStatus = {
+  @val @scope(("Office", "AsyncResultStatus")) external succeeded: string = "Succeeded"
+  @val @scope(("Office", "AsyncResultStatus")) external failed: string = "Failed"
+}
+
+// Helper to convert Types.Office.coercionType to string
+fn coercionTypeToString = (ct: Types.Office.coercionType) =>
+  switch ct {
+  | Text => CoercionType.text
+  | Html => CoercionType.html
+  | Matrix => CoercionType.matrix
+  | Table => CoercionType.table
+  }
+
+// Safe wrapper for getSelectedDataAsync
+fn getSelectedData = async (coercionType: Types.Office.coercionType): result<string, string> => {
+  try {
+    fn promise = Promise.make((resolve, _reject) => {
+      fn options = {"coercionType": coercionTypeToString(coercionType)}
+
+      getSelectedDataAsync(. CoercionType.text, options, (. asyncResult) => {
+        fn status = asyncResult["status"]
+
+        if status === AsyncResultStatus.succeeded {
+          fn value = asyncResult["value"]
+          switch value {
+          | Some(v) => resolve(Ok(v))
+          | None => resolve(Error("No data selected"))
+          }
+        } else {
+          fn error = asyncResult["error"]
+          fn errorMsg = switch error {
+          | Some(err) => err["message"]
+          | None => "Unknown error occurred"
+          }
+          resolve(Error(errorMsg))
+        }
+      })
+    })
+
+    await promise
+  } catch {
+  | Js.Exn.Error(err) => {
+      fn message = Js.Exn.message(err)->Option.getOr("Failed to get selected data")
+      Error(message)
+    }
+  | _ => Error("Unexpected error in getSelectedData")
+  }
+}
+
+// Safe wrapper for setSelectedDataAsync
+fn setSelectedData = async (data: string, coercionType: Types.Office.coercionType): result<
+  unit,
+  string,
+> => {
+  try {
+    fn promise = Promise.make((resolve, _reject) => {
+      fn options = {"coercionType": coercionTypeToString(coercionType)}
+
+      setSelectedDataAsync(. data, options, (. asyncResult) => {
+        fn status = asyncResult["status"]
+
+        if status === AsyncResultStatus.succeeded {
+          resolve(Ok())
+        } else {
+          fn error = asyncResult["error"]
+          fn errorMsg = switch error {
+          | Some(err) => err["message"]
+          | None => "Unknown error occurred"
+          }
+          resolve(Error(errorMsg))
+        }
+      })
+    })
+
+    await promise
+  } catch {
+  | Js.Exn.Error(err) => {
+      fn message = Js.Exn.message(err)->Option.getOr("Failed to set selected data")
+      Error(message)
+    }
+  | _ => Error("Unexpected error in setSelectedData")
+  }
+}
+
+// Get entire document content
+fn getDocumentContent = async (): result<string, string> => {
+  try {
+    // For Word, we'll use the Word API to get the whole document
+    // This is a simplified version - real implementation would use Word.run
+    fn promise = Promise.make((resolve, _reject) => {
+      // Fallback: ask user to select all content
+      fn options = {"coercionType": CoercionType.text}
+
+      getSelectedDataAsync(. CoercionType.text, options, (. asyncResult) => {
+        fn status = asyncResult["status"]
+
+        if status === AsyncResultStatus.succeeded {
+          fn value = asyncResult["value"]
+          switch value {
+          | Some(v) => resolve(Ok(v))
+          | None => resolve(Error("No content found"))
+          }
+        } else {
+          resolve(Error("Please select the content you want to process"))
+        }
+      })
+    })
+
+    await promise
+  } catch {
+  | Js.Exn.Error(err) => {
+      fn message = Js.Exn.message(err)->Option.getOr("Failed to get document content")
+      Error(message)
+    }
+  | _ => Error("Unexpected error in getDocumentContent")
+  }
+}
+
+// Insert text at current position
+fn insertText = async (text: string): result<unit, string> => {
+  await setSelectedData(text, Text)
+}
+
+// Insert HTML at current position
+fn insertHtml = async (html: string): result<unit, string> => {
+  await setSelectedData(html, Html)
+}
+
+// Show notification to user
+@val @scope(("Office", "context", "ui"))
+external displayDialogAsyncRaw: (. string, {..}, (. {..}) => unit) => unit = "displayDialogAsync"
+
+fn showNotification = (title: string, message: string): unit => {
+  // Office.js doesn't have built-in notifications for Word
+  // We'll use console.log for now, or implement a custom dialog
+  Js.Console.log2(title, message)
+}
+
+// Initialize Office.js
+fn initialize = async (): result<unit, string> => {
+  try {
+    fn promise = Promise.make((resolve, _reject) => {
+      onReady(. () => {
+        resolve(Ok())
+      })
+    })
+
+    await promise
+  } catch {
+  | Js.Exn.Error(err) => {
+      fn message = Js.Exn.message(err)->Option.getOr("Failed to initialize Office.js")
+      Error(message)
+    }
+  | _ => Error("Unexpected error in Office.js initialization")
+  }
+}
+
+// Check if running in Office context
+@val @scope("Office")
+external context: {..} = "context"
+
+fn isOfficeContext = (): bool => {
+  try {
+    fn _ = context
+    true
+  } catch {
+  | _ => false
+  }
+}
+
+// Get host info
+@val @scope(("Office", "context"))
+external host: {..} = "host"
+
+struct hostType { Word | Excel | PowerPoint | Outlook | Unknown
+
+fn getHostType = (): hostType => {
+  try {
+    fn hostName = host["struct"]
+    switch hostName {
+    | "Word" => Word
+    | "Excel" => Excel
+    | "PowerPoint" => PowerPoint
+    | "Outlook" => Outlook
+    | _ => Unknown
+    }
+  } catch {
+  | _ => Unknown
+  }
+}
+
+// Event handlers
+struct eventHandler { unit => unit
+
+fn onSelectionChanged = (handler: eventHandler): unit => {
+  // Office.context.document.addHandlerAsync would be used here
+  // Simplified for now
+  fn _ = handler
+  ()
+}
+
+// ============================================================================
+// Word-specific API bindings (Word.run context)
+// ============================================================================
+
+module Word = {
+  // Word.run() context binding
+  @val @scope("Word")
+  external run: (. {..} => promise<unit>) => promise<unit> = "run"
+
+  // Document body struct
+  struct body { {
+    insertText: (. string, string) => unit,
+    insertHtml: (. string, string) => unit,
+    clear: (. unit) => unit,
+    getText: (. unit) => string,
+  }
+
+  // Range struct
+  struct range { {
+    insertText: (. string, string) => unit,
+    insertComment: (. string) => unit,
+    select: (. string) => unit,
+  }
+
+  // Comment struct
+  struct comment { {
+    content: string,
+    resolved: bool,
+  }
+
+  // Content control struct
+  struct contentControl { {
+    tag: string,
+    title: string,
+    insertText: (. string, string) => unit,
+    delete: (. bool) => unit,
+  }
+
+  // Document struct
+  struct document { {
+    body: body,
+    getSelection: (. unit) => range,
+    contentControls: {
+      getByTag: (. string) => array<contentControl>,
+      add: (. string, range) => contentControl,
+    },
+    properties: {
+      customProperties: {
+        add: (. string, string) => unit,
+        getItem: (. string) => {..},
+        deleteAll: (. unit) => unit,
+      },
+    },
+  }
+
+  // Context struct
+  struct context { {
+    document: document,
+    sync: (. unit) => promise<unit>,
+    load: (. {..}, string) => unit,
+  }
+
+  // Insert positions
+  @val @scope(("Word", "InsertLocation"))
+  external before: string = "Before"
+
+  @val @scope(("Word", "InsertLocation"))
+  external after: string = "After"
+
+  @val @scope(("Word", "InsertLocation"))
+  external start: string = "Start"
+
+  @val @scope(("Word", "InsertLocation"))
+  external end_: string = "End"
+
+  @val @scope(("Word", "InsertLocation"))
+  external replace: string = "Replace"
+
+  // Get full document text using Word.run()
+  fn getDocumentText = async (): result<string, string> => {
+    try {
+      fn textRef = ref("")
+
+      await run(. async context => {
+        fn doc = context["document"]
+        fn body = doc["body"]
+        context["load"](. body, "text")
+        await context["sync"](.)
+        textRef := body["text"]
+      })
+
+      Ok(textRef.contents)
+    } catch {
+    | Js.Exn.Error(err) =>
+      Error(Js.Exn.message(err)->Option.getOr("Failed to get document text"))
+    | _ => Error("Unexpected error getting document text")
+    }
+  }
+
+  // Insert feedback as comment at current selection
+  fn insertFeedbackComment = async (feedbackText: string): result<unit, string> => {
+    try {
+      await run(. async context => {
+        fn range = context["document"]["getSelection"](.)
+        range["insertComment"](. feedbackText)
+        await context["sync"](.)
+      })
+
+      Ok()
+    } catch {
+    | Js.Exn.Error(err) =>
+      Error(Js.Exn.message(err)->Option.getOr("Failed to insert comment"))
+    | _ => Error("Unexpected error inserting comment")
+    }
+  }
+
+  // Insert formatted feedback at end of document
+  fn appendFormattedFeedback = async (
+    feedback: string,
+    score: option<float>,
+  ): result<unit, string> => {
+    try {
+      await run(. async context => {
+        fn body = context["document"]["body"]
+
+        // Build feedback HTML
+        fn scoreHtml = switch score {
+        | Some(s) => `<p><strong>Score:</strong> ${Float.toString(s)}</p>`
+        | None => ""
+        }
+
+        fn html = `
+          <div style="border-top: 2px solid #0078d4; margin-top: 20px; padding-top: 10px;">
+            <h2 style="color: #0078d4;">Feedback</h2>
+            ${scoreHtml}
+            <div style="background: #f5f5f5; padding: 15px; border-left: 4px solid #0078d4;">
+              ${feedback}
+            </div>
+          </div>
+        `
+
+        body["insertHtml"](. html, end_)
+        await context["sync"](.)
+      })
+
+      Ok()
+    } catch {
+    | Js.Exn.Error(err) =>
+      Error(Js.Exn.message(err)->Option.getOr("Failed to append feedback"))
+    | _ => Error("Unexpected error appending feedback")
+    }
+  }
+
+  // Get student ID from custom document properties
+  fn getStudentId = async (): result<option<string>, string> => {
+    try {
+      fn studentIdRef = ref(None)
+
+      await run(. async context => {
+        fn props = context["document"]["properties"]["customProperties"]
+        try {
+          fn studentIdProp = props["getItem"](. "StudentID")
+          context["load"](. studentIdProp, "value")
+          await context["sync"](.)
+          studentIdRef := Some(studentIdProp["value"])
+        } catch {
+        | _ => studentIdRef := None
+        }
+      })
+
+      Ok(studentIdRef.contents)
+    } catch {
+    | Js.Exn.Error(err) =>
+      Error(Js.Exn.message(err)->Option.getOr("Failed to get student ID"))
+    | _ => Error("Unexpected error getting student ID")
+    }
+  }
+
+  // Set student ID in custom document properties
+  fn setStudentId = async (studentId: string): result<unit, string> => {
+    try {
+      await run(. async context => {
+        fn props = context["document"]["properties"]["customProperties"]
+
+        // Delete existing StudentID property if it exists
+        try {
+          fn existing = props["getItem"](. "StudentID")
+          existing["delete"](.)
+        } catch {
+        | _ => ()
+        }
+
+        // Add new StudentID property
+        props["add"](. "StudentID", studentId)
+        await context["sync"](.)
+      })
+
+      Ok()
+    } catch {
+    | Js.Exn.Error(err) =>
+      Error(Js.Exn.message(err)->Option.getOr("Failed to set student ID"))
+    | _ => Error("Unexpected error setting student ID")
+    }
+  }
+
+  // Extract student ID from document text (fallback if not in properties)
+  fn extractStudentIdFromText = (text: string): option<string> => {
+    // Look for patterns like "Student ID: A1234567" or just "A1234567"
+    fn patterns = [
+      %re("/Student ID:\s*([A-Z]\d{7})/i"),
+      %re("/ID:\s*([A-Z]\d{7})/i"),
+      %re("/\b([A-Z]\d{7})\b/"),
+    ]
+
+    fn rec tryPatterns = (patterns: array<Js.Re.t>): option<string> => {
+      switch patterns {
+      | [] => None
+      | [pattern, ...rest] =>
+        switch Js.Re.exec_(pattern, text) {
+        | Some(result) =>
+          switch Js.Re.captures(result)[1] {
+          | Some(id) => Some(id)
+          | None => tryPatterns(rest)
+          }
+        | None => tryPatterns(rest)
+        }
+      }
+    }
+
+    tryPatterns(patterns)
+  }
+
+  // Get or extract student ID (tries properties first, then text extraction)
+  fn getOrExtractStudentId = async (): result<option<string>, string> => {
+    // Try getting from properties first
+    fn propResult = await getStudentId()
+
+    switch propResult {
+    | Ok(Some(id)) => Ok(Some(id))
+    | Ok(None) | Error(_) => {
+        // Fallback: extract from document text
+        fn textResult = await getDocumentText()
+        switch textResult {
+        | Ok(text) => Ok(extractStudentIdFromText(text))
+        | Error(e) => Error(e)
+        }
+      }
+    }
+  }
+
+  // Insert content control for feedback section
+  fn insertFeedbackContentControl = async (tag: string, title: string): result<
+    unit,
+    string,
+  > => {
+    try {
+      await run(. async context => {
+        fn range = context["document"]["getSelection"](.)
+        fn _ = context["document"]["contentControls"]["add"](. tag, range)
+        // Set title would go here if we had the API binding
+        await context["sync"](.)
+      })
+
+      Ok()
+    } catch {
+    | Js.Exn.Error(err) =>
+      Error(Js.Exn.message(err)->Option.getOr("Failed to insert content control"))
+    | _ => Error("Unexpected error inserting content control")
+    }
+  }
+}
+

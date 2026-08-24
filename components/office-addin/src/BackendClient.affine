@@ -1,7 +1,540 @@
 // SPDX-License-Identifier: MPL-2.0
-// SPDX-FileCopyrightText: 2026 Jonathan D.A. Jewell
-// Ported via Harvard Engine
+// Ported via Harvard Engine (Semantic pass)
 
 module BackendClient;
 
-// TODO: Complete semantic implementation
+// HTTP client for AWAP backend API
+
+// Fetch API bindings
+@val
+external fetch: (string, {..}) => promise<{..}> = "fetch"
+
+// Helper to create headers
+fn createHeaders = (apiKey: option<string>): {..} => {
+  fn headers = {"Content-Type": "application/json"}
+
+  switch apiKey {
+  | Some(key) => {
+      ...headers,
+      "Authorization": `Bearer ${key}`,
+    }
+  | None => headers
+  }
+}
+
+// POST TMA to backend
+fn submitTma = async (
+  baseUrl: string,
+  apiKey: option<string>,
+  tma: Types.tma,
+): result<string, string> => {
+  try {
+    // Prepare request body
+    fn body = {
+      "moduleCode": tma.moduleCode,
+      "assignmentNumber": tma.assignmentNumber,
+      "content": tma.content,
+      "studentId": tma.studentId,
+      "timestamp": tma.timestamp,
+    }
+
+    fn options = {
+      "method": "POST",
+      "headers": createHeaders(apiKey),
+      "body": Types.Json.stringify(body),
+    }
+
+    fn response = await fetch(`${baseUrl}/api/tmas`, options)
+    fn status = response["status"]
+
+    if status >= 200 && status < 300 {
+      fn json = await response["json"](.)
+      fn tmaId = json["id"]
+      Ok(tmaId)
+    } else {
+      fn errorText = await response["text"](.)
+      Error(`Failed to submit TMA: ${errorText}`)
+    }
+  } catch {
+  | Js.Exn.Error(err) => {
+      fn message = Js.Exn.message(err)->Option.getOr("Network error")
+      Error(`Failed to submit TMA: ${message}`)
+    }
+  | _ => Error("Unexpected error submitting TMA")
+  }
+}
+
+// GET feedback for a TMA
+fn getFeedback = async (
+  baseUrl: string,
+  apiKey: option<string>,
+  tmaId: string,
+): result<Types.feedback, string> => {
+  try {
+    fn options = {
+      "method": "GET",
+      "headers": createHeaders(apiKey),
+    }
+
+    fn response = await fetch(`${baseUrl}/api/tmas/${tmaId}/feedback`, options)
+    fn status = response["status"]
+
+    if status >= 200 && status < 300 {
+      fn json = await response["json"](.)
+
+      // Parse JSON response into Types.feedback
+      fn feedback: Types.feedback = {
+        id: json["id"],
+        tmaId: json["tmaId"],
+        content: json["content"],
+        score: json["score"],
+        suggestions: json["suggestions"],
+        plagiarismCheck: switch json["plagiarismCheck"] {
+        | Some(pc) =>
+          Some({
+            score: pc["score"],
+            matches: pc["matches"]->Array.map(m => {
+              {
+                source: m["source"],
+                similarity: m["similarity"],
+                excerpt: m["excerpt"],
+              }: Types.plagiarismMatch
+            }),
+            status: switch pc["status"] {
+            | "clean" => Types.Clean
+            | "suspicious" => Types.Suspicious
+            | "flagged" => Types.Flagged
+            | _ => Types.Clean
+            },
+          })
+        | None => None
+        },
+        generatedAt: json["generatedAt"],
+      }
+
+      Ok(feedback)
+    } else {
+      fn errorText = await response["text"](.)
+      Error(`Failed to get feedback: ${errorText}`)
+    }
+  } catch {
+  | Js.Exn.Error(err) => {
+      fn message = Js.Exn.message(err)->Option.getOr("Network error")
+      Error(`Failed to get feedback: ${message}`)
+    }
+  | _ => Error("Unexpected error getting feedback")
+  }
+}
+
+// Request feedback generation
+fn requestFeedbackGeneration = async (
+  baseUrl: string,
+  apiKey: option<string>,
+  tmaId: string,
+): result<unit, string> => {
+  try {
+    fn options = {
+      "method": "POST",
+      "headers": createHeaders(apiKey),
+      "body": Types.Json.stringify({"tmaId": tmaId}),
+    }
+
+    fn response = await fetch(`${baseUrl}/api/feedback/generate`, options)
+    fn status = response["status"]
+
+    if status >= 200 && status < 300 {
+      Ok()
+    } else {
+      fn errorText = await response["text"](.)
+      Error(`Failed to request feedback generation: ${errorText}`)
+    }
+  } catch {
+  | Js.Exn.Error(err) => {
+      fn message = Js.Exn.message(err)->Option.getOr("Network error")
+      Error(`Failed to request feedback generation: ${message}`)
+    }
+  | _ => Error("Unexpected error requesting feedback generation")
+  }
+}
+
+// List all TMAs for a module
+fn listTmas = async (
+  baseUrl: string,
+  apiKey: option<string>,
+  moduleCode: option<string>,
+): result<array<Types.tma>, string> => {
+  try {
+    fn url = switch moduleCode {
+    | Some(code) => `${baseUrl}/api/tmas?moduleCode=${code}`
+    | None => `${baseUrl}/api/tmas`
+    }
+
+    fn options = {
+      "method": "GET",
+      "headers": createHeaders(apiKey),
+    }
+
+    fn response = await fetch(url, options)
+    fn status = response["status"]
+
+    if status >= 200 && status < 300 {
+      fn json = await response["json"](.)
+      fn tmas = json->Array.map(item => {
+        {
+          id: Some(item["id"]),
+          moduleCode: item["moduleCode"],
+          assignmentNumber: item["assignmentNumber"],
+          content: item["content"],
+          studentId: item["studentId"],
+          timestamp: item["timestamp"],
+        }: Types.tma
+      })
+
+      Ok(tmas)
+    } else {
+      fn errorText = await response["text"](.)
+      Error(`Failed to list TMAs: ${errorText}`)
+    }
+  } catch {
+  | Js.Exn.Error(err) => {
+      fn message = Js.Exn.message(err)->Option.getOr("Network error")
+      Error(`Failed to list TMAs: ${message}`)
+    }
+  | _ => Error("Unexpected error listing TMAs")
+  }
+}
+
+// WebSocket client for real-time updates
+module WebSocket = {
+  @new external create: string => {..} = "WebSocket"
+
+  struct ws { {..}
+
+  struct messageHandler { string => unit
+  struct errorHandler { {..} => unit
+  struct closeHandler { unit => unit
+
+  fn connect = (
+    baseUrl: string,
+    apiKey: option<string>,
+    onMessage: messageHandler,
+    onError: errorHandler,
+    onClose: closeHandler,
+  ): ws => {
+    // Convert http(s) to ws(s)
+    fn wsUrl = baseUrl->String.replace("http://", "ws://")->String.replace("https://", "wss://")
+
+    fn wsUrl = switch apiKey {
+    | Some(key) => `${wsUrl}/ws?token=${key}`
+    | None => `${wsUrl}/ws`
+    }
+
+    fn ws = create(wsUrl)
+
+    ws["onmessage"] = (. event) => {
+      fn data = event["data"]
+      onMessage(data)
+    }
+
+    ws["onerror"] = (. error) => {
+      onError(error)
+    }
+
+    ws["onclose"] = (. _) => {
+      onClose()
+    }
+
+    ws
+  }
+
+  fn send = (ws: ws, message: string): unit => {
+    ws["send"](. message)
+  }
+
+  fn close = (ws: ws): unit => {
+    ws["close"](.)
+  }
+}
+
+// Health check
+fn healthCheck = async (baseUrl: string): result<bool, string> => {
+  try {
+    fn options = {"method": "GET"}
+
+    fn response = await fetch(`${baseUrl}/health`, options)
+    fn status = response["status"]
+
+    if status === 200 {
+      Ok(true)
+    } else {
+      Error("Backend is not healthy")
+    }
+  } catch {
+  | Js.Exn.Error(err) => {
+      fn message = Js.Exn.message(err)->Option.getOr("Network error")
+      Error(`Health check failed: ${message}`)
+    }
+  | _ => Error("Unexpected error during health check")
+  }
+}
+
+// ============================================================================
+// Rubric Management API
+// ============================================================================
+
+// List rubrics with optional filtering
+fn listRubrics = async (
+  baseUrl: string,
+  apiKey: option<string>,
+  moduleCode: option<string>,
+  assignment: option<string>,
+): result<array<Types.rubric>, string> => {
+  try {
+    // Build query parameters
+    fn params = []
+    switch moduleCode {
+    | Some(code) => params->Array.push(`module=${code}`)
+    | None => ()
+    }
+    switch assignment {
+    | Some(assign) => params->Array.push(`assignment=${assign}`)
+    | None => ()
+    }
+
+    fn queryString = if Array.length(params) > 0 {
+      "?" ++ Array.join(params, "&")
+    } else {
+      ""
+    }
+
+    fn options = {
+      "method": "GET",
+      "headers": createHeaders(apiKey),
+    }
+
+    fn response = await fetch(`${baseUrl}/api/v1/rubrics${queryString}`, options)
+    fn status = response["status"]
+
+    if status >= 200 && status < 300 {
+      fn json = await response["json"](.)
+      fn rubrics = json->Array.map(item => {
+        {
+          id: item["id"],
+          name: item["name"],
+          module: item["module"],
+          assignment: item["assignment"],
+          totalMarks: item["total_marks"],
+          criteria: item["criteria"]->Array.map(c => {
+            {
+              name: c["name"],
+              description: c["description"],
+              maxMarks: c["max_marks"],
+            }: Types.rubricCriterion
+          }),
+        }: Types.rubric
+      })
+
+      Ok(rubrics)
+    } else {
+      fn errorText = await response["text"](.)
+      Error(`Failed to list rubrics: ${errorText}`)
+    }
+  } catch {
+  | Js.Exn.Error(err) => {
+      fn message = Js.Exn.message(err)->Option.getOr("Network error")
+      Error(`Failed to list rubrics: ${message}`)
+    }
+  | _ => Error("Unexpected error listing rubrics")
+  }
+}
+
+// ============================================================================
+// Analysis API
+// ============================================================================
+
+// Trigger analysis for a document
+fn triggerAnalysis = async (
+  baseUrl: string,
+  apiKey: option<string>,
+  documentId: string,
+  rubricId: string,
+): result<string, string> => {
+  try {
+    fn body = {
+      "document_id": documentId,
+      "rubric_id": rubricId,
+    }
+
+    fn options = {
+      "method": "POST",
+      "headers": createHeaders(apiKey),
+      "body": Types.Json.stringify(body),
+    }
+
+    fn response = await fetch(`${baseUrl}/api/v1/analyze`, options)
+    fn status = response["status"]
+
+    if status >= 200 && status < 300 {
+      fn json = await response["json"](.)
+      fn analysisId = json["analysis_id"]
+      Ok(analysisId)
+    } else {
+      fn errorText = await response["text"](.)
+      Error(`Failed to trigger analysis: ${errorText}`)
+    }
+  } catch {
+  | Js.Exn.Error(err) => {
+      fn message = Js.Exn.message(err)->Option.getOr("Network error")
+      Error(`Failed to trigger analysis: ${message}`)
+    }
+  | _ => Error("Unexpected error triggering analysis")
+  }
+}
+
+// Get analysis status
+fn getAnalysisStatus = async (
+  baseUrl: string,
+  apiKey: option<string>,
+  analysisId: string,
+): result<Types.analysisStatus, string> => {
+  try {
+    fn options = {
+      "method": "GET",
+      "headers": createHeaders(apiKey),
+    }
+
+    fn response = await fetch(`${baseUrl}/api/v1/analyze/${analysisId}/status`, options)
+    fn status = response["status"]
+
+    if status >= 200 && status < 300 {
+      fn json = await response["json"](.)
+
+      fn analysisStatus = switch json["status"] {
+      | "queued" => Types.Queued
+      | "in_progress" => Types.InProgress
+      | "completed" => Types.Completed
+      | "failed" => Types.Failed
+      | _ => Types.Queued
+      }
+
+      Ok(analysisStatus)
+    } else {
+      fn errorText = await response["text"](.)
+      Error(`Failed to get analysis status: ${errorText}`)
+    }
+  } catch {
+  | Js.Exn.Error(err) => {
+      fn message = Js.Exn.message(err)->Option.getOr("Network error")
+      Error(`Failed to get analysis status: ${message}`)
+    }
+  | _ => Error("Unexpected error getting analysis status")
+  }
+}
+
+// ============================================================================
+// Feedback Management API
+// ============================================================================
+
+// Accept feedback (tutor approves AI-generated feedback)
+fn acceptFeedback = async (
+  baseUrl: string,
+  apiKey: option<string>,
+  analysisId: string,
+): result<unit, string> => {
+  try {
+    fn options = {
+      "method": "POST",
+      "headers": createHeaders(apiKey),
+      "body": Types.Json.stringify({}),
+    }
+
+    fn response = await fetch(`${baseUrl}/api/v1/feedback/${analysisId}/accept`, options)
+    fn status = response["status"]
+
+    if status >= 200 && status < 300 {
+      Ok()
+    } else {
+      fn errorText = await response["text"](.)
+      Error(`Failed to accept feedback: ${errorText}`)
+    }
+  } catch {
+  | Js.Exn.Error(err) => {
+      fn message = Js.Exn.message(err)->Option.getOr("Network error")
+      Error(`Failed to accept feedback: ${message}`)
+    }
+  | _ => Error("Unexpected error accepting feedback")
+  }
+}
+
+// Reject feedback (tutor rejects AI-generated feedback)
+fn rejectFeedback = async (
+  baseUrl: string,
+  apiKey: option<string>,
+  analysisId: string,
+): result<unit, string> => {
+  try {
+    fn options = {
+      "method": "POST",
+      "headers": createHeaders(apiKey),
+      "body": Types.Json.stringify({}),
+    }
+
+    fn response = await fetch(`${baseUrl}/api/v1/feedback/${analysisId}/reject`, options)
+    fn status = response["status"]
+
+    if status >= 200 && status < 300 {
+      Ok()
+    } else {
+      fn errorText = await response["text"](.)
+      Error(`Failed to reject feedback: ${errorText}`)
+    }
+  } catch {
+  | Js.Exn.Error(err) => {
+      fn message = Js.Exn.message(err)->Option.getOr("Network error")
+      Error(`Failed to reject feedback: ${message}`)
+    }
+  | _ => Error("Unexpected error rejecting feedback")
+  }
+}
+
+// Load document for analysis
+fn loadDocument = async (
+  baseUrl: string,
+  apiKey: option<string>,
+  filePath: string,
+  moduleCode: string,
+  assignment: string,
+): result<string, string> => {
+  try {
+    fn body = {
+      "file_path": filePath,
+      "module": moduleCode,
+      "assignment": assignment,
+    }
+
+    fn options = {
+      "method": "POST",
+      "headers": createHeaders(apiKey),
+      "body": Types.Json.stringify(body),
+    }
+
+    fn response = await fetch(`${baseUrl}/api/v1/documents`, options)
+    fn status = response["status"]
+
+    if status >= 200 && status < 300 {
+      fn json = await response["json"](.)
+      fn documentId = json["document_id"]
+      Ok(documentId)
+    } else {
+      fn errorText = await response["text"](.)
+      Error(`Failed to load document: ${errorText}`)
+    }
+  } catch {
+  | Js.Exn.Error(err) => {
+      fn message = Js.Exn.message(err)->Option.getOr("Network error")
+      Error(`Failed to load document: ${message}`)
+    }
+  | _ => Error("Unexpected error loading document")
+  }
+}
+
