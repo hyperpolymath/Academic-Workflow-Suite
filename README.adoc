@@ -470,7 +470,7 @@ See link:TOPOLOGY.md[TOPOLOGY.md] for a visual architecture map and completion d
 │  ┌───────────────────────────────────────────────────────────────┐ │
 │  │  Presentation Layer                                           │ │
 │  │  ┌─────────────────────────────────────────────────────────┐  │ │
-│  │  │  Microsoft Word + AWS Office Add-in (ReScript)          │  │ │
+│  │  │  Microsoft Word + AWS Office Add-in (AffineScript)          │  │ │
 │  │  │  - Task pane UI                                         │  │ │
 │  │  │  - Document manipulation (Office.js)                    │  │ │
 │  │  └──────────────────────┬──────────────────────────────────┘  │ │
@@ -521,7 +521,7 @@ See link:TOPOLOGY.md[TOPOLOGY.md] for a visual architecture map and completion d
 
 | Component | Technology | Purpose |
 |-----------|------------|---------|
-| *Office Add-in* | ReScript, Office.js, Webpack | UI and Word integration |
+| *Office Add-in* | AffineScript, Office.js, Webpack | UI and Word integration |
 | *Core Engine* | Rust, Actix-Web, Tokio | Business logic and API |
 | *Event Store* | LMDB (via Heed) | Immutable event log |
 | *AI Jail* | Rust, ONNX Runtime, Docker | Isolated AI inference |
@@ -529,7 +529,7 @@ See link:TOPOLOGY.md[TOPOLOGY.md] for a visual architecture map and completion d
 
 === Technology Stack
 
-- *Frontend*: ReScript → JavaScript, React, Office.js
+- *Frontend*: AffineScript → JavaScript, React, Office.js
 - *Backend*: Rust (stable), Actix-Web 4.x
 - *Database*: LMDB (Lightning Memory-Mapped Database)
 - *AI Runtime*: ONNX Runtime, llama.cpp
@@ -974,7 +974,7 @@ aws-core stats export --module TM112 --format csv
 === Component Documentation
 
 - *[Core Engine](components/core/README.md)* - Rust backend
-- *[Office Add-in](components/office-addin/README.md)* - ReScript frontend
+- *[Office Add-in](components/office-addin/README.md)* - AffineScript frontend
 - *[AI Jail](components/ai-jail/README.md)* - Isolated AI inference
 - *[Backend](components/backend/README.md)* - Optional cloud services
 
@@ -1033,7 +1033,7 @@ make dev
 academic-workflow-suite/
 ├── components/
 │   ├── core/              # Rust backend (Actix-Web)
-│   ├── office-addin/      # ReScript frontend (Office.js)
+│   ├── office-addin/      # AffineScript frontend (Office.js)
 │   ├── ai-jail/           # Isolated AI inference
 │   ├── backend/           # Optional cloud services
 │   └── shared/            # Shared types and utilities
@@ -1109,7 +1109,7 @@ make test-coverage
 
 This project follows:
 - *Rust*: `rustfmt` and `clippy` (strict mode)
-- *ReScript*: ReScript formatter
+- *AffineScript*: AffineScript formatter
 - *YAML*: `yamllint`
 
 ```bash
@@ -1528,7 +1528,7 @@ Built with excellent open-source technologies:
 | Technology | License | Purpose |
 |------------|---------|---------|
 | [Rust](https://www.rust-lang.org/) | MIT/Apache-2.0 | Core engine |
-| [ReScript](https://rescript-lang.org/) | MIT | Frontend |
+| [AffineScript](https://affinescript-lang.org/) | MIT | Frontend |
 | [Actix-Web](https://actix.rs/) | MIT/Apache-2.0 | Web framework |
 | [LMDB](https://www.symas.com/lmdb) | OpenLDAP | Database |
 | [ONNX Runtime](https://onnxruntime.ai/) | MIT | AI inference |

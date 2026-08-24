@@ -24,10 +24,10 @@ The following files in `.machine_readable/` contain structured project metadata:
 | Language/Tool | Use Case | Notes |
 |---------------|----------|-------|
 | **Rust** | This project's primary application language | The core (Actix/LMDB/anonymization), shared library, ai-jail, and CLI are all Rust. This is the sanctioned primary stack for AWS. |
-| **ReScript** | Office add-in (Word) | The `components/office-addin` uses ReScript + Office.js. Sanctioned for the add-in. |
+| **AffineScript** | Office add-in (Word) | The `components/office-addin` uses AffineScript + Office.js. Sanctioned for the add-in. |
 | **Elixir/Phoenix** | Alternate backend (non-canonical) | `components/backend`; see `docs/adr/0001-backend-consolidation.md`. |
 | **AffineScript** | Aspirational only | Not used in this repo today; not a mandate. Keep as a future direction, not a requirement. |
-| **Deno** | Runtime & package management for JS/ReScript tooling | Replaces Node/npm/bun |
+| **Deno** | Runtime & package management for JS/AffineScript tooling | Replaces Node/npm/bun |
 | **Tauri 2.0+** | Mobile apps (iOS/Android) | Rust backend + web UI |
 | **Dioxus** | Mobile apps (native UI) | Pure Rust, React-like |
 | **Gleam** | Backend services | Runs on BEAM or compiles to JS |
@@ -76,7 +76,7 @@ Both are FOSS with independent governance (no Big Tech).
 ### Package Management
 
 - **Primary**: Guix (guix.scm)
-- **Fallback**: Nix (flake.nix)
+- **Fallback**: Guix (flake.guix)
 - **JS deps**: Deno (deno.json imports)
 
 ### Security Requirements

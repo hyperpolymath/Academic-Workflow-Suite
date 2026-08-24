@@ -1,3 +1,8 @@
+// SPDX-License-Identifier: MPL-2.0
+// Ported via Harvard Engine (Semantic pass)
+
+module RibbonCommands;
+
 // Ribbon command handlers for AWAP Office Add-in
 
 // Local storage bindings for settings
@@ -8,13 +13,13 @@ external getItem: string => Nullable.t<string> = "getItem"
 external setItem: (string, string) => unit = "setItem"
 
 // Load settings from localStorage
-let loadSettings = (): Types.settings => {
+fn loadSettings = (): Types.settings => {
   try {
-    let settingsJson = getItem("awap-settings")
+    fn settingsJson = getItem("awap-settings")
 
     switch settingsJson->Nullable.toOption {
     | Some(json) => {
-        let parsed = Types.Json.parse(json)
+        fn parsed = Types.Json.parse(json)
         {
           backendUrl: parsed["backendUrl"],
           apiKey: parsed["apiKey"],
@@ -31,9 +36,9 @@ let loadSettings = (): Types.settings => {
 }
 
 // Save settings to localStorage
-let saveSettings = (settings: Types.settings): unit => {
+fn saveSettings = (settings: Types.settings): unit => {
   try {
-    let json = Types.Json.stringify(settings)
+    fn json = Types.Json.stringify(settings)
     setItem("awap-settings", json)
   } catch {
   | _ => Js.Console.error("Failed to save settings")
@@ -43,18 +48,18 @@ let saveSettings = (settings: Types.settings): unit => {
 // Show user feedback (temporary implementation using alert)
 @val external alert: string => unit = "alert"
 
-let showMessage = (message: string): unit => {
+fn showMessage = (message: string): unit => {
   alert(message)
 }
 
 // Mark TMA command - Extract selected TMA content and send to backend
-let markTMA = async (_event: {..}): unit => {
+fn markTMA = async (_event: {..}): unit => {
   try {
     // Load settings
-    let settings = loadSettings()
+    fn settings = loadSettings()
 
     // Get selected content from document
-    let contentResult = await OfficeAPI.getSelectedData(Types.Office.Text)
+    fn contentResult = await OfficeAPI.getSelectedData(Types.Office.Text)
 
     switch contentResult {
     | Ok(content) => {
@@ -62,7 +67,7 @@ let markTMA = async (_event: {..}): unit => {
           showMessage("Please select content to mark as TMA")
         } else {
           // Create TMA object
-          let tma: Types.tma = {
+          fn tma: Types.tma = {
             id: None,
             moduleCode: settings.moduleCode->Option.getOr("UNKNOWN"),
             assignmentNumber: "TMA-" ++ Float.toString(Date.now()),
@@ -72,7 +77,7 @@ let markTMA = async (_event: {..}): unit => {
           }
 
           // Submit to backend
-          let submitResult = await BackendClient.submitTma(
+          fn submitResult = await BackendClient.submitTma(
             settings.backendUrl,
             settings.apiKey,
             tma,
@@ -92,7 +97,7 @@ let markTMA = async (_event: {..}): unit => {
     }
   } catch {
   | Js.Exn.Error(err) => {
-      let message = Js.Exn.message(err)->Option.getOr("Unknown error")
+      fn message = Js.Exn.message(err)->Option.getOr("Unknown error")
       showMessage(`Error: ${message}`)
     }
   | _ => showMessage("Unexpected error occurred")
@@ -100,18 +105,18 @@ let markTMA = async (_event: {..}): unit => {
 }
 
 // Generate Feedback command - Trigger AI feedback generation
-let generateFeedback = async (_event: {..}): unit => {
+fn generateFeedback = async (_event: {..}): unit => {
   try {
     // Load settings
-    let settings = loadSettings()
+    fn settings = loadSettings()
 
     // Get last TMA ID
-    let lastTmaId = getItem("awap-last-tma-id")
+    fn lastTmaId = getItem("awap-last-tma-id")
 
     switch lastTmaId->Nullable.toOption {
     | Some(tmaId) => {
         // Request feedback generation
-        let result = await BackendClient.requestFeedbackGeneration(
+        fn result = await BackendClient.requestFeedbackGeneration(
           settings.backendUrl,
           settings.apiKey,
           tmaId,
@@ -124,7 +129,7 @@ let generateFeedback = async (_event: {..}): unit => {
             // Optionally, start polling for feedback
             if settings.enableWebSocket === false {
               // Poll for feedback after a delay
-              let _ = setTimeout(() => {
+              fn _ = setTimeout(() => {
                 pollForFeedback(tmaId, settings)
               }, 5000)
             }
@@ -137,7 +142,7 @@ let generateFeedback = async (_event: {..}): unit => {
     }
   } catch {
   | Js.Exn.Error(err) => {
-      let message = Js.Exn.message(err)->Option.getOr("Unknown error")
+      fn message = Js.Exn.message(err)->Option.getOr("Unknown error")
       showMessage(`Error: ${message}`)
     }
   | _ => showMessage("Unexpected error occurred")
@@ -147,7 +152,7 @@ let generateFeedback = async (_event: {..}): unit => {
 // Poll for feedback (fallback when WebSocket is not enabled)
 and pollForFeedback = async (tmaId: string, settings: Types.settings): unit => {
   try {
-    let result = await BackendClient.getFeedback(settings.backendUrl, settings.apiKey, tmaId)
+    fn result = await BackendClient.getFeedback(settings.backendUrl, settings.apiKey, tmaId)
 
     switch result {
     | Ok(feedback) => {
@@ -155,10 +160,10 @@ and pollForFeedback = async (tmaId: string, settings: Types.settings): unit => {
         setItem("awap-last-feedback", Types.Json.stringify(feedback))
 
         // Insert feedback into document
-        let feedbackText =
+        fn feedbackText =
           `\n\n--- FEEDBACK ---\n${feedback.content}\n\nScore: ${feedback.score->Option.getOr(0.0)->Float.toString}\n\n`
 
-        let _ = await OfficeAPI.insertText(feedbackText)
+        fn _ = await OfficeAPI.insertText(feedbackText)
 
         showMessage("Feedback has been inserted into the document!")
       }
@@ -176,7 +181,7 @@ and pollForFeedback = async (tmaId: string, settings: Types.settings): unit => {
 @val @scope(("Office", "context", "ui"))
 external displayDialogAsync: (string, {..}, {..} => unit) => unit = "displayDialogAsync"
 
-let openSettings = (_event: {..}): unit => {
+fn openSettings = (_event: {..}): unit => {
   // The Settings button in manifest.xml is configured to show the task pane
   // This function is here for completeness but won't be called
   // since the manifest handles it via ShowTaskpane action
@@ -188,7 +193,7 @@ let openSettings = (_event: {..}): unit => {
 @set external setGenerateFeedback: (. string, {..} => promise<unit>) = "generateFeedback"
 @set external setOpenSettings: (. string, {..} => unit) = "openSettings"
 
-let registerCommands = (): unit => {
+fn registerCommands = (): unit => {
   // Register commands on global object for Office.js to call
   setMarkTMA(. "markTMA", markTMA)
   setGenerateFeedback(. "generateFeedback", generateFeedback)
@@ -198,10 +203,11 @@ let registerCommands = (): unit => {
 }
 
 // Export for testing
-let exportedForTesting = {
+fn exportedForTesting = {
   "loadSettings": loadSettings,
   "saveSettings": saveSettings,
   "markTMA": markTMA,
   "generateFeedback": generateFeedback,
   "openSettings": openSettings,
 }
+

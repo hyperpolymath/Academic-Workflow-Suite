@@ -1,3 +1,8 @@
+// SPDX-License-Identifier: MPL-2.0
+// Ported via Harvard Engine (Semantic pass)
+
+module OfficeAPI;
+
 // Office.js API bindings for ReScript
 
 // External bindings to Office.js global objects
@@ -16,7 +21,7 @@ external getFileAsync: (. int, {..}, (. {..}) => unit) => unit = "getFileAsync"
 @val @scope("Office") @scope("context")
 external displayDialogAsync: (. string, {..}, (. {..}) => unit) => unit = "displayDialogAsync"
 
-// Constants for coercion types
+// Constants for coercion structs
 module CoercionType = {
   @val @scope(("Office", "CoercionType")) external text: string = "Text"
   @val @scope(("Office", "CoercionType")) external html: string = "Html"
@@ -31,7 +36,7 @@ module AsyncResultStatus = {
 }
 
 // Helper to convert Types.Office.coercionType to string
-let coercionTypeToString = (ct: Types.Office.coercionType) =>
+fn coercionTypeToString = (ct: Types.Office.coercionType) =>
   switch ct {
   | Text => CoercionType.text
   | Html => CoercionType.html
@@ -40,23 +45,23 @@ let coercionTypeToString = (ct: Types.Office.coercionType) =>
   }
 
 // Safe wrapper for getSelectedDataAsync
-let getSelectedData = async (coercionType: Types.Office.coercionType): result<string, string> => {
+fn getSelectedData = async (coercionType: Types.Office.coercionType): result<string, string> => {
   try {
-    let promise = Promise.make((resolve, _reject) => {
-      let options = {"coercionType": coercionTypeToString(coercionType)}
+    fn promise = Promise.make((resolve, _reject) => {
+      fn options = {"coercionType": coercionTypeToString(coercionType)}
 
       getSelectedDataAsync(. CoercionType.text, options, (. asyncResult) => {
-        let status = asyncResult["status"]
+        fn status = asyncResult["status"]
 
         if status === AsyncResultStatus.succeeded {
-          let value = asyncResult["value"]
+          fn value = asyncResult["value"]
           switch value {
           | Some(v) => resolve(Ok(v))
           | None => resolve(Error("No data selected"))
           }
         } else {
-          let error = asyncResult["error"]
-          let errorMsg = switch error {
+          fn error = asyncResult["error"]
+          fn errorMsg = switch error {
           | Some(err) => err["message"]
           | None => "Unknown error occurred"
           }
@@ -68,7 +73,7 @@ let getSelectedData = async (coercionType: Types.Office.coercionType): result<st
     await promise
   } catch {
   | Js.Exn.Error(err) => {
-      let message = Js.Exn.message(err)->Option.getOr("Failed to get selected data")
+      fn message = Js.Exn.message(err)->Option.getOr("Failed to get selected data")
       Error(message)
     }
   | _ => Error("Unexpected error in getSelectedData")
@@ -76,22 +81,22 @@ let getSelectedData = async (coercionType: Types.Office.coercionType): result<st
 }
 
 // Safe wrapper for setSelectedDataAsync
-let setSelectedData = async (data: string, coercionType: Types.Office.coercionType): result<
+fn setSelectedData = async (data: string, coercionType: Types.Office.coercionType): result<
   unit,
   string,
 > => {
   try {
-    let promise = Promise.make((resolve, _reject) => {
-      let options = {"coercionType": coercionTypeToString(coercionType)}
+    fn promise = Promise.make((resolve, _reject) => {
+      fn options = {"coercionType": coercionTypeToString(coercionType)}
 
       setSelectedDataAsync(. data, options, (. asyncResult) => {
-        let status = asyncResult["status"]
+        fn status = asyncResult["status"]
 
         if status === AsyncResultStatus.succeeded {
           resolve(Ok())
         } else {
-          let error = asyncResult["error"]
-          let errorMsg = switch error {
+          fn error = asyncResult["error"]
+          fn errorMsg = switch error {
           | Some(err) => err["message"]
           | None => "Unknown error occurred"
           }
@@ -103,7 +108,7 @@ let setSelectedData = async (data: string, coercionType: Types.Office.coercionTy
     await promise
   } catch {
   | Js.Exn.Error(err) => {
-      let message = Js.Exn.message(err)->Option.getOr("Failed to set selected data")
+      fn message = Js.Exn.message(err)->Option.getOr("Failed to set selected data")
       Error(message)
     }
   | _ => Error("Unexpected error in setSelectedData")
@@ -111,19 +116,19 @@ let setSelectedData = async (data: string, coercionType: Types.Office.coercionTy
 }
 
 // Get entire document content
-let getDocumentContent = async (): result<string, string> => {
+fn getDocumentContent = async (): result<string, string> => {
   try {
     // For Word, we'll use the Word API to get the whole document
     // This is a simplified version - real implementation would use Word.run
-    let promise = Promise.make((resolve, _reject) => {
+    fn promise = Promise.make((resolve, _reject) => {
       // Fallback: ask user to select all content
-      let options = {"coercionType": CoercionType.text}
+      fn options = {"coercionType": CoercionType.text}
 
       getSelectedDataAsync(. CoercionType.text, options, (. asyncResult) => {
-        let status = asyncResult["status"]
+        fn status = asyncResult["status"]
 
         if status === AsyncResultStatus.succeeded {
-          let value = asyncResult["value"]
+          fn value = asyncResult["value"]
           switch value {
           | Some(v) => resolve(Ok(v))
           | None => resolve(Error("No content found"))
@@ -137,7 +142,7 @@ let getDocumentContent = async (): result<string, string> => {
     await promise
   } catch {
   | Js.Exn.Error(err) => {
-      let message = Js.Exn.message(err)->Option.getOr("Failed to get document content")
+      fn message = Js.Exn.message(err)->Option.getOr("Failed to get document content")
       Error(message)
     }
   | _ => Error("Unexpected error in getDocumentContent")
@@ -145,12 +150,12 @@ let getDocumentContent = async (): result<string, string> => {
 }
 
 // Insert text at current position
-let insertText = async (text: string): result<unit, string> => {
+fn insertText = async (text: string): result<unit, string> => {
   await setSelectedData(text, Text)
 }
 
 // Insert HTML at current position
-let insertHtml = async (html: string): result<unit, string> => {
+fn insertHtml = async (html: string): result<unit, string> => {
   await setSelectedData(html, Html)
 }
 
@@ -158,16 +163,16 @@ let insertHtml = async (html: string): result<unit, string> => {
 @val @scope(("Office", "context", "ui"))
 external displayDialogAsyncRaw: (. string, {..}, (. {..}) => unit) => unit = "displayDialogAsync"
 
-let showNotification = (title: string, message: string): unit => {
+fn showNotification = (title: string, message: string): unit => {
   // Office.js doesn't have built-in notifications for Word
   // We'll use console.log for now, or implement a custom dialog
   Js.Console.log2(title, message)
 }
 
 // Initialize Office.js
-let initialize = async (): result<unit, string> => {
+fn initialize = async (): result<unit, string> => {
   try {
-    let promise = Promise.make((resolve, _reject) => {
+    fn promise = Promise.make((resolve, _reject) => {
       onReady(. () => {
         resolve(Ok())
       })
@@ -176,7 +181,7 @@ let initialize = async (): result<unit, string> => {
     await promise
   } catch {
   | Js.Exn.Error(err) => {
-      let message = Js.Exn.message(err)->Option.getOr("Failed to initialize Office.js")
+      fn message = Js.Exn.message(err)->Option.getOr("Failed to initialize Office.js")
       Error(message)
     }
   | _ => Error("Unexpected error in Office.js initialization")
@@ -187,9 +192,9 @@ let initialize = async (): result<unit, string> => {
 @val @scope("Office")
 external context: {..} = "context"
 
-let isOfficeContext = (): bool => {
+fn isOfficeContext = (): bool => {
   try {
-    let _ = context
+    fn _ = context
     true
   } catch {
   | _ => false
@@ -200,11 +205,11 @@ let isOfficeContext = (): bool => {
 @val @scope(("Office", "context"))
 external host: {..} = "host"
 
-type hostType = Word | Excel | PowerPoint | Outlook | Unknown
+struct hostType { Word | Excel | PowerPoint | Outlook | Unknown
 
-let getHostType = (): hostType => {
+fn getHostType = (): hostType => {
   try {
-    let hostName = host["type"]
+    fn hostName = host["struct"]
     switch hostName {
     | "Word" => Word
     | "Excel" => Excel
@@ -218,12 +223,12 @@ let getHostType = (): hostType => {
 }
 
 // Event handlers
-type eventHandler = unit => unit
+struct eventHandler { unit => unit
 
-let onSelectionChanged = (handler: eventHandler): unit => {
+fn onSelectionChanged = (handler: eventHandler): unit => {
   // Office.context.document.addHandlerAsync would be used here
   // Simplified for now
-  let _ = handler
+  fn _ = handler
   ()
 }
 
@@ -236,37 +241,37 @@ module Word = {
   @val @scope("Word")
   external run: (. {..} => promise<unit>) => promise<unit> = "run"
 
-  // Document body type
-  type body = {
+  // Document body struct
+  struct body { {
     insertText: (. string, string) => unit,
     insertHtml: (. string, string) => unit,
     clear: (. unit) => unit,
     getText: (. unit) => string,
   }
 
-  // Range type
-  type range = {
+  // Range struct
+  struct range { {
     insertText: (. string, string) => unit,
     insertComment: (. string) => unit,
     select: (. string) => unit,
   }
 
-  // Comment type
-  type comment = {
+  // Comment struct
+  struct comment { {
     content: string,
     resolved: bool,
   }
 
-  // Content control type
-  type contentControl = {
+  // Content control struct
+  struct contentControl { {
     tag: string,
     title: string,
     insertText: (. string, string) => unit,
     delete: (. bool) => unit,
   }
 
-  // Document type
-  type document = {
+  // Document struct
+  struct document { {
     body: body,
     getSelection: (. unit) => range,
     contentControls: {
@@ -282,8 +287,8 @@ module Word = {
     },
   }
 
-  // Context type
-  type context = {
+  // Context struct
+  struct context { {
     document: document,
     sync: (. unit) => promise<unit>,
     load: (. {..}, string) => unit,
@@ -306,13 +311,13 @@ module Word = {
   external replace: string = "Replace"
 
   // Get full document text using Word.run()
-  let getDocumentText = async (): result<string, string> => {
+  fn getDocumentText = async (): result<string, string> => {
     try {
-      let textRef = ref("")
+      fn textRef = ref("")
 
       await run(. async context => {
-        let doc = context["document"]
-        let body = doc["body"]
+        fn doc = context["document"]
+        fn body = doc["body"]
         context["load"](. body, "text")
         await context["sync"](.)
         textRef := body["text"]
@@ -327,10 +332,10 @@ module Word = {
   }
 
   // Insert feedback as comment at current selection
-  let insertFeedbackComment = async (feedbackText: string): result<unit, string> => {
+  fn insertFeedbackComment = async (feedbackText: string): result<unit, string> => {
     try {
       await run(. async context => {
-        let range = context["document"]["getSelection"](.)
+        fn range = context["document"]["getSelection"](.)
         range["insertComment"](. feedbackText)
         await context["sync"](.)
       })
@@ -344,21 +349,21 @@ module Word = {
   }
 
   // Insert formatted feedback at end of document
-  let appendFormattedFeedback = async (
+  fn appendFormattedFeedback = async (
     feedback: string,
     score: option<float>,
   ): result<unit, string> => {
     try {
       await run(. async context => {
-        let body = context["document"]["body"]
+        fn body = context["document"]["body"]
 
         // Build feedback HTML
-        let scoreHtml = switch score {
+        fn scoreHtml = switch score {
         | Some(s) => `<p><strong>Score:</strong> ${Float.toString(s)}</p>`
         | None => ""
         }
 
-        let html = `
+        fn html = `
           <div style="border-top: 2px solid #0078d4; margin-top: 20px; padding-top: 10px;">
             <h2 style="color: #0078d4;">Feedback</h2>
             ${scoreHtml}
@@ -381,14 +386,14 @@ module Word = {
   }
 
   // Get student ID from custom document properties
-  let getStudentId = async (): result<option<string>, string> => {
+  fn getStudentId = async (): result<option<string>, string> => {
     try {
-      let studentIdRef = ref(None)
+      fn studentIdRef = ref(None)
 
       await run(. async context => {
-        let props = context["document"]["properties"]["customProperties"]
+        fn props = context["document"]["properties"]["customProperties"]
         try {
-          let studentIdProp = props["getItem"](. "StudentID")
+          fn studentIdProp = props["getItem"](. "StudentID")
           context["load"](. studentIdProp, "value")
           await context["sync"](.)
           studentIdRef := Some(studentIdProp["value"])
@@ -406,14 +411,14 @@ module Word = {
   }
 
   // Set student ID in custom document properties
-  let setStudentId = async (studentId: string): result<unit, string> => {
+  fn setStudentId = async (studentId: string): result<unit, string> => {
     try {
       await run(. async context => {
-        let props = context["document"]["properties"]["customProperties"]
+        fn props = context["document"]["properties"]["customProperties"]
 
         // Delete existing StudentID property if it exists
         try {
-          let existing = props["getItem"](. "StudentID")
+          fn existing = props["getItem"](. "StudentID")
           existing["delete"](.)
         } catch {
         | _ => ()
@@ -433,15 +438,15 @@ module Word = {
   }
 
   // Extract student ID from document text (fallback if not in properties)
-  let extractStudentIdFromText = (text: string): option<string> => {
+  fn extractStudentIdFromText = (text: string): option<string> => {
     // Look for patterns like "Student ID: A1234567" or just "A1234567"
-    let patterns = [
+    fn patterns = [
       %re("/Student ID:\s*([A-Z]\d{7})/i"),
       %re("/ID:\s*([A-Z]\d{7})/i"),
       %re("/\b([A-Z]\d{7})\b/"),
     ]
 
-    let rec tryPatterns = (patterns: array<Js.Re.t>): option<string> => {
+    fn rec tryPatterns = (patterns: array<Js.Re.t>): option<string> => {
       switch patterns {
       | [] => None
       | [pattern, ...rest] =>
@@ -460,15 +465,15 @@ module Word = {
   }
 
   // Get or extract student ID (tries properties first, then text extraction)
-  let getOrExtractStudentId = async (): result<option<string>, string> => {
+  fn getOrExtractStudentId = async (): result<option<string>, string> => {
     // Try getting from properties first
-    let propResult = await getStudentId()
+    fn propResult = await getStudentId()
 
     switch propResult {
     | Ok(Some(id)) => Ok(Some(id))
     | Ok(None) | Error(_) => {
         // Fallback: extract from document text
-        let textResult = await getDocumentText()
+        fn textResult = await getDocumentText()
         switch textResult {
         | Ok(text) => Ok(extractStudentIdFromText(text))
         | Error(e) => Error(e)
@@ -478,14 +483,14 @@ module Word = {
   }
 
   // Insert content control for feedback section
-  let insertFeedbackContentControl = async (tag: string, title: string): result<
+  fn insertFeedbackContentControl = async (tag: string, title: string): result<
     unit,
     string,
   > => {
     try {
       await run(. async context => {
-        let range = context["document"]["getSelection"](.)
-        let _ = context["document"]["contentControls"]["add"](. tag, range)
+        fn range = context["document"]["getSelection"](.)
+        fn _ = context["document"]["contentControls"]["add"](. tag, range)
         // Set title would go here if we had the API binding
         await context["sync"](.)
       })
@@ -498,3 +503,4 @@ module Word = {
     }
   }
 }
+

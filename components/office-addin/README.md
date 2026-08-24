@@ -5,7 +5,7 @@ Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 
 # office-addin
 
-The Microsoft Word Office add-in (task pane + ribbon), written in **ReScript**
+The Microsoft Word Office add-in (task pane + ribbon), written in **AffineScript**
 against Office.js. This is how an Associate Lecturer interacts with the suite
 from inside Word.
 
