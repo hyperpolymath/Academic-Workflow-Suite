@@ -226,7 +226,7 @@ test_configuration_files() {
 test_documentation() {
     log_info "Testing documentation..."
 
-    local required_docs=("README.md" "CLAUDE.md")
+    local required_docs=("README.adoc" "CLAUDE.md")
 
     for doc in "${required_docs[@]}"; do
         if [ ! -f "${ROOT_DIR}/${doc}" ]; then

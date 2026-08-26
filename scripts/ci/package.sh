@@ -79,8 +79,8 @@ package_deb() {
     fi
 
     # Copy documentation
-    if [ -f "${ROOT_DIR}/README.md" ]; then
-        cp "${ROOT_DIR}/README.md" "${deb_dir}/usr/share/doc/${package_name}/"
+    if [ -f "${ROOT_DIR}/README.adoc" ]; then
+        cp "${ROOT_DIR}/README.adoc" "${deb_dir}/usr/share/doc/${package_name}/"
     fi
 
     if [ -f "${ROOT_DIR}/LICENSE" ]; then
