@@ -154,11 +154,17 @@ update_python_version() {
 update_documentation() {
     local version=$1
 
-    # Update README.md
-    if [ -f "$PROJECT_ROOT/README.md" ]; then
+    # Update README.adoc
+    if [ -f "$PROJECT_ROOT/README.adoc" ]; then
         # Update badge version if exists
-        sed -i "s/version-[0-9.]*-/version-$version-/" "$PROJECT_ROOT/README.md" 2>/dev/null || true
-        log_success "Updated README.md"
+        # Do NOT mask this: a silently-failed badge update ships a release
+        # advertising the wrong version, and nothing surfaces it.
+        if sed -i "s/version-[0-9.]*-/version-$version-/" "$PROJECT_ROOT/README.adoc"; then
+            log_success "Updated README.adoc"
+        else
+            log_error "Failed to update the version badge in README.adoc"
+            exit 1
+        fi
     fi
 
     # Update CLAUDE.md

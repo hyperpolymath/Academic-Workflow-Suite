@@ -156,7 +156,7 @@ build_deb() {
     fi
 
     # Copy documentation
-    cp "$PROJECT_ROOT/README.md" "${pkg_dir}/usr/share/doc/${pkg_name}/" 2>/dev/null || true
+    cp "$PROJECT_ROOT/README.adoc" "${pkg_dir}/usr/share/doc/${pkg_name}/"
     cp "$PROJECT_ROOT/LICENSE" "${pkg_dir}/usr/share/doc/${pkg_name}/" 2>/dev/null || true
 
     # Build package

@@ -154,7 +154,7 @@ check_archive_contents() {
 
     # Check for essential files
     local essential_files=(
-        "README.md"
+        "README.adoc"
         "LICENSE"
     )
 
